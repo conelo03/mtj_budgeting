@@ -29,7 +29,7 @@ class ProjectGroup extends CI_Controller {
 			$no++;
 			$row = array();
 			$row[] = $no.".";
-			$row[] = $i->groupName;
+			$row[] = $i->projectGroupName;
 			$row[] = $i->description;
 			// add html for action
 			$row[] = '<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->projectGroupId.'"><i class="fa fa-edit"></i>  Edit</a>
@@ -67,7 +67,7 @@ class ProjectGroup extends CI_Controller {
 				];
 			}else{
 				$data = [
-					'groupName' => $this->input->post('groupName', true),
+					'projectGroupName' => $this->input->post('projectGroupName', true),
 					'description' => $this->input->post('description', true)
 				];
 	
@@ -94,7 +94,7 @@ class ProjectGroup extends CI_Controller {
 			}else{
 				$data = [
 					'projectGroupId' => $projectGroupId,
-					'groupName' => $this->input->post('groupName', true),
+					'projectGroupName' => $this->input->post('projectGroupName', true),
 					'description' => $this->input->post('description', true)
 				];
 	
@@ -126,7 +126,7 @@ class ProjectGroup extends CI_Controller {
 
 	private function validation()
 	{
-		$this->form_validation->set_rules('groupName', 'Name', 'required|trim');
+		$this->form_validation->set_rules('projectGroupName', 'Name', 'required|trim');
 		$this->form_validation->set_rules('description', 'Description', 'required|trim');
 	}
 }

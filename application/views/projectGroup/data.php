@@ -26,7 +26,7 @@
                   <thead>
                     <tr>
                       <th class="text-center" style="width: 20px;">#</th>
-                      <th>Group Name</th>
+                      <th>Project Group Name</th>
                       <th>Description</th>
                       <th class="text-center" style="width: 200px;">Aksi</th>
                     </tr>
@@ -58,7 +58,7 @@
           <span class="text-danger msgError" style="display: none"></span>
           <div class="form-group">
             <label class="form-label">Name</label>
-            <input name="groupName" id="groupName" class="form-control" type="text" placeholder="Name">
+            <input name="projectGroupName" id="projectGroupName" class="form-control" type="text" placeholder="Name">
           </div>
 
           <div class="form-group">
@@ -89,7 +89,7 @@
           <span class="text-danger msgError" style="display: none"></span>
           <div class="form-group">
             <label class="form-label">Name</label>
-            <input name="groupName" id="groupNameEdit" class="form-control" type="text" placeholder="Name">
+            <input name="projectGroupName" id="projectGroupNameEdit" class="form-control" type="text" placeholder="Name">
           </div>
 
           <div class="form-group">
@@ -191,7 +191,7 @@
         success: function(res){
           let data = res.data;
           $('#modalEdit').modal('show');
-          $('#groupNameEdit').val(data.groupName);
+          $('#projectGroupNameEdit').val(data.projectGroupName);
           $('#descriptionEdit').val(data.description);
           $('#updateData').attr("data", id);
         },

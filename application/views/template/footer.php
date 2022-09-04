@@ -55,7 +55,58 @@
             $("#selectGroupProject").html(res.data_group_project.data).selectpicker('refresh');
             $("#selectGroupProjectEdit").html(res.data_group_project.data).selectpicker('refresh');
           } else {
+            $('#item-error').html('Group Project not Found!');
+          }
+        }, 
+      });
+    }
+
+    function loadGroup(){
+      $.ajax({
+        type: "GET", 
+        url: "<?= base_url("Project/get_group"); ?>", 
+        async : true,
+        dataType: "JSON",
+        success: function(res) {
+          if(res.response === true){
+            $("#selectGroup").html(res.data_group.data).selectpicker('refresh');
+            $("#selectGroupEdit").html(res.data_group.data).selectpicker('refresh');
+          } else {
             $('#item-error').html('Group not Found!');
+          }
+        }, 
+      });
+    }
+
+    function loadUserGroup(){
+      $.ajax({
+        type: "GET", 
+        url: "<?= base_url("User/get_user_group"); ?>", 
+        async : true,
+        dataType: "JSON",
+        success: function(res) {
+          if(res.response === true){
+            $("#selectUserGroup").html(res.data_group.data).selectpicker('refresh');
+            $("#selectUserGroupEdit").html(res.data_group.data).selectpicker('refresh');
+          } else {
+            $('#item-error').html('Group not Found!');
+          }
+        }, 
+      });
+    }
+
+    function loadUserAccess(){
+      $.ajax({
+        type: "GET", 
+        url: "<?= base_url("User/get_user_access"); ?>", 
+        async : true,
+        dataType: "JSON",
+        success: function(res) {
+          if(res.response === true){
+            $("#selectUserAccess").html(res.data_access.data).selectpicker('refresh');
+            $("#selectUserAccessEdit").html(res.data_access.data).selectpicker('refresh');
+          } else {
+            $('#item-error').html('Access not Found!');
           }
         }, 
       });
@@ -64,6 +115,9 @@
     $(document).ready( function () { 
       loadClient();
       loadGroupProject();
+      loadGroup();
+      loadUserAccess();
+      loadUserGroup();
       
       $('#select-kota').selectpicker({
         search : true,

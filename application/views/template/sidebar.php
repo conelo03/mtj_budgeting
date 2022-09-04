@@ -11,10 +11,10 @@
             <div class="d-sm-none d-lg-inline-block"><?= $this->session->userdata('userName') ?></div></a>
             <div class="dropdown-menu dropdown-menu-right">
               <a href="#" class="dropdown-item has-icon">
-                <i class="fas fa-cog"></i> Edit Akun
+                <i class="fas fa-cog"></i> Edit Account
               </a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item has-icon text-danger" data-confirm="Logout|Anda yakin ingin keluar?" data-confirm-yes="document.location.href='<?= base_url('logout'); ?>';"><i class="fas fa-sign-out-alt"></i> Logout</a>
+              <a class="dropdown-item has-icon text-danger" data-confirm="Logout|Are You sure you want to Log out?" data-confirm-yes="document.location.href='<?= base_url('logout'); ?>';"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
           </li>
         </ul>

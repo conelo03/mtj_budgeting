@@ -8,7 +8,7 @@
     </div>
 
     <div class="section-header">
-      <h6>Selamat Datang di Aplikasi Budgeting</h6>
+      <h6>Welcome to Budget Monitoring App MTJ Group</h6>
 
     </div>
 

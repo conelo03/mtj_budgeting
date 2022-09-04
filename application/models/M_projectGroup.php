@@ -6,8 +6,8 @@ class M_projectGroup extends CI_Model {
 	public $table	= 'project_group';
 
 	// start datatables
-	var $column_order = array('name', 'description'); //set column field database for datatable orderable
-	var $column_search = array('name', 'description'); //set column field database for datatable searchable
+	var $column_order = array('projectGroupName', 'description'); //set column field database for datatable orderable
+	var $column_search = array('projectGroupName', 'description'); //set column field database for datatable searchable
 	var $order = array('projectGroupId' => 'asc'); // default order 
 
 	private function _get_datatables_query() {

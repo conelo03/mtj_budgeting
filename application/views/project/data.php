@@ -27,14 +27,15 @@
                     <tr>
                       <th class="text-center" style="width: 20px;">#</th>
                       <th>ID</th>
-                      <th>Group</th>
+                      <th>Group Name</th>
+                      <th>Project Group</th>
                       <th>Project Name</th>
                       <th>Client</th>
                       <th>Description</th>
                       <th>Value</th>
                       <th>Final</th>
                       <th>Add Work</th>
-                      <th class="text-center" style="width: 200px;">Aksi</th>
+                      <th class="text-center" style="width: 230px;">Aksi</th>
                     </tr>
                   </thead>
                   <tbody id="dataList">
@@ -71,10 +72,18 @@
 
           <div class="form-group">
             <label class="form-label">Select Group</label>
+            <select name="groupId" class="form-control" id="selectGroup" data-live-search="true" required>
+
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Select Group Project</label>
             <select name="projectGroupId" class="form-control" id="selectGroupProject" data-live-search="true" required>
 
             </select>
           </div>
+
           <div class="form-group">
             <label class="form-label">Project Name</label>
             <input name="projectName" id="projectName" class="form-control" type="text" placeholder="Project Name">
@@ -120,10 +129,18 @@
 
           <div class="form-group">
             <label class="form-label">Select Group</label>
+            <select name="groupId" class="form-control" id="selectGroupEdit" data-live-search="true" required>
+
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Select Group Project</label>
             <select name="projectGroupId" class="form-control" id="selectGroupProjectEdit" data-live-search="true">
 
             </select>
           </div>
+
           <div class="form-group">
             <label class="form-label">Project Name</label>
             <input name="projectName" id="projectNameEdit" class="form-control" type="text" placeholder="Project Name">
@@ -265,6 +282,7 @@
         success: function(res){
           let data = res.data;
           $('#modalEdit').modal('show');
+          $('#selectGroupEdit').selectpicker('val', data.groupId);
           $('#selectClientEdit').selectpicker('val', data.clientId);
           $('#selectGroupProjectEdit').selectpicker('val', data.projectGroupId);
           $('#projectNameEdit').val(data.projectName);

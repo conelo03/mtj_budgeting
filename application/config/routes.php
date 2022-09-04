@@ -65,6 +65,16 @@ $route['add-user'] 	        = 'User/add';
 $route['edit-user/(:any)'] 	    = 'User/edit/$1';
 $route['delete-user/(:any)']    	= 'User/delete/$1';
 
+$route['access-right'] 				    = 'User';
+$route['add-access-right'] 	        = 'User/add_access';
+$route['edit-access-right/(:any)'] 	    = 'User/edit_access/$1';
+$route['delete-access-right/(:any)']    	= 'User/delete_access/$1';
+
+$route['user-group'] 				    = 'User';
+$route['add-user-group'] 	        = 'User/add_user_group';
+$route['edit-user-group/(:any)'] 	    = 'User/edit_user_group/$1';
+$route['delete-user-group/(:any)']    	= 'User/delete_user_group/$1';
+
 $route['client'] 				    = 'Client';
 $route['add-client'] 	        = 'Client/add';
 $route['edit-client/(:any)'] 	    = 'Client/edit/$1';

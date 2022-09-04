@@ -31,6 +31,7 @@ class Project extends CI_Controller {
 			$row[] = $no.".";
 			$row[] = $i->generateId;
 			$row[] = $i->groupName;
+			$row[] = $i->projectGroupName;
 			$row[] = $i->projectName;
 			$row[] = $i->name;
 			$row[] = $i->description;
@@ -38,8 +39,9 @@ class Project extends CI_Controller {
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			$row[] = $i->isAddWork == 0 ? 'No' : 'Yes';
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->projectId.'"><i class="fa fa-edit"></i>  Edit</a>
-							<a href="#" class="btn btn-danger" id="btnDelete" data="'.$i->projectId.'"><i class="fa fa-trash"></i>  Delete</a>';
+			$row[] = '<a href="#" class="btn btn-light"><i class="fa fa-list"></i> Detail</a>
+							<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->projectId.'"><i class="fa fa-edit"></i> Edit</a>
+							<a href="#" class="btn btn-danger" id="btnDelete" data="'.$i->projectId.'"><i class="fa fa-trash"></i> Delete</a>';
 			$data[] = $row;
 		}
 		$output = [
@@ -75,6 +77,7 @@ class Project extends CI_Controller {
 				$generateId = $this->generateId();
 				$data = [
 					'generateId' => $generateId,
+					'groupId' => $this->input->post('groupId', true),
 					'clientId' => $this->input->post('clientId', true),
 					'projectGroupId' => empty($this->input->post('projectGroupId', true)) ? null : $this->input->post('projectGroupId', true),
 					'projectName' => $this->input->post('projectName', true),
@@ -105,6 +108,7 @@ class Project extends CI_Controller {
 			}else{
 				$data = [
 					'projectId' => $projectId,
+					'groupId' => $this->input->post('groupId', true),
 					'clientId' => $this->input->post('clientId', true),
 					'projectGroupId' => empty($this->input->post('projectGroupId', true)) ? null : $this->input->post('projectGroupId', true),
 					'projectName' => $this->input->post('projectName', true),
@@ -143,6 +147,7 @@ class Project extends CI_Controller {
 	private function validation()
 	{
 		$this->form_validation->set_rules('clientId', 'Client', 'required|trim');
+		$this->form_validation->set_rules('groupId', 'Group', 'required|trim');
 		$this->form_validation->set_rules('projectName', 'Project Name', 'required|trim');
 		$this->form_validation->set_rules('description', 'Description', 'required|trim');
 		$this->form_validation->set_rules('value', 'Value', 'required|trim');
@@ -152,7 +157,7 @@ class Project extends CI_Controller {
 	{
 		$client = $this->M_client->get_data()->result_array();
 		
-		$html = "<option disabled selected>-- Pilih Client --</option>";
+		$html = "<option disabled selected>-- Select Client --</option>";
 		foreach($client as $data){ // Ambil semua data dari hasil eksekusi $sql
 			$html .= "<option value='".$data['clientId']."'>".$data['name']."</option>"; // Tambahkan tag option ke variabel $html
 		}
@@ -169,14 +174,36 @@ class Project extends CI_Controller {
 	{
 		$pg = $this->db->get('project_group')->result_array();
 		
-		$html = "<option disabled selected>-- Pilih Group --</option>";
+		$html = "<option disabled selected>-- Select Group --</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
-			$html .= "<option value='".$data['projectGroupId']."'>".$data['groupName']."</option>"; // Tambahkan tag option ke variabel $html
+			$html .= "<option value='".$data['projectGroupId']."'>".$data['projectGroupName']."</option>"; // Tambahkan tag option ke variabel $html
 		}
 		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
 		$response = [
 			'response' => true,
 			'data_group_project'	=> $callback
+
+		]; 
+		echo json_encode($response);
+	}
+
+	public function get_group()
+	{
+		$userId = $this->session->userdata('userId');
+		$this->db->select('*');
+		$this->db->from('user_group');
+		$this->db->join('group', 'group.groupId=user_group.groupId');
+		$this->db->where('user_group.userId', $userId);
+		$pg = $this->db->get()->result_array();
+		
+		$html = "<option disabled selected>-- Select Group --</option>";
+		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
+			$html .= "<option value='".$data['groupId']."'>".$data['groupName']."</option>"; // Tambahkan tag option ke variabel $html
+		}
+		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
+		$response = [
+			'response' => true,
+			'data_group'	=> $callback
 
 		]; 
 		echo json_encode($response);

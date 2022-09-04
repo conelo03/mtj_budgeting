@@ -1,21 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class M_project extends CI_Model {
+class M_group extends CI_Model {
 
-	public $table	= 'project';
+	public $table	= 'group';
 
 	// start datatables
-	var $column_order = array('project.generateId', 'group.groupName', 'project_group.projectGroupName', 'project.projectName', 'client.name', 'project.description', 'project.value', 'project.isFinal', 'project.isAddWork'); //set column field database for datatable orderable
-	var $column_search = array('project.generateId', 'group.groupName', 'project_group.projectGroupName', 'project.projectName', 'client.name', 'project.description', 'project.value', 'project.isFinal', 'project.isAddWork'); //set column field database for datatable searchable
-	var $order = array('project.projectId' => 'asc'); // default order 
+	var $column_order = array('groupName'); //set column field database for datatable orderable
+	var $column_search = array('groupName'); //set column field database for datatable searchable
+	var $order = array('groupId' => 'asc'); // default order 
 
 	private function _get_datatables_query() {
 		$this->db->select('*');
 		$this->db->from($this->table);
-		$this->db->join('group', 'group.groupId=project.groupId');
-		$this->db->join('client', 'client.clientId=project.clientId');
-		$this->db->join('project_group', 'project_group.projectGroupId = project.projectGroupId', 'left');
 		$i = 0;
 		foreach ($this->column_search as $i) { // loop column 
 			if(@$_POST['search']['value']) { // if datatable send POST for search
@@ -54,7 +51,7 @@ class M_project extends CI_Model {
 	}
 	
 	function count_all() {
-		$this->db->from('project');
+		$this->db->from('group');
 		return $this->db->count_all_results();
 	}
 	// end datatables
@@ -71,19 +68,19 @@ class M_project extends CI_Model {
 		return $this->db->insert($this->table, $data);
 	}
 
-	public function get_by_id($projectId)
+	public function get_by_id($groupId)
 	{
-		return $this->db->get_where($this->table, ['projectId' => $projectId])->row_array();
+		return $this->db->get_where($this->table, ['groupId' => $groupId])->row_array();
 	}
 
 	public function update($data)
 	{
-		$this->db->where('projectId', $data['projectId']);
+		$this->db->where('groupId', $data['groupId']);
 		return $this->db->update($this->table, $data);
 	}
 
-	public function delete($projectId)
+	public function delete($groupId)
 	{
-		return $this->db->delete($this->table, ['projectId' => $projectId]);
+		return $this->db->delete($this->table, ['groupId' => $groupId]);
 	}
 }
