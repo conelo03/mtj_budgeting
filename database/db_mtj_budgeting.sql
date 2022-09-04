@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 02, 2022 at 07:36 AM
+-- Generation Time: Sep 04, 2022 at 07:58 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.2.33
 
@@ -21,6 +21,25 @@ SET time_zone = "+00:00";
 --
 -- Database: `db_mtj_budgeting`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `access_right`
+--
+
+CREATE TABLE `access_right` (
+  `accessRightId` int(11) NOT NULL,
+  `accessName` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `access_right`
+--
+
+INSERT INTO `access_right` (`accessRightId`, `accessName`) VALUES
+(1, 'Manager Budget'),
+(2, 'Manager Leader');
 
 -- --------------------------------------------------------
 
@@ -77,6 +96,25 @@ CREATE TABLE `distribution_cost` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `group`
+--
+
+CREATE TABLE `group` (
+  `groupId` int(11) NOT NULL,
+  `groupName` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `group`
+--
+
+INSERT INTO `group` (`groupId`, `groupName`) VALUES
+(1, 'GROUP 1'),
+(2, 'GROUP 2');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `notes`
 --
 
@@ -97,6 +135,7 @@ CREATE TABLE `notes` (
 CREATE TABLE `project` (
   `projectId` int(11) NOT NULL,
   `generateId` varchar(10) NOT NULL,
+  `groupId` int(11) NOT NULL,
   `projectGroupId` int(11) DEFAULT NULL,
   `projectName` varchar(100) NOT NULL,
   `clientId` int(11) NOT NULL,
@@ -110,9 +149,9 @@ CREATE TABLE `project` (
 -- Dumping data for table `project`
 --
 
-INSERT INTO `project` (`projectId`, `generateId`, `projectGroupId`, `projectName`, `clientId`, `description`, `value`, `isFinal`, `isAddWork`) VALUES
-(1, '2209001', 1, 'Project Test', 1, 'Desc Test', '2000000', 1, 0),
-(3, '2209002', 1, 'Project Test 2 edit', 3, 'Desc edit', '5000000', 1, 0);
+INSERT INTO `project` (`projectId`, `generateId`, `groupId`, `projectGroupId`, `projectName`, `clientId`, `description`, `value`, `isFinal`, `isAddWork`) VALUES
+(1, '2209001', 1, 1, 'Project Test', 1, 'Desc Test', '2000000', 1, 0),
+(4, '2209002', 2, NULL, 'Project Test 2', 3, 'Desc', '5000000', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -122,7 +161,7 @@ INSERT INTO `project` (`projectId`, `generateId`, `projectGroupId`, `projectName
 
 CREATE TABLE `project_group` (
   `projectGroupId` int(11) NOT NULL,
-  `groupName` varchar(100) NOT NULL,
+  `projectGroupName` varchar(100) NOT NULL,
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -130,7 +169,7 @@ CREATE TABLE `project_group` (
 -- Dumping data for table `project_group`
 --
 
-INSERT INTO `project_group` (`projectGroupId`, `groupName`, `description`) VALUES
+INSERT INTO `project_group` (`projectGroupId`, `projectGroupName`, `description`) VALUES
 (1, 'Group Test', 'Desc'),
 (2, 'Group Test 2', 'Desc Test');
 
@@ -228,20 +267,68 @@ CREATE TABLE `user` (
   `userId` int(11) NOT NULL,
   `userName` varchar(100) NOT NULL,
   `userEmail` varchar(100) NOT NULL,
-  `userPassword` text NOT NULL,
-  `userRole` varchar(100) NOT NULL
+  `userPassword` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`userId`, `userName`, `userEmail`, `userPassword`, `userRole`) VALUES
-(1, 'Administrator', 'admin@email.com', '$2y$10$5VifqomOAsoe39zJDc/GJefzvAwOmvdqMbDeNjocX0piQd5KDOKbS', 'all');
+INSERT INTO `user` (`userId`, `userName`, `userEmail`, `userPassword`) VALUES
+(1, 'Administrator', 'admin@email.com', '$2y$10$5VifqomOAsoe39zJDc/GJefzvAwOmvdqMbDeNjocX0piQd5KDOKbS'),
+(4, 'a', 'a@a.c', '$2y$10$3QLNv1eUz/4gI.aAjEhpbecllqf.yRfJgqgcf06j0prR8gBQic6pK');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_access`
+--
+
+CREATE TABLE `user_access` (
+  `userAccessId` int(11) NOT NULL,
+  `accessRightId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `user_access`
+--
+
+INSERT INTO `user_access` (`userAccessId`, `accessRightId`, `userId`) VALUES
+(6, 1, 4),
+(8, 1, 1),
+(9, 2, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_group`
+--
+
+CREATE TABLE `user_group` (
+  `userGroupId` int(11) NOT NULL,
+  `groupId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `user_group`
+--
+
+INSERT INTO `user_group` (`userGroupId`, `groupId`, `userId`) VALUES
+(6, 1, 4),
+(8, 1, 1),
+(9, 2, 1);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `access_right`
+--
+ALTER TABLE `access_right`
+  ADD PRIMARY KEY (`accessRightId`);
 
 --
 -- Indexes for table `budget`
@@ -260,6 +347,12 @@ ALTER TABLE `client`
 --
 ALTER TABLE `distribution_cost`
   ADD PRIMARY KEY (`distributionCostId`);
+
+--
+-- Indexes for table `group`
+--
+ALTER TABLE `group`
+  ADD PRIMARY KEY (`groupId`);
 
 --
 -- Indexes for table `notes`
@@ -317,8 +410,26 @@ ALTER TABLE `user`
   ADD UNIQUE KEY `userName` (`userName`);
 
 --
+-- Indexes for table `user_access`
+--
+ALTER TABLE `user_access`
+  ADD PRIMARY KEY (`userAccessId`);
+
+--
+-- Indexes for table `user_group`
+--
+ALTER TABLE `user_group`
+  ADD PRIMARY KEY (`userGroupId`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `access_right`
+--
+ALTER TABLE `access_right`
+  MODIFY `accessRightId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `budget`
@@ -339,6 +450,12 @@ ALTER TABLE `distribution_cost`
   MODIFY `distributionCostId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `group`
+--
+ALTER TABLE `group`
+  MODIFY `groupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `notes`
 --
 ALTER TABLE `notes`
@@ -348,7 +465,7 @@ ALTER TABLE `notes`
 -- AUTO_INCREMENT for table `project`
 --
 ALTER TABLE `project`
-  MODIFY `projectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `projectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `project_group`
@@ -390,7 +507,19 @@ ALTER TABLE `report_budget`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `user_access`
+--
+ALTER TABLE `user_access`
+  MODIFY `userAccessId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `user_group`
+--
+ALTER TABLE `user_group`
+  MODIFY `userGroupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
