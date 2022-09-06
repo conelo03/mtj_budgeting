@@ -86,4 +86,80 @@ class M_project extends CI_Model {
 	{
 		return $this->db->delete($this->table, ['projectId' => $projectId]);
 	}
+
+	// PROJECT QUOTATION
+	// start datatables
+	var $column_quotation_order = array('orderNo', 'projectQuotationName', 'project_quotation.description', 'quoteValue', 'estCost', 'detailDescription', 'isFinal'); //set column field database for datatable orderable
+	var $column_quotation_search = array('orderNo', 'projectQuotationName', 'project_quotation.description', 'quoteValue', 'estCost', 'detailDescription', 'isFinal'); //set column field database for datatable searchable
+	var $order_quotation = array('projectQuotationId' => 'asc'); // default order 
+
+	private function _get_datatables_quotation_query($projectId) {
+		$this->db->select('*, project_quotation.description, project_quotation.isFinal');
+		$this->db->from('project_quotation');
+		$this->db->join('project', 'project.projectId=project_quotation.projectId');
+		$this->db->where('project_quotation.projectId', $projectId);
+		$i = 0;
+		foreach ($this->column_quotation_search as $i) { // loop column 
+			if(@$_POST['search']['value']) { // if datatable send POST for search
+				if($i===0) { // first loop
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+					$this->db->like($i, $_POST['search']['value']);
+				} else {
+					$this->db->or_like($i, $_POST['search']['value']);
+				}
+				if(count($this->column_quotation_search) - 1 == $i) //last loop
+					$this->db->group_end(); //close bracket
+			}
+			$i++;
+		}
+				
+		if(isset($_POST['order'])) { // here order processing
+			$this->db->order_by($this->column_quotation_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if(isset($this->order_quotation)) {
+			$order = $this->order_quotation;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function get_quotation_datatables($projectId) {
+		$this->_get_datatables_quotation_query($projectId);
+		if(@$_POST['length'] != -1)
+		$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function count_quotation_filtered($projectId) {
+		$this->_get_datatables_quotation_query($projectId);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	
+	function count_quotation_all($projectId) {
+		$this->db->from('project_quotation');
+		$this->db->where('projectId', $projectId);
+		return $this->db->count_all_results();
+	}
+	// end datatables
+
+	public function insert_project_quotation($data)
+	{
+		return $this->db->insert('project_quotation', $data);
+	}
+
+	public function get_project_quotation_by_id($projectQuotationId)
+	{
+		return $this->db->get_where('project_quotation', ['projectQuotationId' => $projectQuotationId])->row_array();
+	}
+
+	public function update_project_quotation($data)
+	{
+		$this->db->where('projectQuotationId', $data['projectQuotationId']);
+		return $this->db->update('project_quotation', $data);
+	}
+
+	public function delete_project_quotation($projectQuotationId)
+	{
+		return $this->db->delete('project_quotation', ['projectQuotationId' => $projectQuotationId]);
+	}
 }

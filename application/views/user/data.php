@@ -57,7 +57,7 @@
                           <th>Email</th>
                           <th>Group</th>
                           <th>Access</th>
-                          <th class="text-center" style="width: 200px;">Aksi</th>
+                          <th class="text-center" style="width: 200px;">Action</th>
                         </tr>
                       </thead>
                       <tbody id="dataList">
@@ -81,7 +81,7 @@
                         <tr>
                           <th class="text-center" style="width: 20px;">#</th>
                           <th>Access</th>
-                          <th class="text-center" style="width: 200px;">Aksi</th>
+                          <th class="text-center" style="width: 200px;">Action</th>
                         </tr>
                       </thead>
                       <tbody id="dataAccessList">
@@ -105,7 +105,7 @@
                         <tr>
                           <th class="text-center" style="width: 20px;">#</th>
                           <th>Group Name</th>
-                          <th class="text-center" style="width: 200px;">Aksi</th>
+                          <th class="text-center" style="width: 200px;">Action</th>
                         </tr>
                       </thead>
                       <tbody id="dataGroupList">

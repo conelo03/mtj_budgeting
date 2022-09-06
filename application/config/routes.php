@@ -80,6 +80,11 @@ $route['add-client'] 	        = 'Client/add';
 $route['edit-client/(:any)'] 	    = 'Client/edit/$1';
 $route['delete-client/(:any)']    	= 'Client/delete/$1';
 
+$route['quotation-header'] 				    = 'QuotationHeader';
+$route['add-quotation-header'] 	        = 'QuotationHeader/add';
+$route['edit-quotation-header/(:any)'] 	    = 'QuotationHeader/edit/$1';
+$route['delete-quotation-header/(:any)']    	= 'QuotationHeader/delete/$1';
+
 $route['project-group'] 				    = 'ProjectGroup';
 $route['add-project-group'] 	        = 'ProjectGroup/add';
 $route['edit-project-group/(:any)'] 	    = 'ProjectGroup/edit/$1';
@@ -89,3 +94,8 @@ $route['project'] 				    = 'Project';
 $route['add-project'] 	        = 'Project/add';
 $route['edit-project/(:any)'] 	    = 'Project/edit/$1';
 $route['delete-project/(:any)']    	= 'Project/delete/$1';
+
+$route['detail-project/(:any)'] 				    = 'Project/detail/$1';
+$route['add-project-quotation/(:any)'] 	        = 'Project/add_project_quotation/$1';
+$route['edit-project-quotation/(:any)'] 	    = 'Project/edit_project_quotation/$1';
+$route['delete-project-quotation/(:any)']    	= 'Project/delete_project_quotation/$1';

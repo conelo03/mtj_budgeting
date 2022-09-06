@@ -28,7 +28,7 @@
                       <th class="text-center" style="width: 20px;">#</th>
                       <th>Project Group Name</th>
                       <th>Description</th>
-                      <th class="text-center" style="width: 200px;">Aksi</th>
+                      <th class="text-center" style="width: 200px;">Action</th>
                     </tr>
                   </thead>
                   <tbody id="dataList">

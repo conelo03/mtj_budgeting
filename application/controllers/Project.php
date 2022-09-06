@@ -39,7 +39,7 @@ class Project extends CI_Controller {
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			$row[] = $i->isAddWork == 0 ? 'No' : 'Yes';
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-light"><i class="fa fa-list"></i> Detail</a>
+			$row[] = '<a href="'.base_url('detail-project/'.$i->projectId).'" class="btn btn-light"><i class="fa fa-list"></i> Detail</a>
 							<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->projectId.'"><i class="fa fa-edit"></i> Edit</a>
 							<a href="#" class="btn btn-danger" id="btnDelete" data="'.$i->projectId.'"><i class="fa fa-trash"></i> Delete</a>';
 			$data[] = $row;
@@ -174,7 +174,7 @@ class Project extends CI_Controller {
 	{
 		$pg = $this->db->get('project_group')->result_array();
 		
-		$html = "<option disabled selected>-- Select Group --</option>";
+		$html = "<option value='' disabled>-- Select Group --</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
 			$html .= "<option value='".$data['projectGroupId']."'>".$data['projectGroupName']."</option>"; // Tambahkan tag option ke variabel $html
 		}
@@ -196,7 +196,7 @@ class Project extends CI_Controller {
 		$this->db->where('user_group.userId', $userId);
 		$pg = $this->db->get()->result_array();
 		
-		$html = "<option disabled selected>-- Select Group --</option>";
+		$html = "<option value='' disabled>-- Select Group --</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
 			$html .= "<option value='".$data['groupId']."'>".$data['groupName']."</option>"; // Tambahkan tag option ke variabel $html
 		}
@@ -204,6 +204,24 @@ class Project extends CI_Controller {
 		$response = [
 			'response' => true,
 			'data_group'	=> $callback
+
+		]; 
+		echo json_encode($response);
+	}
+
+	public function get_quotation_header()
+	{
+		$pg = $this->M_quotationHeader->get_data()->result_array();
+		
+		$html = "<option value='' disabled>-- Select Quotation Header --</option>";
+		$html .= "<option value=''>SET EMPTY</option>";
+		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
+			$html .= "<option value='".$data['quotationHeaderId']."'>".$data['orderNo']." - ".$data['pdName']."</option>"; // Tambahkan tag option ke variabel $html
+		}
+		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
+		$response = [
+			'response' => true,
+			'data_quotation_header'	=> $callback
 
 		]; 
 		echo json_encode($response);
@@ -232,5 +250,143 @@ class Project extends CI_Controller {
 		$id = date('ym').$x;
 
 		return $id;
+	}
+
+	//Detail Project
+	public function detail($projectId)
+	{
+    $data['title']		= 'Data Project';
+		$data['project'] = $this->M_project->get_by_id($projectId);
+		$this->load->view('project/detail', $data);
+	}
+
+	function get_quotation_data($projectId) {
+		$list = $this->M_project->get_quotation_datatables($projectId);
+		$data = array();
+		$no = @$_POST['start'];
+		foreach ($list as $i) {
+			$no++;
+			$row = array();
+			$row[] = $no.".";
+			$row[] = $i->orderNo;
+			$row[] = $i->projectQuotationName;
+			$row[] = $i->description;
+			$row[] = $i->quoteValue;
+			$row[] = $i->estCost;
+			$row[] = $i->detailDescription;
+			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
+			// add html for action
+			$row[] = '<a href="#" class="btn btn-info" id="btnQuotationEdit" data="'.$i->projectQuotationId.'"><i class="fa fa-edit"></i> Edit</a>
+							<a href="#" class="btn btn-danger" id="btnQuotationDelete" data="'.$i->projectQuotationId.'"><i class="fa fa-trash"></i> Delete</a>';
+			$data[] = $row;
+		}
+		$output = [
+			"draw" => @$_POST['draw'],
+			"recordsTotal" => $this->M_project->count_quotation_all($projectId),
+			"recordsFiltered" => $this->M_project->count_quotation_filtered($projectId),
+			"data" => $data,
+		];
+		// output to json format
+		echo json_encode($output);
+	}
+
+	function get_quotation_data_by_id(){
+		$projectQuotationId = $this->input->get('id');
+		$data = $this->M_project->get_project_quotation_by_id($projectQuotationId);
+		$res = [
+			'data' => $data,
+			'response' => $data ? true : false,
+		];
+
+		echo json_encode($res);
+	}
+
+	function add_project_quotation($projectId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_project_quotation();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'projectId' => $projectId,
+					'quotationHeaderId' => empty($this->input->post('quotationHeaderId', true)) ? null : $this->input->post('quotationHeaderId', true),
+					'orderNo' => $this->input->post('orderNo', true),
+					'projectQuotationName' => $this->input->post('projectQuotationName', true),
+					'quoteValue' => $this->input->post('quoteValue', true),
+					'estCost' => $this->input->post('estCost', true),
+					'description' => $this->input->post('description', true),
+					'detailDescription' => $this->input->post('detailDescription', true),
+				];
+	
+				$q = $this->M_project->insert_project_quotation($data);
+	
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function edit_project_quotation($projectQuotationId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_project_quotation();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'projectQuotationId' => $projectQuotationId,
+					'quotationHeaderId' => empty($this->input->post('quotationHeaderId', true)) ? null : $this->input->post('quotationHeaderId', true),
+					'orderNo' => $this->input->post('orderNo', true),
+					'projectQuotationName' => $this->input->post('projectQuotationName', true),
+					'quoteValue' => $this->input->post('quoteValue', true),
+					'estCost' => $this->input->post('estCost', true),
+					'description' => $this->input->post('description', true),
+					'detailDescription' => $this->input->post('detailDescription', true),
+					'isFinal' => $this->input->post('isFinal', true),
+				];
+	
+				$q = $this->M_project->update_project_quotation($data);
+	
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function delete_project_quotation($projectQuotationId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$projectQuotationId = $this->input->post('projectQuotationId', true);
+			$q = $this->M_project->delete_project_quotation($projectQuotationId);
+
+			$res = [
+				'response' => $q,
+				'message' => $q ? 'Data Deleted Successfully!' : 'Data Failed to Delete!'
+			];
+			echo json_encode($res);
+		}
+	}
+
+	private function validation_project_quotation()
+	{
+		$this->form_validation->set_rules('orderNo', 'Order No', 'required|trim');
+		$this->form_validation->set_rules('projectQuotationName', 'Project Quotaion Name', 'required|trim');
+		$this->form_validation->set_rules('estCost', 'Cost', 'required|trim');
+		$this->form_validation->set_rules('quoteValue', 'Value', 'required|trim');
+		$this->form_validation->set_rules('description', 'Description', 'required|trim');
+		$this->form_validation->set_rules('detailDescription', 'Detail Description', 'required|trim');
 	}
 }

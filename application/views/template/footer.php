@@ -78,6 +78,23 @@
       });
     }
 
+    function loadQuotationHeader(){
+      $.ajax({
+        type: "GET", 
+        url: "<?= base_url("Project/get_quotation_header"); ?>", 
+        async : true,
+        dataType: "JSON",
+        success: function(res) {
+          if(res.response === true){
+            $("#selectQuotationHeader").html(res.data_quotation_header.data).selectpicker('refresh');
+            $("#selectQuotationHeaderEdit").html(res.data_quotation_header.data).selectpicker('refresh');
+          } else {
+            $('#item-error').html('Group not Found!');
+          }
+        }, 
+      });
+    }
+
     function loadUserGroup(){
       $.ajax({
         type: "GET", 
@@ -118,6 +135,7 @@
       loadGroup();
       loadUserAccess();
       loadUserGroup();
+      loadQuotationHeader();
       
       $('#select-kota').selectpicker({
         search : true,

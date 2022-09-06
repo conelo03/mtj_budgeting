@@ -6,7 +6,7 @@
     <div class="section-header">
       <h1><?= $title?></h1>
       <div class="section-header-breadcrumb">
-        <div class="breadcrumb-item active"><a href="#">Kelola Client</a></div>
+        <div class="breadcrumb-item active"><a href="#">Kelola Quotation Header</a></div>
       </div>
     </div>
 
@@ -15,7 +15,7 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h4>Data Client</h4>
+              <h4>Data Quotation Header</h4>
               <div class="card-header-action">
                 <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i> Add Data</a>
               </div>
@@ -26,7 +26,8 @@
                   <thead>
                     <tr>
                       <th class="text-center" style="width: 20px;">#</th>
-                      <th>Name</th>
+                      <th>Order No</th>
+                      <th>PD Name</th>
                       <th>Description</th>
                       <th class="text-center" style="width: 200px;">Action</th>
                     </tr>
@@ -57,8 +58,13 @@
         <div class="modal-body">
           <span class="text-danger msgError" style="display: none"></span>
           <div class="form-group">
-            <label class="form-label">Name</label>
-            <input name="name" id="name" class="form-control" type="text" placeholder="Name">
+            <label class="form-label">Order No</label>
+            <input name="orderNo" id="orderNo" class="form-control" type="text" placeholder="Order No">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">PD Name</label>
+            <input name="pdName" id="pdName" class="form-control" type="text" placeholder="PD Name">
           </div>
 
           <div class="form-group">
@@ -88,8 +94,13 @@
         <div class="modal-body">
           <span class="text-danger msgError" style="display: none"></span>
           <div class="form-group">
-            <label class="form-label">Name</label>
-            <input name="name" id="nameEdit" class="form-control" type="text" placeholder="Name">
+            <label class="form-label">Order No</label>
+            <input name="orderNo" id="orderNoEdit" class="form-control" type="text" placeholder="Order No">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">PD Name</label>
+            <input name="pdName" id="pdNameEdit" class="form-control" type="text" placeholder="PD Name">
           </div>
 
           <div class="form-group">
@@ -117,7 +128,7 @@
       </div>
       <form id="deleteData">
         <div class="modal-body">
-          <input type="hidden" name="clientId" id="clientIdDelete" value="">
+          <input type="hidden" name="quotationHeaderId" id="quotationHeaderIdDelete" value="">
           <p>Are you sure want to delete this data?</p>
         </div>
         <div class="modal-footer">
@@ -137,7 +148,7 @@
       "processing" : true,
       "serverside" : true,
       "ajax" : {
-        "url" : "<?= base_url('Client/get_data') ?>",
+        "url" : "<?= base_url('QuotationHeader/get_data') ?>",
         "type" : "POST"
       },
       "columnDefs" : [{
@@ -155,7 +166,7 @@
     $('#saveData').submit(function(e){
       $.ajax({
         type : "POST",
-        url  : "<?php echo base_url('add-client')?>",
+        url  : "<?php echo base_url('add-quotation-header')?>",
         dataType : "JSON",
         data : $(this).serialize(),
         success: function(res){
@@ -183,7 +194,7 @@
       let id = $(this).attr('data');
       $.ajax({
         type : "GET",
-        url  : "<?= base_url('Client/get_data_by_id')?>",
+        url  : "<?= base_url('QuotationHeader/get_data_by_id')?>",
         dataType : "JSON",
         data : {
           id : id
@@ -191,7 +202,8 @@
         success: function(res){
           let data = res.data;
           $('#modalEdit').modal('show');
-          $('#nameEdit').val(data.name);
+          $('#orderNoEdit').val(data.orderNo);
+          $('#pdNameEdit').val(data.pdName);
           $('#descriptionEdit').val(data.description);
           $('#updateData').attr("data", id);
         },
@@ -207,7 +219,7 @@
       let id = $(this).attr('data');
       $.ajax({
         type : "POST",
-        url  : "<?= base_url('edit-client/')?>" + id,
+        url  : "<?= base_url('edit-quotation-header/')?>" + id,
         dataType : "JSON",
         data : $(this).serialize(),
         success: function(res){
@@ -234,7 +246,7 @@
     $('#dataList').on('click','#btnDelete',function(){
       var id = $(this).attr('data');
       $('#modalDelete').modal('show');
-      $('#clientIdDelete').val(id);
+      $('#quotationHeaderIdDelete').val(id);
       $('#deleteData').attr("data", id);
     });	
 
@@ -243,7 +255,7 @@
       let id = $(this).attr('data');
       $.ajax({
         type : "POST",
-        url  : "<?= base_url('delete-client/')?>" + id,
+        url  : "<?= base_url('delete-quotation-header/')?>" + id,
         dataType : "JSON",
         data : $(this).serialize(),
         success: function(res){
