@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 04, 2022 at 07:58 PM
+-- Generation Time: Sep 06, 2022 at 09:24 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.2.33
 
@@ -188,8 +188,17 @@ CREATE TABLE `project_quotation` (
   `description` text NOT NULL,
   `quoteValue` double NOT NULL,
   `estCost` double NOT NULL,
-  `detailDescription` text NOT NULL
+  `detailDescription` text NOT NULL,
+  `isFinal` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `project_quotation`
+--
+
+INSERT INTO `project_quotation` (`projectQuotationId`, `projectId`, `quotationHeaderId`, `orderNo`, `projectQuotationName`, `description`, `quoteValue`, `estCost`, `detailDescription`, `isFinal`) VALUES
+(1, 1, NULL, '1', '1', '1', 1, 1, '1', 0),
+(2, 1, NULL, '2', '2', '2', 2, 2, '2', 0);
 
 -- --------------------------------------------------------
 
@@ -223,6 +232,13 @@ CREATE TABLE `quotation_header` (
   `pdName` varchar(100) NOT NULL,
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `quotation_header`
+--
+
+INSERT INTO `quotation_header` (`quotationHeaderId`, `orderNo`, `pdName`, `description`) VALUES
+(2, 'order qh 1', 'pd name qh 1', 'desc qh 1');
 
 -- --------------------------------------------------------
 
@@ -453,7 +469,7 @@ ALTER TABLE `distribution_cost`
 -- AUTO_INCREMENT for table `group`
 --
 ALTER TABLE `group`
-  MODIFY `groupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `groupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `notes`
@@ -477,7 +493,7 @@ ALTER TABLE `project_group`
 -- AUTO_INCREMENT for table `project_quotation`
 --
 ALTER TABLE `project_quotation`
-  MODIFY `projectQuotationId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `projectQuotationId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `proposed_cost`
@@ -489,7 +505,7 @@ ALTER TABLE `proposed_cost`
 -- AUTO_INCREMENT for table `quotation_header`
 --
 ALTER TABLE `quotation_header`
-  MODIFY `quotationHeaderId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `quotationHeaderId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `real_budget`
