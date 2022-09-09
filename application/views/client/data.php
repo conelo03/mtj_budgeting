@@ -168,6 +168,7 @@
               populateError(res.message);
             }
             $('#modalAdd').modal('hide');
+            document.getElementById('saveData').reset();
             loadData();
           }
         },

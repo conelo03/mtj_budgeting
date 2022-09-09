@@ -99,3 +99,17 @@ $route['detail-project/(:any)'] 				    = 'Project/detail/$1';
 $route['add-project-quotation/(:any)'] 	        = 'Project/add_project_quotation/$1';
 $route['edit-project-quotation/(:any)'] 	    = 'Project/edit_project_quotation/$1';
 $route['delete-project-quotation/(:any)']    	= 'Project/delete_project_quotation/$1';
+
+$route['add-budget/(:any)'] 	        = 'Project/add_budget/$1';
+$route['edit-budget/(:any)'] 	    = 'Project/edit_budget/$1';
+$route['delete-budget/(:any)']    	= 'Project/delete_budget/$1';
+
+$route['add-proposed-cost/(:any)'] 	        = 'Project/add_proposed_cost/$1';
+$route['edit-proposed-cost/(:any)'] 	    = 'Project/edit_proposed_cost/$1';
+$route['delete-proposed-cost/(:any)']    	= 'Project/delete_proposed_cost/$1';
+
+$route['add-proposed-budget/(:any)'] 	        = 'Project/add_proposed_budget/$1';
+$route['edit-proposed-budget/(:any)'] 	    = 'Project/edit_proposed_budget/$1';
+$route['approve-proposed-budget/(:any)'] 	    = 'Project/approve_proposed_budget/$1';
+$route['reject-proposed-budget/(:any)']    	= 'Project/reject_proposed_budget/$1';
+$route['delete-proposed-budget/(:any)']    	= 'Project/delete_proposed_budget/$1';
