@@ -36,12 +36,12 @@
 
           <div class="form-group">
             <label class="form-label">Password</label>
-            <input name="userPassword" id="userPassword" class="form-control" type="text" placeholder="Password">
+            <input name="userPassword" id="userPassword" class="form-control" type="password" placeholder="Password">
           </div>
 
           <div class="form-group">
-            <label class="form-label">Password</label>
-            <input name="userPasswordConfirm" id="userPasswordConfirm" class="form-control" type="text" placeholder="Confirm Password">
+            <label class="form-label">Password Confirm</label>
+            <input name="userPasswordConfirm" id="userPasswordConfirm" class="form-control" type="password" placeholder="Confirm Password">
           </div>
         </div>
         <div class="modal-footer">

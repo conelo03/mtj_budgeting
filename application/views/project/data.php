@@ -22,19 +22,19 @@
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-striped" id="getData">
+                <table class="table table-striped" id="getData" style="table-layout: fixed; width: 100%;">
                   <thead>
                     <tr>
                       <th class="text-center" style="width: 20px;">#</th>
-                      <th>ID</th>
-                      <th>Group Name</th>
-                      <th>Project Group</th>
-                      <th>Project Name</th>
-                      <th>Client</th>
-                      <th>Description</th>
-                      <th>Value</th>
-                      <th>Final</th>
-                      <th>Add Work</th>
+                      <th style="width: 100px;">ID</th>
+                      <th style="width: 100px;">Group Name</th>
+                      <th style="width: 100px;">Project Group</th>
+                      <th style="width: 200px;">Project Name</th>
+                      <th style="width: 100px;">Client</th>
+                      <th style="width: 200px;">Description</th>
+                      <th style="width: 100px;">Value</th>
+                      <th style="width: 50px;">Final</th>
+                      <th style="width: 50px;">Add Work</th>
                       <th class="text-center" style="width: 230px;">Action</th>
                     </tr>
                   </thead>

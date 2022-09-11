@@ -11,7 +11,7 @@ class M_project extends CI_Model {
 	var $order = array('project.projectId' => 'asc'); // default order 
 
 	private function _get_datatables_query() {
-		$this->db->select('*');
+		$this->db->select('*, project.description');
 		$this->db->from($this->table);
 		$this->db->join('group', 'group.groupId=project.groupId');
 		$this->db->join('client', 'client.clientId=project.clientId');
@@ -390,5 +390,313 @@ class M_project extends CI_Model {
 	public function delete_proposed_budget($proposedBudgetId)
 	{
 		return $this->db->delete('cost_to_budget', ['proposedBudgetId' => $proposedBudgetId]);
+	}
+
+	// DISTRIBUTION COST
+	// start datatables
+	var $column_distribution_cost_order = array('proposedCostName', 'proposedDate', 'userName', 'holder', 'value', 'description'); //set column field database for datatable orderable
+	var $column_distribution_cost_search = array('proposedCostName', 'proposedDate', 'userName', 'holder', 'value', 'description'); //set column field database for datatable searchable
+	var $order_distribution_cost = array('distributionCostId' => 'asc'); // default order 
+
+	private function _get_datatables_distribution_cost_query($projectId) {
+		$this->db->select('*');
+		$this->db->from('distribution_cost');
+		$this->db->join('proposed_cost', 'proposed_cost.proposedCostId=distribution_cost.proposedCostId');
+		$this->db->join('user', 'user.userId=distribution_cost.userId');
+		$this->db->where('distribution_cost.projectId', $projectId);
+		$i = 0;
+		foreach ($this->column_distribution_cost_search as $i) { // loop column 
+			if(@$_POST['search']['value']) { // if datatable send POST for search
+				if($i===0) { // first loop
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+					$this->db->like($i, $_POST['search']['value']);
+				} else {
+					$this->db->or_like($i, $_POST['search']['value']);
+				}
+				if(count($this->column_distribution_cost_search) - 1 == $i) //last loop
+					$this->db->group_end(); //close bracket
+			}
+			$i++;
+		}
+				
+		if(isset($_POST['order'])) { // here order processing
+			$this->db->order_by($this->column_distribution_cost_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if(isset($this->order_distribution_cost)) {
+			$order = $this->order_distribution_cost;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function get_distribution_cost_datatables($projectId) {
+		$this->_get_datatables_distribution_cost_query($projectId);
+		if(@$_POST['length'] != -1)
+		$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function count_distribution_cost_filtered($projectId) {
+		$this->_get_datatables_distribution_cost_query($projectId);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	
+	function count_distribution_cost_all($projectId) {
+		$this->db->from('distribution_cost');
+		$this->db->where('projectId', $projectId);
+		return $this->db->count_all_results();
+	}
+	// end datatables
+
+	public function insert_distribution_cost($data)
+	{
+		return $this->db->insert('distribution_cost', $data);
+	}
+
+	public function get_distribution_cost_by_id($distributionCostId)
+	{
+		return $this->db->get_where('distribution_cost', ['distributionCostId' => $distributionCostId])->row_array();
+	}
+
+	public function update_distribution_cost($data)
+	{
+		$this->db->where('distributionCostId', $data['distributionCostId']);
+		return $this->db->update('distribution_cost', $data);
+	}
+
+	public function delete_distribution_cost($distributionCostId)
+	{
+		return $this->db->delete('distribution_cost', ['distributionCostId' => $distributionCostId]);
+	}
+
+	// REAL BUDGET
+	// start datatables
+	var $column_real_budget_order = array('distribution_cost.holder', 'distribution_cost.value', 'user.userName', 'real_budget.reportDate', 'real_budget.realBudgetValue', 'real_budget.description', 'budget.orderNo', 'budget.budget'); //set column field database for datatable orderable
+	var $column_real_budget_search = array('distribution_cost.holder', 'distribution_cost.value', 'user.userName', 'real_budget.reportDate', 'real_budget.realBudgetValue', 'real_budget.description', 'budget.orderNo', 'budget.budget'); //set column field database for datatable searchable
+	var $order_real_budget = array('realBudgetId' => 'asc'); // default order 
+
+	private function _get_datatables_real_budget_query($projectId) {
+		$this->db->select('*, real_budget.description');
+		$this->db->from('real_budget');
+		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=real_budget.distributionCostId');
+		$this->db->join('user', 'user.userId=real_budget.reportBy');
+		$this->db->join('budget', 'budget.budgetId=real_budget.budgetId', 'left');
+		$this->db->where('real_budget.projectId', $projectId);
+		$i = 0;
+		foreach ($this->column_real_budget_search as $i) { // loop column 
+			if(@$_POST['search']['value']) { // if datatable send POST for search
+				if($i===0) { // first loop
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+					$this->db->like($i, $_POST['search']['value']);
+				} else {
+					$this->db->or_like($i, $_POST['search']['value']);
+				}
+				if(count($this->column_real_budget_search) - 1 == $i) //last loop
+					$this->db->group_end(); //close bracket
+			}
+			$i++;
+		}
+				
+		if(isset($_POST['order'])) { // here order processing
+			$this->db->order_by($this->column_real_budget_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if(isset($this->order_real_budget)) {
+			$order = $this->order_real_budget;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function get_real_budget_datatables($projectId) {
+		$this->_get_datatables_real_budget_query($projectId);
+		if(@$_POST['length'] != -1)
+		$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function count_real_budget_filtered($projectId) {
+		$this->_get_datatables_real_budget_query($projectId);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	
+	function count_real_budget_all($projectId) {
+		$this->db->from('real_budget');
+		$this->db->where('projectId', $projectId);
+		return $this->db->count_all_results();
+	}
+	// end datatables
+
+	public function insert_real_budget($data)
+	{
+		return $this->db->insert('real_budget', $data);
+	}
+
+	public function get_real_budget_by_id($realBudgetId)
+	{
+		return $this->db->get_where('real_budget', ['realBudgetId' => $realBudgetId])->row_array();
+	}
+
+	public function update_real_budget($data)
+	{
+		$this->db->where('realBudgetId', $data['realBudgetId']);
+		return $this->db->update('real_budget', $data);
+	}
+
+	public function delete_real_budget($realBudgetId)
+	{
+		return $this->db->delete('real_budget', ['realBudgetId' => $realBudgetId]);
+	}
+
+	// REPORT BUDGET
+	// start datatables
+	var $column_report_budget_order = array('reportBudgetValue', 'description', 'fileName'); //set column field database for datatable orderable
+	var $column_report_budget_search = array('reportBudgetValue', 'description', 'fileName'); //set column field database for datatable searchable
+	var $order_report_budget = array('reportBudgetId' => 'asc'); // default order 
+
+	private function _get_datatables_report_budget_query($projectId) {
+		$this->db->select('*, report_budget.description');
+		$this->db->from('report_budget');
+		$this->db->join('real_budget', 'real_budget.realBudgetId=report_budget.realBudgetId');
+		$this->db->where('real_budget.projectId', $projectId);
+		$i = 0;
+		foreach ($this->column_report_budget_search as $i) { // loop column 
+			if(@$_POST['search']['value']) { // if datatable send POST for search
+				if($i===0) { // first loop
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+					$this->db->like($i, $_POST['search']['value']);
+				} else {
+					$this->db->or_like($i, $_POST['search']['value']);
+				}
+				if(count($this->column_report_budget_search) - 1 == $i) //last loop
+					$this->db->group_end(); //close bracket
+			}
+			$i++;
+		}
+				
+		if(isset($_POST['order'])) { // here order processing
+			$this->db->order_by($this->column_report_budget_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if(isset($this->order_report_budget)) {
+			$order = $this->order_report_budget;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function get_report_budget_datatables($projectId) {
+		$this->_get_datatables_report_budget_query($projectId);
+		if(@$_POST['length'] != -1)
+		$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function count_report_budget_filtered($projectId) {
+		$this->_get_datatables_report_budget_query($projectId);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	
+	function count_report_budget_all($projectId) {
+		$this->db->from('report_budget');
+		$this->db->join('real_budget', 'real_budget.realBudgetId=report_budget.realBudgetId');
+		$this->db->where('real_budget.projectId', $projectId);
+		return $this->db->count_all_results();
+	}
+	// end datatables
+
+	public function insert_report_budget($data)
+	{
+		return $this->db->insert('report_budget', $data);
+	}
+
+	public function get_report_budget_by_id($reportBudgetId)
+	{
+		return $this->db->get_where('report_budget', ['reportBudgetId' => $reportBudgetId])->row_array();
+	}
+
+	public function update_report_budget($data)
+	{
+		$this->db->where('reportBudgetId', $data['reportBudgetId']);
+		return $this->db->update('report_budget', $data);
+	}
+
+	public function delete_report_budget($reportBudgetId)
+	{
+		return $this->db->delete('report_budget', ['reportBudgetId' => $reportBudgetId]);
+	}
+
+	// NOTES
+	// start datatables
+	var $column_notes_order = array('notes.notesType', 'notes.notes', 'user.userName', 'notes.timestamp'); //set column field database for datatable orderable
+	var $column_notes_search = array('notes.notesType', 'notes.notes', 'user.userName', 'notes.timestamp'); //set column field database for datatable searchable
+	var $order_notes = array('notesId' => 'desc'); // default order 
+
+	private function _get_datatables_notes_query($projectId) {
+		$this->db->select('*');
+		$this->db->from('notes');
+		$this->db->join('user', 'user.userId=notes.userId');
+		$this->db->where('notes.projectId', $projectId);
+		$i = 0;
+		foreach ($this->column_notes_search as $i) { // loop column 
+			if(@$_POST['search']['value']) { // if datatable send POST for search
+				if($i===0) { // first loop
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+					$this->db->like($i, $_POST['search']['value']);
+				} else {
+					$this->db->or_like($i, $_POST['search']['value']);
+				}
+				if(count($this->column_notes_search) - 1 == $i) //last loop
+					$this->db->group_end(); //close bracket
+			}
+			$i++;
+		}
+				
+		if(isset($_POST['order'])) { // here order processing
+			$this->db->order_by($this->column_notes_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if(isset($this->order_notes)) {
+			$order = $this->order_notes;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function get_notes_datatables($projectId) {
+		$this->_get_datatables_notes_query($projectId);
+		if(@$_POST['length'] != -1)
+		$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function count_notes_filtered($projectId) {
+		$this->_get_datatables_notes_query($projectId);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	
+	function count_notes_all($projectId) {
+		$this->db->from('notes');
+		$this->db->where('notes.projectId', $projectId);
+		return $this->db->count_all_results();
+	}
+	// end datatables
+
+	public function insert_notes($data)
+	{
+		return $this->db->insert('notes', $data);
+	}
+
+	public function get_notes_by_id($notesId)
+	{
+		return $this->db->get_where('notes', ['notesId' => $notesId])->row_array();
+	}
+
+	public function update_notes($data)
+	{
+		$this->db->where('notesId', $data['notesId']);
+		return $this->db->update('notes', $data);
+	}
+
+	public function delete_notes($notesId)
+	{
+		return $this->db->delete('notes', ['notesId' => $notesId]);
 	}
 }

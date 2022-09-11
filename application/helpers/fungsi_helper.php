@@ -38,58 +38,10 @@ function set_pesan($pesan, $tipe = true)
     }
 }
 
-function status($status)
+function currency($num)
 {
-    $stat = '';
-    switch ($status) {
-        case 0:
-            $stat = '<button class="btn btn-light">Belum Bayar</button>';
-            break;
-        case 1:
-            $stat = '<button class="btn btn-warning">Sudah Bayar</button>';
-            break;
-        case 2:
-            $stat = '<button class="btn btn-info">Proses Packing</button>';
-            break;
-        case 3:
-            $stat = '<button class="btn btn-info">Proses Pengiriman</button>';
-            break;
-        case 4:
-            $stat = '<button class="btn btn-success">Diterima</button>';
-            break;
-        default:
-            $stat = 'Error';
-            break;
-    }
-
-    return $stat;
-}
-
-function color_btn($status)
-{
-    $stat = '';
-    switch ($status) {
-        case 0:
-            $stat = 'light';
-            break;
-        case 1:
-            $stat = 'warning';
-            break;
-        case 2:
-            $stat = 'info';
-            break;
-        case 3:
-            $stat = 'danger';
-            break;
-        case 4:
-            $stat = 'success';
-            break;
-        default:
-            $stat = 'Error';
-            break;
-    }
-
-    return $stat;
+    $data = 'Rp. '.number_format($num, 0, ',', '.');
+    return $data;
 }
 
 function output_json($data)

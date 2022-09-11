@@ -35,7 +35,7 @@ class Project extends CI_Controller {
 			$row[] = $i->projectName;
 			$row[] = $i->name;
 			$row[] = $i->description;
-			$row[] = $i->value;
+			$row[] = currency($i->value);
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			$row[] = $i->isAddWork == 0 ? 'No' : 'Yes';
 			// add html for action
@@ -115,7 +115,7 @@ class Project extends CI_Controller {
 					'description' => $this->input->post('description', true),
 					'value' => $this->input->post('value', true),
 					'isFinal' => $this->input->post('isFinal', true),
-					'isAddwork' => $this->input->post('isAddwork', true),
+					'isAddWork' => $this->input->post('isAddWork', true),
 				];
 	
 				$q = $this->M_project->update($data);
@@ -175,6 +175,7 @@ class Project extends CI_Controller {
 		$pg = $this->db->get('project_group')->result_array();
 		
 		$html = "<option value='' disabled>-- Select Group --</option>";
+		$html .= "<option value='' >SET EMPTY</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
 			$html .= "<option value='".$data['projectGroupId']."'>".$data['projectGroupName']."</option>"; // Tambahkan tag option ke variabel $html
 		}
@@ -249,9 +250,9 @@ class Project extends CI_Controller {
 	{
 		$pg = $this->db->get_where('proposed_cost', ['projectId' => $projectId])->result_array();
 		
-		$html = "<option value='' disabled>-- Select Proposed Cost --</option>";
+		$html = "<option value='' disabled selected>-- Select Proposed Cost --</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
-			$html .= "<option value='".$data['proposedCostId']."'>".$data['proposedCostName']." - ".$data['proposedValue']."</option>"; // Tambahkan tag option ke variabel $html
+			$html .= "<option value='".$data['proposedCostId']."'>".$data['proposedCostName']." - ".currency($data['proposedValue'])."</option>"; // Tambahkan tag option ke variabel $html
 		}
 		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
 		$response = [
@@ -267,13 +268,65 @@ class Project extends CI_Controller {
 		$pg = $this->db->get_where('budget', ['projectId' => $projectId])->result_array();
 		
 		$html = "<option value='' disabled>-- Select Budget --</option>";
+		$html .= "<option value='' >SET EMPTY</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
-			$html .= "<option value='".$data['budgetId']."'>".$data['orderNo']." - ".$data['budget']."</option>"; // Tambahkan tag option ke variabel $html
+			$html .= "<option value='".$data['budgetId']."'>".$data['orderNo']." - ".currency($data['budget'])."</option>"; // Tambahkan tag option ke variabel $html
 		}
 		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
 		$response = [
 			'response' => true,
 			'data_budget'	=> $callback
+
+		]; 
+		echo json_encode($response);
+	}
+
+	public function get_real_budget($projectId)
+	{
+		$pg = $this->db->get_where('real_budget', ['projectId' => $projectId])->result_array();
+		
+		$html = "<option value='' disabled selected>-- Select Real Budget --</option>";
+		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
+			$html .= "<option value='".$data['realBudgetId']."'>".currency($data['realBudgetValue'])." - ".$data['description']."</option>"; // Tambahkan tag option ke variabel $html
+		}
+		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
+		$response = [
+			'response' => true,
+			'data_rb'	=> $callback
+
+		]; 
+		echo json_encode($response);
+	}
+
+	public function get_user()
+	{
+		$client = $this->M_user->get_data()->result_array();
+		
+		$html = "<option disabled selected>-- Select Holder --</option>";
+		foreach($client as $data){ // Ambil semua data dari hasil eksekusi $sql
+			$html .= "<option value='".$data['userId']."'>".$data['userName']."</option>"; // Tambahkan tag option ke variabel $html
+		}
+		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
+		$response = [
+			'response' => true,
+			'data_user'	=> $callback
+
+		]; 
+		echo json_encode($response);
+	}
+
+	public function get_distribution_cost($projectId)
+	{
+		$pg = $this->db->get_where('distribution_cost', ['projectId' => $projectId])->result_array();
+		
+		$html = "<option value='' disabled selected>-- Select Distribution Cost --</option>";
+		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
+			$html .= "<option value='".$data['distributionCostId']."'>".currency($data['value'])." - ".$data['description']."</option>"; // Tambahkan tag option ke variabel $html
+		}
+		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
+		$response = [
+			'response' => true,
+			'data_dc'	=> $callback
 
 		]; 
 		echo json_encode($response);
@@ -323,8 +376,8 @@ class Project extends CI_Controller {
 			$row[] = $i->orderNo;
 			$row[] = $i->projectQuotationName;
 			$row[] = $i->description;
-			$row[] = $i->quoteValue;
-			$row[] = $i->estCost;
+			$row[] = currency($i->quoteValue);
+			$row[] = currency($i->estCost);
 			$row[] = $i->detailDescription;
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			// add html for action
@@ -411,7 +464,7 @@ class Project extends CI_Controller {
 				$res = [
 					'data' => $data,
 					'response' => $q,
-					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
 				];
 			}
 			echo json_encode($res);
@@ -453,7 +506,7 @@ class Project extends CI_Controller {
 			$row[] = $no.".";
 			$row[] = $i->orderNo;
 			$row[] = $i->description;
-			$row[] = $i->budget;
+			$row[] = currency($i->budget);
 			$row[] = $i->createdAt;
 			$row[] = $i->lastUpdate;
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
@@ -536,7 +589,7 @@ class Project extends CI_Controller {
 				$res = [
 					'data' => $data,
 					'response' => $q,
-					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
 				];
 			}
 			echo json_encode($res);
@@ -576,7 +629,7 @@ class Project extends CI_Controller {
 			$row[] = $i->proposedCostName;
 			$row[] = $i->proposedDate;
 			$row[] = $i->userName;
-			$row[] = $i->proposedValue;
+			$row[] = currency($i->proposedValue);
 			$row[] = $i->detailDescription;
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			$row[] = $i->distributionDate == null ? '-' : $i->distributionDate;
@@ -647,6 +700,8 @@ class Project extends CI_Controller {
 			}else{
 				$data = [
 					'proposedCostId' => $proposedCostId,
+					'proposedDate' => date('Y-m-d'),
+					'proposedBy' => $this->session->userdata('userId'),
 					'proposedCostName' => $this->input->post('proposedCostName', true),
 					'proposedValue' => $this->input->post('proposedValue', true),
 					'detailDescription' => $this->input->post('detailDescription', true),
@@ -659,7 +714,7 @@ class Project extends CI_Controller {
 				$res = [
 					'data' => $data,
 					'response' => $q,
-					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
 				];
 			}
 			echo json_encode($res);
@@ -699,18 +754,18 @@ class Project extends CI_Controller {
 			$row = array();
 			$row[] = $no.".";
 			$row[] = $i->orderNo;
-			$row[] = $i->budget;
+			$row[] = currency($i->budget);
 			$row[] = $i->proposedDate;
 			$row[] = $i->proposedCostName;
-			$row[] = $i->proposedValue;
+			$row[] = currency($i->proposedValue);
 			$row[] = $i->proposedBudgetDate;
 			$row[] = $i->proposedBudgetDescription;
 			$row[] = $userBudget['userName'];
-			$row[] = $i->proposedBudgetValue;
+			$row[] = currency($i->proposedBudgetValue);
 			$row[] = $i->approvedDate;
 			$row[] = $i->approvedDescription;
 			$row[] = $userApprove['userName'];
-			$row[] = $i->approvedValue;
+			$row[] = currency($i->approvedValue);
 			$row[] = $i->rejectedDate;
 			$row[] = $i->rejectedDescription;
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
@@ -786,6 +841,8 @@ class Project extends CI_Controller {
 					'proposedBudgetId' => $proposedBudgetId,
 					'budgetId' => empty($this->input->post('budgetId', true)) ? null : $this->input->post('budgetId', true),
 					'proposedCostId' => empty($this->input->post('proposedCostId', true)) ? null : $this->input->post('proposedCostId', true),
+					'proposedBudgetDate' => date('Y-m-d'),
+					'proposedBudgetBy' => $this->session->userdata('userId'),
 					'proposedBudgetDescription' => $this->input->post('proposedBudgetDescription', true),
 					'proposedBudgetValue' => $this->input->post('proposedBudgetValue', true),
 				];
@@ -795,7 +852,7 @@ class Project extends CI_Controller {
 				$res = [
 					'data' => $data,
 					'response' => $q,
-					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
 				];
 			}
 			echo json_encode($res);
@@ -891,5 +948,566 @@ class Project extends CI_Controller {
 	{
 		$this->form_validation->set_rules('rejectedDescription', 'Description', 'required|trim');
 		$this->form_validation->set_rules('isFinal', 'Final', 'required|trim');
+	}
+
+	//DISTRIBUTION COST
+	function get_distribution_cost_data($projectId) {
+		$list = $this->M_project->get_distribution_cost_datatables($projectId);
+		$data = array();
+		$no = @$_POST['start'];
+		foreach ($list as $i) {
+			$user = $this->db->get_where('user', ['userId' => $i->holder])->row_array();
+			$no++;
+			$row = array();
+			$row[] = $no.".";
+			$row[] = $i->proposedCostName;
+			$row[] = $i->proposedDate;
+			$row[] = $i->userName;
+			$row[] = $user['userName'];
+			$row[] = currency($i->value);
+			$row[] = $i->description;
+			// add html for action
+			$row[] = '<a href="#" class="btn btn-info" id="btnDistributionCostEdit" data="'.$i->distributionCostId.'"><i class="fa fa-edit"></i> Edit</a>
+			<a href="#" class="btn btn-danger" id="btnDistributionCostDelete" data="'.$i->distributionCostId.'"><i class="fa fa-trash"></i> Delete</a>';
+			$data[] = $row;
+		}
+		$output = [
+			"draw" => @$_POST['draw'],
+			"recordsTotal" => $this->M_project->count_distribution_cost_all($projectId),
+			"recordsFiltered" => $this->M_project->count_distribution_cost_filtered($projectId),
+			"data" => $data,
+		];
+		// output to json format
+		echo json_encode($output);
+	}
+
+	function get_distribution_cost_data_by_id(){
+		$distributionCostId = $this->input->get('id');
+		$data = $this->M_project->get_distribution_cost_by_id($distributionCostId);
+		$res = [
+			'data' => $data,
+			'response' => $data ? true : false,
+		];
+
+		echo json_encode($res);
+	}
+
+	function add_distribution_cost($projectId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_distribution_cost();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'projectId' => $projectId,
+					'proposedCostId' => $this->input->post('proposedCostId', true),
+					'userId' => $this->session->userdata('userId'),
+					'holder' => $this->input->post('holder', true),
+					'value' => $this->input->post('value', true),
+					'description' => $this->input->post('description', true),
+				];
+	
+				$q = $this->M_project->insert_distribution_cost($data);
+	
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function edit_distribution_cost($distributionCostId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_distribution_cost();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'distributionCostId' => $distributionCostId,
+					'proposedCostId' => $this->input->post('proposedCostId', true),
+					'userId' => $this->session->userdata('userId'),
+					'holder' => $this->input->post('holder', true),
+					'value' => $this->input->post('value', true),
+					'description' => $this->input->post('description', true),
+				];
+	
+				$q = $this->M_project->update_distribution_cost($data);
+	
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function delete_distribution_cost($distributionCostId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$distributionCostId = $this->input->post('distributionCostId', true);
+			$q = $this->M_project->delete_distribution_cost($distributionCostId);
+
+			$res = [
+				'response' => $q,
+				'message' => $q ? 'Data Deleted Successfully!' : 'Data Failed to Delete!'
+			];
+			echo json_encode($res);
+		}
+	}
+
+	private function validation_distribution_cost()
+	{
+		$this->form_validation->set_rules('proposedCostId', 'Proposed', 'required|trim');
+		$this->form_validation->set_rules('holder', 'Holder', 'required|trim');
+		$this->form_validation->set_rules('value', 'Value', 'required|trim');
+		$this->form_validation->set_rules('description', 'Description', 'required|trim');
+	}
+
+	//REAL BUDGET
+	function get_real_budget_data($projectId) {
+		$list = $this->M_project->get_real_budget_datatables($projectId);
+		$data = array();
+		$no = @$_POST['start'];
+		foreach ($list as $i) {
+			$user = $this->db->get_where('user', ['userId' => $i->holder])->row_array();
+			$no++;
+			$row = array();
+			$row[] = $no.".";
+			$row[] = $user['userName'];
+			$row[] = currency($i->value);
+			$row[] = $i->userName;
+			$row[] = $i->reportDate;
+			$row[] = currency($i->realBudgetValue);
+			$row[] = $i->description;
+			$row[] = $i->orderNo == null ? '-' : $i->orderNo;
+			$row[] = $i->budget == null ? '-' : currency($i->budget);
+			// add html for action
+			$row[] = '<a href="#" class="btn btn-success" id="btnRealBudgetSelectBudget" data="'.$i->realBudgetId.'"><i class="fa fa-edit"></i> Select Budget</a>
+			<a href="#" class="btn btn-info" id="btnRealBudgetEdit" data="'.$i->realBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
+			<a href="#" class="btn btn-danger" id="btnRealBudgetDelete" data="'.$i->realBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+			$data[] = $row;
+		}
+		$output = [
+			"draw" => @$_POST['draw'],
+			"recordsTotal" => $this->M_project->count_real_budget_all($projectId),
+			"recordsFiltered" => $this->M_project->count_real_budget_filtered($projectId),
+			"data" => $data,
+		];
+		// output to json format
+		echo json_encode($output);
+	}
+
+	function get_real_budget_data_by_id(){
+		$realBudgetId = $this->input->get('id');
+		$data = $this->M_project->get_real_budget_by_id($realBudgetId);
+		$res = [
+			'data' => $data,
+			'response' => $data ? true : false,
+		];
+
+		echo json_encode($res);
+	}
+
+	function add_real_budget($projectId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_real_budget();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'projectId' => $projectId,
+					'distributionCostId' => $this->input->post('distributionCostId', true),
+					'reportBy' => $this->session->userdata('userId'),
+					'reportDate' => date('Y-m-d'),
+					'realBudgetValue' => $this->input->post('realBudgetValue', true),
+					'description' => $this->input->post('description', true),
+				];
+	
+				$q = $this->M_project->insert_real_budget($data);
+	
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function edit_real_budget($realBudgetId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_real_budget();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'realBudgetId' => $realBudgetId,
+					'distributionCostId' => $this->input->post('distributionCostId', true),
+					'reportBy' => $this->session->userdata('userId'),
+					'reportDate' => date('Y-m-d'),
+					'realBudgetValue' => $this->input->post('realBudgetValue', true),
+					'description' => $this->input->post('description', true),
+				];
+	
+				$q = $this->M_project->update_real_budget($data);
+	
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function select_budget_real_budget($realBudgetId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$data = [
+				'realBudgetId' => $realBudgetId,
+				'budgetId' => empty($this->input->post('budgetId', true)) ? null : $this->input->post('budgetId', true),
+			];
+
+			$q = $this->M_project->update_real_budget($data);
+
+			$res = [
+				'data' => $data,
+				'response' => $q,
+				'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+			];
+			echo json_encode($res);
+		}
+	}
+
+	function delete_real_budget($realBudgetId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$realBudgetId = $this->input->post('realBudgetId', true);
+			$q = $this->M_project->delete_real_budget($realBudgetId);
+
+			$res = [
+				'response' => $q,
+				'message' => $q ? 'Data Deleted Successfully!' : 'Data Failed to Delete!'
+			];
+			echo json_encode($res);
+		}
+	}
+
+	private function validation_real_budget()
+	{
+		$this->form_validation->set_rules('distributionCostId', 'Distribution Cost', 'required|trim');
+		$this->form_validation->set_rules('realBudgetValue', 'Value', 'required|trim');
+		$this->form_validation->set_rules('description', 'Description', 'required|trim');
+	}
+
+	function get_report_budget_data($projectId) {
+		$list = $this->M_project->get_report_budget_datatables($projectId);
+		$data = array();
+		$no = @$_POST['start'];
+		foreach ($list as $i) {
+			$no++;
+			$row = array();
+			$row[] = $no.".";
+			$row[] = currency($i->reportBudgetValue);
+			$row[] = $i->description;
+			$row[] = '<a href="#" class="btn btn-light" id="btnReportBudgetDetail" data="'.$i->reportBudgetId.'"><i class="fa fa-eye"></i> </a> '.$i->fileName;
+			// add html for action
+			$row[] = '<a href="#" class="btn btn-info" id="btnReportBudgetEdit" data="'.$i->reportBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
+			<a href="#" class="btn btn-danger" id="btnReportBudgetDelete" data="'.$i->reportBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+			$data[] = $row;
+		}
+		$output = [
+			"draw" => @$_POST['draw'],
+			"recordsTotal" => $this->M_project->count_report_budget_all($projectId),
+			"recordsFiltered" => $this->M_project->count_report_budget_filtered($projectId),
+			"data" => $data,
+		];
+		// output to json format
+		echo json_encode($output);
+	}
+
+	function get_report_budget_data_by_id(){
+		$reportBudgetId = $this->input->get('id');
+		$data = $this->M_project->get_report_budget_by_id($reportBudgetId);
+		$res = [
+			'data' => $data,
+			'response' => $data ? true : false,
+		];
+
+		echo json_encode($res);
+	}
+
+	function add_report_budget($projectId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_report_budget();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$config['upload_path'] = './assets/upload/report-budget'; 
+				$config['allowed_types'] = 'png|jpg|jpeg|PNG|JPG|JPEG';
+				$config['max_size'] = 10000;
+
+				$this->upload->initialize($config);
+				$this->load->library('upload', $config); 
+
+				$image = '';
+				if($this->upload->do_upload('fileName')){
+					$uploadData = $this->upload->data();
+					$image =  $uploadData['file_name'];
+				}
+
+				if($image == ''){
+					$res = [
+						'error' => $this->upload->display_errors('<p>', '</p>'),
+					];
+				} else {
+					$data = [
+						'realBudgetId' => $this->input->post('realBudgetId', true),
+						'reportBudgetValue' => $this->input->post('reportBudgetValue', true),
+						'description' => $this->input->post('description', true),
+						'fileName' => $image
+					];
+		
+					$q = $this->M_project->insert_report_budget($data);
+					
+					$res = [
+						'data' => $data,
+						'response' => $q,
+						'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+					];
+				}
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function edit_report_budget($reportBudgetId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_report_budget();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$rb = $this->M_project->get_report_budget_by_id($reportBudgetId);
+				if (!empty($_FILES['fileName']['name'])) {
+					$config['upload_path'] = './assets/upload/report-budget'; 
+					$config['allowed_types'] = 'png|jpg|jpeg|PNG|JPG|JPEG';
+					$config['max_size'] = 10000;
+
+					$this->upload->initialize($config);
+					$this->load->library('upload', $config); 
+
+					$image = '';
+					if($this->upload->do_upload('fileName')){
+						$uploadData = $this->upload->data();
+						$image =  $uploadData['file_name'];
+					}
+
+					if($image == ''){
+						$res = [
+							'error' => $this->upload->display_errors('<p>', '</p>'),
+						];
+					} else {
+						$data = [
+							'reportBudgetId' => $reportBudgetId,
+							'realBudgetId' => $this->input->post('realBudgetId', true),
+							'reportBudgetValue' => $this->input->post('reportBudgetValue', true),
+							'description' => $this->input->post('description', true),
+							'fileName' => $image
+						];
+			
+						$q = $this->M_project->update_report_budget($data);
+						if($q == true){
+							unlink('./assets/upload/report-budget/'.$rb['fileName']);
+						}
+						
+						$res = [
+							'data' => $data,
+							'response' => $q,
+							'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+						];
+					}
+				}else{
+					$data = [
+						'reportBudgetId' => $reportBudgetId,
+						'realBudgetId' => $this->input->post('realBudgetId', true),
+						'reportBudgetValue' => $this->input->post('reportBudgetValue', true),
+						'description' => $this->input->post('description', true)
+					];
+		
+					$q = $this->M_project->update_report_budget($data);
+					
+					$res = [
+						'data' => $data,
+						'response' => $q,
+						'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+					];
+				}
+				
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function delete_report_budget($reportBudgetId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$reportBudgetId = $this->input->post('reportBudgetId', true);
+			$rb = $this->M_project->get_report_budget_by_id($reportBudgetId);
+			$q = $this->M_project->delete_report_budget($reportBudgetId);
+			if($q == true){
+				unlink('./assets/upload/report-budget/'.$rb['fileName']);
+			}
+			$res = [
+				'response' => $q,
+				'message' => $q ? 'Data Deleted Successfully!' : 'Data Failed to Delete!'
+			];
+			echo json_encode($res);
+		}
+	}
+
+	private function validation_report_budget()
+	{
+		$this->form_validation->set_rules('realBudgetId', 'Budget', 'required|trim');
+		$this->form_validation->set_rules('reportBudgetValue', 'Value', 'required|trim');
+		$this->form_validation->set_rules('description', 'Description', 'required|trim');
+	}
+
+	function get_notes_data($projectId) {
+		$list = $this->M_project->get_notes_datatables($projectId);
+		$data = array();
+		$no = @$_POST['start'];
+		foreach ($list as $i) {
+			$no++;
+			$row = array();
+			$row[] = $no.".";
+			$row[] = $i->notesType;
+			$row[] = $i->notes;
+			$row[] = $i->userName;
+			$row[] = $i->timestamp;
+			// add html for action
+			$row[] = '<a href="#" class="btn btn-info" id="btnNotesEdit" data="'.$i->notesId.'"><i class="fa fa-edit"></i> Edit</a>
+			<a href="#" class="btn btn-danger" id="btnNotesDelete" data="'.$i->notesId.'"><i class="fa fa-trash"></i> Delete</a>';
+			$data[] = $row;
+		}
+		$output = [
+			"draw" => @$_POST['draw'],
+			"recordsTotal" => $this->M_project->count_notes_all($projectId),
+			"recordsFiltered" => $this->M_project->count_notes_filtered($projectId),
+			"data" => $data,
+		];
+		// output to json format
+		echo json_encode($output);
+	}
+
+	function get_notes_data_by_id(){
+		$notesId = $this->input->get('id');
+		$data = $this->M_project->get_notes_by_id($notesId);
+		$res = [
+			'data' => $data,
+			'response' => $data ? true : false,
+		];
+
+		echo json_encode($res);
+	}
+
+	function add_notes($projectId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_notes();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'projectId' => $projectId,
+					'userId' => $this->session->userdata('userId'),
+					'notesType' => $this->input->post('notesType', true),
+					'notes' => $this->input->post('notes', true),
+				];
+	
+				$q = $this->M_project->insert_notes($data);
+	
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function edit_notes($notesId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_notes();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'notesId' => $notesId,
+					'userId' => $this->session->userdata('userId'),
+					'notesType' => $this->input->post('notesType', true),
+					'notes' => $this->input->post('notes', true),
+				];
+	
+				$q = $this->M_project->update_notes($data);
+	
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function delete_notes($notesId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$notesId = $this->input->post('notesId', true);
+			$q = $this->M_project->delete_notes($notesId);
+
+			$res = [
+				'response' => $q,
+				'message' => $q ? 'Data Deleted Successfully!' : 'Data Failed to Delete!'
+			];
+			echo json_encode($res);
+		}
+	}
+
+	private function validation_notes()
+	{
+		$this->form_validation->set_rules('notesType', 'Type', 'required|trim');
+		$this->form_validation->set_rules('notes', 'Notes', 'required|trim');
 	}
 }
