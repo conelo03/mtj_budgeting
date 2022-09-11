@@ -17,7 +17,9 @@
             <div class="card-header">
               <h4>Data Quotation Header</h4>
               <div class="card-header-action">
+                <?php if (is_manager_leader() || is_manager_budget()): ?>
                 <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i> Add Data</a>
+                <?php endif; ?>
               </div>
             </div>
             <div class="card-body">
@@ -49,7 +51,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Data</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Add Quotation Header</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -85,7 +87,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit Data</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Edit Quotation Header</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -121,7 +123,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Delete Data</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Delete Quotation Header</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

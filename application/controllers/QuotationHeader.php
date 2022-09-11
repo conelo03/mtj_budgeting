@@ -33,8 +33,14 @@ class QuotationHeader extends CI_Controller {
 			$row[] = $i->pdName;
 			$row[] = $i->description;
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->quotationHeaderId.'"><i class="fa fa-edit"></i>  Edit</a>
+			if (is_manager_leader() || is_manager_budget()) {
+				$row[] = '<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->quotationHeaderId.'"><i class="fa fa-edit"></i>  Edit</a>
 							<a href="#" class="btn btn-danger" id="btnDelete" data="'.$i->quotationHeaderId.'"><i class="fa fa-trash"></i>  Delete</a>';
+			} else {
+				$row[] = '';
+			}
+			
+			
 			$data[] = $row;
 		}
 		$output = [

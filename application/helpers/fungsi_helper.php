@@ -1,27 +1,51 @@
 <?php
 
-function is_admin()
+function is_manager_leader()
 {
     $ci = get_instance();
-    $role = $ci->session->userdata('role');
-    $roles = explode(",", $role);
+    $access = $ci->session->userdata('userAccess');
     $status = false;
 
-    if (in_array("Admin", $roles)) {
+    if (in_array("Manager Leader", $access)) {
         $status = true;
     }
 
     return $status;
 }
 
-function is_owner()
+function is_manager_budget()
 {
     $ci = get_instance();
-    $role = $ci->session->userdata('role');
-    $roles = explode(",", $role);
+    $access = $ci->session->userdata('userAccess');
     $status = false;
 
-    if (in_array("Owner", $roles)) {
+    if (in_array("Manager Budget", $access)) {
+        $status = true;
+    }
+
+    return $status;
+}
+
+function is_finance()
+{
+    $ci = get_instance();
+    $access = $ci->session->userdata('userAccess');
+    $status = false;
+
+    if (in_array("Finance", $access)) {
+        $status = true;
+    }
+
+    return $status;
+}
+
+function is_pengawas_lapangan()
+{
+    $ci = get_instance();
+    $access = $ci->session->userdata('userAccess');
+    $status = false;
+
+    if (in_array("Pengawas Lapangan", $access)) {
         $status = true;
     }
 

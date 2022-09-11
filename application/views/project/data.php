@@ -17,7 +17,9 @@
             <div class="card-header">
               <h4>Data Project</h4>
               <div class="card-header-action">
-                <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i> Add Data</a>
+                <?php if(is_manager_leader() || is_manager_budget() || is_finance()): ?>
+                  <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i> Add Data</a>
+                <?php endif; ?>
               </div>
             </div>
             <div class="card-body">

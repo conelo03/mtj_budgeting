@@ -70,7 +70,9 @@
                       <h5>Data Quotation</h5>
                     </div>
                     <div class="col-md-6 text-right">
+                      <?php if(is_manager_leader() || is_manager_budget()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalQuotationAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                   <div class="table-responsive">
@@ -100,7 +102,9 @@
                       <h5>Data Budget</h5>
                     </div>
                     <div class="col-md-6 text-right">
+                      <?php if(is_manager_budget()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalBudgetAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                   <div class="table-responsive">
@@ -129,7 +133,9 @@
                       <h5>Data Proposed Cost</h5>
                     </div>
                     <div class="col-md-6 text-right">
+                      <?php if(is_pengawas_lapangan()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalProposedCostAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                   <div class="table-responsive">
@@ -141,6 +147,7 @@
                           <th style="width: 100px;">Date</th>
                           <th style="width: 100px;">Proposed By</th>
                           <th style="width: 100px;">Value</th>
+                          <th style="width: 100px;">Approved Value</th>
                           <th style="width: 200px;">Desc</th>
                           <th style="width: 100px;">Is Final</th>
                           <th style="width: 100px;">Dist. Date</th>
@@ -159,7 +166,9 @@
                       <h5>Data Cost to Budget</h5>
                     </div>
                     <div class="col-md-6 text-right">
+                      <?php if(is_manager_budget()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalProposedBudgetAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                   <div class="table-responsive">
@@ -198,7 +207,9 @@
                       <h5>Data Distribution Cost</h5>
                     </div>
                     <div class="col-md-6 text-right">
+                      <?php if(is_manager_budget()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalDistributionCostAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                   <div class="table-responsive">
@@ -227,7 +238,9 @@
                       <h5>Data Real Budget</h5>
                     </div>
                     <div class="col-md-6 text-right">
+                      <?php if(is_pengawas_lapangan()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalRealBudgetAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                   <div class="table-responsive">
@@ -258,7 +271,9 @@
                       <h5>Data Report Budget</h5>
                     </div>
                     <div class="col-md-6 text-right">
+                      <?php if(is_pengawas_lapangan()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalReportBudgetAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                   <div class="table-responsive">

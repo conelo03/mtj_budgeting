@@ -39,9 +39,14 @@ class Project extends CI_Controller {
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			$row[] = $i->isAddWork == 0 ? 'No' : 'Yes';
 			// add html for action
-			$row[] = '<a href="'.base_url('detail-project/'.$i->projectId).'" class="btn btn-light"><i class="fa fa-list"></i> Detail</a>
+
+			if (is_manager_leader() || is_manager_budget() || is_finance()) {
+				$row[] = '<a href="'.base_url('detail-project/'.$i->projectId).'" class="btn btn-light"><i class="fa fa-list"></i> Detail</a>
 							<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->projectId.'"><i class="fa fa-edit"></i> Edit</a>
 							<a href="#" class="btn btn-danger" id="btnDelete" data="'.$i->projectId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} else {
+				$row[] = '<a href="'.base_url('detail-project/'.$i->projectId).'" class="btn btn-light"><i class="fa fa-list"></i> Detail</a>';
+			}
 			$data[] = $row;
 		}
 		$output = [
@@ -302,7 +307,7 @@ class Project extends CI_Controller {
 	{
 		$client = $this->M_user->get_data()->result_array();
 		
-		$html = "<option disabled selected>-- Select Holder --</option>";
+		$html = "<option value='' disabled selected>-- Select Holder --</option>";
 		foreach($client as $data){ // Ambil semua data dari hasil eksekusi $sql
 			$html .= "<option value='".$data['userId']."'>".$data['userName']."</option>"; // Tambahkan tag option ke variabel $html
 		}
@@ -381,8 +386,15 @@ class Project extends CI_Controller {
 			$row[] = $i->detailDescription;
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnQuotationEdit" data="'.$i->projectQuotationId.'"><i class="fa fa-edit"></i> Edit</a>
+
+			if (is_manager_leader() || is_manager_budget()) {
+				$row[] = '<a href="#" class="btn btn-info" id="btnQuotationEdit" data="'.$i->projectQuotationId.'"><i class="fa fa-edit"></i> Edit</a>
 							<a href="#" class="btn btn-danger" id="btnQuotationDelete" data="'.$i->projectQuotationId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} else {
+				$row[] = '';
+			}
+			
+			
 			$data[] = $row;
 		}
 		$output = [
@@ -511,8 +523,14 @@ class Project extends CI_Controller {
 			$row[] = $i->lastUpdate;
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnBudgetEdit" data="'.$i->budgetId.'"><i class="fa fa-edit"></i> Edit</a>
+
+			if (is_manager_budget()) {
+				$row[] = '<a href="#" class="btn btn-info" id="btnBudgetEdit" data="'.$i->budgetId.'"><i class="fa fa-edit"></i> Edit</a>
 							<a href="#" class="btn btn-danger" id="btnBudgetDelete" data="'.$i->budgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} else {
+				$row[] = '';
+			}
+			
 			$data[] = $row;
 		}
 		$output = [
@@ -623,6 +641,10 @@ class Project extends CI_Controller {
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
+			$this->db->select_sum('approvedValue');
+			$this->db->from('cost_to_budget');
+			$this->db->where('proposedCostId', $i->proposedCostId);
+			$app = $this->db->get()->row_array();
 			$no++;
 			$row = array();
 			$row[] = $no.".";
@@ -630,12 +652,20 @@ class Project extends CI_Controller {
 			$row[] = $i->proposedDate;
 			$row[] = $i->userName;
 			$row[] = currency($i->proposedValue);
+			$row[] = $app['approvedValue'] == 0 ? '-' : currency($app['approvedValue']);
 			$row[] = $i->detailDescription;
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			$row[] = $i->distributionDate == null ? '-' : $i->distributionDate;
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnProposedCostEdit" data="'.$i->proposedCostId.'"><i class="fa fa-edit"></i> Edit</a>
+
+			if (is_pengawas_lapangan()) {
+				$row[] = '<a href="#" class="btn btn-info" id="btnProposedCostEdit" data="'.$i->proposedCostId.'"><i class="fa fa-edit"></i> Edit</a>
 							<a href="#" class="btn btn-danger" id="btnProposedCostDelete" data="'.$i->proposedCostId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} else {
+				$row[] = '';
+			}
+			
+			
 			$data[] = $row;
 		}
 		$output = [
@@ -770,10 +800,19 @@ class Project extends CI_Controller {
 			$row[] = $i->rejectedDescription;
 			$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-success" id="btnProposedBudgetApprove" data="'.$i->proposedBudgetId.'"><i class="fa fa-check"></i> Approve</a>
-			<a href="#" class="btn btn-danger" id="btnProposedBudgetReject" data="'.$i->proposedBudgetId.'"><i class="fa fa-times"></i> Reject</a>
-			<a href="#" class="btn btn-info" id="btnProposedBudgetEdit" data="'.$i->proposedBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
-			<a href="#" class="btn btn-danger" id="btnProposedBudgetDelete" data="'.$i->proposedBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+
+			if (is_manager_budget()) {
+				$row[] = '<a href="#" class="btn btn-info" id="btnProposedBudgetEdit" data="'.$i->proposedBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
+				<a href="#" class="btn btn-danger" id="btnProposedBudgetDelete" data="'.$i->proposedBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} elseif (is_manager_leader()) {
+				$row[] = '<a href="#" class="btn btn-success" id="btnProposedBudgetApprove" data="'.$i->proposedBudgetId.'"><i class="fa fa-check"></i> Approve</a>';
+			} elseif (is_finance()) {
+				$row[] = '<a href="#" class="btn btn-danger" id="btnProposedBudgetReject" data="'.$i->proposedBudgetId.'"><i class="fa fa-times"></i> Reject</a>';
+			} else {
+				$row[] = '';
+			}
+			
+			
 			$data[] = $row;
 		}
 		$output = [
@@ -967,8 +1006,14 @@ class Project extends CI_Controller {
 			$row[] = currency($i->value);
 			$row[] = $i->description;
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnDistributionCostEdit" data="'.$i->distributionCostId.'"><i class="fa fa-edit"></i> Edit</a>
+
+			if (is_manager_budget()) {
+				$row[] = '<a href="#" class="btn btn-info" id="btnDistributionCostEdit" data="'.$i->distributionCostId.'"><i class="fa fa-edit"></i> Edit</a>
 			<a href="#" class="btn btn-danger" id="btnDistributionCostDelete" data="'.$i->distributionCostId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} else {
+				$row[] = '';
+			}
+			
 			$data[] = $row;
 		}
 		$output = [
@@ -1001,22 +1046,38 @@ class Project extends CI_Controller {
 					'error' => validation_errors()
 				];
 			}else{
-				$data = [
-					'projectId' => $projectId,
-					'proposedCostId' => $this->input->post('proposedCostId', true),
-					'userId' => $this->session->userdata('userId'),
-					'holder' => $this->input->post('holder', true),
-					'value' => $this->input->post('value', true),
-					'description' => $this->input->post('description', true),
-				];
-	
-				$q = $this->M_project->insert_distribution_cost($data);
-	
-				$res = [
-					'data' => $data,
-					'response' => $q,
-					'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
-				];
+				$proposedCostId = $this->input->post('proposedCostId', true);
+				$value = $this->input->post('value', true);
+
+				$this->db->select_sum('approvedValue');
+				$this->db->from('cost_to_budget');
+				$this->db->where('proposedCostId', $proposedCostId);
+				$app = $this->db->get()->row_array();
+
+				if($value > $app['approvedValue']){
+					$res = [
+						'error' => 'Value distribution exceeds the Proposed Budget<br>',
+					];
+				} else {
+					$data = [
+						'projectId' => $projectId,
+						'proposedCostId' => $this->input->post('proposedCostId', true),
+						'userId' => $this->session->userdata('userId'),
+						'holder' => $this->input->post('holder', true),
+						'value' => $this->input->post('value', true),
+						'description' => $this->input->post('description', true),
+					];
+		
+					$q = $this->M_project->insert_distribution_cost($data);
+		
+					$res = [
+						'data' => $data,
+						'response' => $q,
+						'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+					];
+				}
+
+				
 			}
 			echo json_encode($res);
 		}
@@ -1031,22 +1092,37 @@ class Project extends CI_Controller {
 					'error' => validation_errors()
 				];
 			}else{
-				$data = [
-					'distributionCostId' => $distributionCostId,
-					'proposedCostId' => $this->input->post('proposedCostId', true),
-					'userId' => $this->session->userdata('userId'),
-					'holder' => $this->input->post('holder', true),
-					'value' => $this->input->post('value', true),
-					'description' => $this->input->post('description', true),
-				];
-	
-				$q = $this->M_project->update_distribution_cost($data);
-	
-				$res = [
-					'data' => $data,
-					'response' => $q,
-					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
-				];
+				$proposedCostId = $this->input->post('proposedCostId', true);
+				$value = $this->input->post('value', true);
+
+				$this->db->select_sum('approvedValue');
+				$this->db->from('cost_to_budget');
+				$this->db->where('proposedCostId', $proposedCostId);
+				$app = $this->db->get()->row_array();
+
+				if($value > $app['approvedValue']){
+					$res = [
+						'error' => 'Value distribution exceeds the Proposed Budget<br>',
+					];
+				} else {
+					$data = [
+						'distributionCostId' => $distributionCostId,
+						'proposedCostId' => $this->input->post('proposedCostId', true),
+						'userId' => $this->session->userdata('userId'),
+						'holder' => $this->input->post('holder', true),
+						'value' => $this->input->post('value', true),
+						'description' => $this->input->post('description', true),
+					];
+		
+					$q = $this->M_project->update_distribution_cost($data);
+		
+					$res = [
+						'data' => $data,
+						'response' => $q,
+						'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+					];
+				}
+				
 			}
 			echo json_encode($res);
 		}
@@ -1093,9 +1169,17 @@ class Project extends CI_Controller {
 			$row[] = $i->orderNo == null ? '-' : $i->orderNo;
 			$row[] = $i->budget == null ? '-' : currency($i->budget);
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-success" id="btnRealBudgetSelectBudget" data="'.$i->realBudgetId.'"><i class="fa fa-edit"></i> Select Budget</a>
-			<a href="#" class="btn btn-info" id="btnRealBudgetEdit" data="'.$i->realBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
-			<a href="#" class="btn btn-danger" id="btnRealBudgetDelete" data="'.$i->realBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+
+			if (is_pengawas_lapangan()) {
+				$row[] = '<a href="#" class="btn btn-info" id="btnRealBudgetEdit" data="'.$i->realBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
+				<a href="#" class="btn btn-danger" id="btnRealBudgetDelete" data="'.$i->realBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} elseif (is_manager_budget()) {
+				$row[] = '<a href="#" class="btn btn-success" id="btnRealBudgetSelectBudget" data="'.$i->realBudgetId.'"><i class="fa fa-edit"></i> Select Budget</a>';
+			} else {
+				$row[] = '';
+			}
+			
+			
 			$data[] = $row;
 		}
 		$output = [
@@ -1231,8 +1315,15 @@ class Project extends CI_Controller {
 			$row[] = $i->description;
 			$row[] = '<a href="#" class="btn btn-light" id="btnReportBudgetDetail" data="'.$i->reportBudgetId.'"><i class="fa fa-eye"></i> </a> '.$i->fileName;
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnReportBudgetEdit" data="'.$i->reportBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
-			<a href="#" class="btn btn-danger" id="btnReportBudgetDelete" data="'.$i->reportBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+
+			if (is_pengawas_lapangan()) {
+				$row[] = '<a href="#" class="btn btn-info" id="btnReportBudgetEdit" data="'.$i->reportBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
+				<a href="#" class="btn btn-danger" id="btnReportBudgetDelete" data="'.$i->reportBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} else {
+				$row[] = '';
+			}
+			
+			
 			$data[] = $row;
 		}
 		$output = [

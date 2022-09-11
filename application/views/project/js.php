@@ -49,7 +49,7 @@
         "type" : "POST"
       },
       "columnDefs" : [{
-        "targets" : [0, 8],
+        "targets" : [0, 9],
         "orderable" : false,
         "className" : "text-center"
       }],
@@ -880,6 +880,7 @@
               populateError(res.message);
             }
             $('#modalDistributionCostAdd').modal('hide');
+            $('.msgError').html('');
             document.getElementById('saveDistributionCostData').reset();
             loadDistributionCostData();
             loadDistributionCost();
@@ -904,6 +905,7 @@
         },
         success: function(res){
           let data = res.data;
+          $('.msgError').html('');
           $('#modalDistributionCostEdit').modal('show');
           $('#selectProposedCostForDCEdit').selectpicker('val', data.proposedCostId);
           $('#selectUserEdit').selectpicker('val', data.holder);
