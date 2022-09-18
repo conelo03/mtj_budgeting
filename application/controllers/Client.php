@@ -32,7 +32,7 @@ class Client extends CI_Controller {
 			$row[] = $i->name;
 			$row[] = $i->description;
 			// add html for action
-			if(is_manager_leader()){
+			if(is_project_manager()){
 				$row[] = '<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->clientId.'"><i class="fa fa-edit"></i>  Edit</a>
 							<a href="#" class="btn btn-danger" id="btnDelete" data="'.$i->clientId.'"><i class="fa fa-trash"></i>  Delete</a>';
 			}else{

@@ -1,22 +1,22 @@
 <script type="text/javascript">
-  function loadQuotationData(){
-    table = $('#getQuotationData').DataTable({
-      "autoWidth": false,
-      "responsive" : true,
-      "destroy" : true,
-      "processing" : true,
-      "serverside" : true,
-      "ajax" : {
-        "url" : "<?= base_url('Project/get_quotation_data/'.$project['projectId']) ?>",
-        "type" : "POST"
-      },
-      "columnDefs" : [{
-        "targets" : [0, 8],
-        "orderable" : false,
-        "className" : "text-center"
-      }],
-    });
-  }
+  // function loadQuotationData(){
+  //   table = $('#getQuotationData').DataTable({
+  //     "autoWidth": false,
+  //     "responsive" : true,
+  //     "destroy" : true,
+  //     "processing" : true,
+  //     "serverside" : true,
+  //     "ajax" : {
+  //       "url" : "<?= base_url('Project/get_quotation_data/'.$project['projectId']) ?>",
+  //       "type" : "POST"
+  //     },
+  //     "columnDefs" : [{
+  //       "targets" : [0, 8],
+  //       "orderable" : false,
+  //       "className" : "text-center"
+  //     }],
+  //   });
+  // }
 
   function loadBudgetData(){
     table = $('#getBudgetData').DataTable({
@@ -30,7 +30,7 @@
         "type" : "POST"
       },
       "columnDefs" : [{
-        "targets" : [0, 7],
+        "targets" : [0, 6],
         "orderable" : false,
         "className" : "text-center"
       }],
@@ -49,7 +49,7 @@
         "type" : "POST"
       },
       "columnDefs" : [{
-        "targets" : [0, 9],
+        "targets" : [0, 13],
         "orderable" : false,
         "className" : "text-center"
       }],
@@ -196,6 +196,7 @@
       success: function(res) {
         if(res.response === true){
           $("#selectBudget").html(res.data_budget.data).selectpicker('refresh');
+          $("#selectBudgetApprove").html(res.data_budget.data).selectpicker('refresh');
           $("#selectBudgetEdit").html(res.data_budget.data).selectpicker('refresh');
           $("#selectBudgetRBEdit").html(res.data_budget.data).selectpicker('refresh');
           $("#selectBudgetRepBudget").html(res.data_budget.data).selectpicker('refresh');
@@ -210,7 +211,7 @@
   function loadUser(){
     $.ajax({
       type: "GET", 
-      url: "<?= base_url("Project/get_user"); ?>", 
+      url: "<?= base_url("Project/get_user/".$project['projectId']); ?>", 
       async : true,
       dataType: "JSON",
       success: function(res) {
@@ -259,144 +260,144 @@
   }
 
 	$(document).ready(function(){
-    loadProjectQuotation();
+    //loadProjectQuotation();
     loadProposedCost();
     loadBudget();
     loadUser();
     loadDistributionCost();
     loadRealBudget();
-		loadQuotationData();
+		//loadQuotationData();
     loadBudgetData();
     loadProposedCostData();
-    loadProposedBudgetData();
+    //loadProposedBudgetData();
     loadDistributionCostData();
     loadRealBudgetData();
     loadReportBudgetData();
     loadNotesData();
 
-    //QUOTATION
-    // SAVE DATA
-    $('#saveQuotationData').submit(function(e){
-      $.ajax({
-        type : "POST",
-        url  : "<?php echo base_url('add-project-quotation/'.$project['projectId'])?>",
-        dataType : "JSON",
-        data : $(this).serialize(),
-        success: function(res){
-          if(res.error){
-            $('.msgError').html(res.error).show();
-          }else{
-            if(res.response){
-              populateSuccess(res.message);
-            }else{
-              populateError(res.message);
-            }
-            $('#modalQuotationAdd').modal('hide');
-            $("#selectQuotationHeader").val('').selectpicker('refresh');
-            document.getElementById('saveQuotationData').reset();
-            loadQuotationData();
-            loadProjectQuotation();
-          }
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-      return false;
-    });
+    // //QUOTATION
+    // // SAVE DATA
+    // $('#saveQuotationData').submit(function(e){
+    //   $.ajax({
+    //     type : "POST",
+    //     url  : "<?php echo base_url('add-project-quotation/'.$project['projectId'])?>",
+    //     dataType : "JSON",
+    //     data : $(this).serialize(),
+    //     success: function(res){
+    //       if(res.error){
+    //         $('.msgError').html(res.error).show();
+    //       }else{
+    //         if(res.response){
+    //           populateSuccess(res.message);
+    //         }else{
+    //           populateError(res.message);
+    //         }
+    //         $('#modalQuotationAdd').modal('hide');
+    //         $("#selectQuotationHeader").val('').selectpicker('refresh');
+    //         document.getElementById('saveQuotationData').reset();
+    //         loadQuotationData();
+    //         loadProjectQuotation();
+    //       }
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
 
-    //GET DATA EDIT
-    $('#dataQuotationList').on('click','#btnQuotationEdit',function(){
-      let id = $(this).attr('data');
-      $.ajax({
-        type : "GET",
-        url  : "<?= base_url('Project/get_quotation_data_by_id')?>",
-        dataType : "JSON",
-        data : {
-          id : id
-        },
-        success: function(res){
-          let data = res.data;
-          $('#modalQuotationEdit').modal('show');
-          $('#selectQuotationHeaderEdit').selectpicker('val', data.quotationHeaderId);
-          $('#orderNoEdit').val(data.orderNo);
-          $('#projectQuotationNameEdit').val(data.projectQuotationName);
-          $('#descriptionEdit').val(data.description);
-          $('#quoteValueEdit').val(data.quoteValue);
-          $('#estCostEdit').val(data.estCost);
-          $('#detailDescriptionEdit').val(data.detailDescription);
-          $("input[name=isFinal][value=" + data.isFinal + "]").prop('checked', true);
-          $('#updateQuotationData').attr("data", id);
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-      return false;
-    });
+    // //GET DATA EDIT
+    // $('#dataQuotationList').on('click','#btnQuotationEdit',function(){
+    //   let id = $(this).attr('data');
+    //   $.ajax({
+    //     type : "GET",
+    //     url  : "<?= base_url('Project/get_quotation_data_by_id')?>",
+    //     dataType : "JSON",
+    //     data : {
+    //       id : id
+    //     },
+    //     success: function(res){
+    //       let data = res.data;
+    //       $('#modalQuotationEdit').modal('show');
+    //       $('#selectQuotationHeaderEdit').selectpicker('val', data.quotationHeaderId);
+    //       $('#orderNoEdit').val(data.orderNo);
+    //       $('#projectQuotationNameEdit').val(data.projectQuotationName);
+    //       $('#descriptionEdit').val(data.description);
+    //       $('#quoteValueEdit').val(data.quoteValue);
+    //       $('#estCostEdit').val(data.estCost);
+    //       $('#detailDescriptionEdit').val(data.detailDescription);
+    //       $("input[name=isFinal][value=" + data.isFinal + "]").prop('checked', true);
+    //       $('#updateQuotationData').attr("data", id);
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
 
-    //EDIT DATA
-    $('#updateQuotationData').submit(function(e){
-      let id = $(this).attr('data');
-      console.log(id);
-      $.ajax({
-        type : "POST",
-        url  : "<?= base_url('edit-project-quotation/')?>" + id,
-        dataType : "JSON",
-        data : $(this).serialize(),
-        success: function(res){
-          if(res.error){
-            $('.msgError').html(res.error).show();
-          }else{
-            if(res.response){
-              populateSuccess(res.message);
-            }else{
-              populateError(res.message);
-            }
-            $('#modalQuotationEdit').modal('hide');
-            loadQuotationData();
-            loadProjectQuotation();
-          }
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-      return false;
-    });
+    // //EDIT DATA
+    // $('#updateQuotationData').submit(function(e){
+    //   let id = $(this).attr('data');
+    //   console.log(id);
+    //   $.ajax({
+    //     type : "POST",
+    //     url  : "<?= base_url('edit-project-quotation/')?>" + id,
+    //     dataType : "JSON",
+    //     data : $(this).serialize(),
+    //     success: function(res){
+    //       if(res.error){
+    //         $('.msgError').html(res.error).show();
+    //       }else{
+    //         if(res.response){
+    //           populateSuccess(res.message);
+    //         }else{
+    //           populateError(res.message);
+    //         }
+    //         $('#modalQuotationEdit').modal('hide');
+    //         loadQuotationData();
+    //         loadProjectQuotation();
+    //       }
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
 
-    //DELETE
-    $('#dataQuotationList').on('click','#btnQuotationDelete',function(){
-      var id = $(this).attr('data');
-      $('#modalQuotationDelete').modal('show');
-      $('#projectQuotationIdDelete').val(id);
-      $('#deleteQuotationData').attr("data", id);
-    });	
+    // //DELETE
+    // $('#dataQuotationList').on('click','#btnQuotationDelete',function(){
+    //   var id = $(this).attr('data');
+    //   $('#modalQuotationDelete').modal('show');
+    //   $('#projectQuotationIdDelete').val(id);
+    //   $('#deleteQuotationData').attr("data", id);
+    // });	
 
-    //DELETE DATA
-    $('#deleteQuotationData').submit(function(e){
-      let id = $(this).attr('data');
-      $.ajax({
-        type : "POST",
-        url  : "<?= base_url('delete-project-quotation/')?>" + id,
-        dataType : "JSON",
-        data : $(this).serialize(),
-        success: function(res){
-          if(res.response){
-            populateSuccess(res.message);
-          }else{
-            populateError(res.message);
-          }
-          $('#modalQuotationDelete').modal('hide');
-          loadQuotationData();
-          loadProjectQuotation();
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-      return false;
-    });
+    // //DELETE DATA
+    // $('#deleteQuotationData').submit(function(e){
+    //   let id = $(this).attr('data');
+    //   $.ajax({
+    //     type : "POST",
+    //     url  : "<?= base_url('delete-project-quotation/')?>" + id,
+    //     dataType : "JSON",
+    //     data : $(this).serialize(),
+    //     success: function(res){
+    //       if(res.response){
+    //         populateSuccess(res.message);
+    //       }else{
+    //         populateError(res.message);
+    //       }
+    //       $('#modalQuotationDelete').modal('hide');
+    //       loadQuotationData();
+    //       loadProjectQuotation();
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
 
     // BUDGET
     // SAVE DATA
@@ -416,7 +417,7 @@
               populateError(res.message);
             }
             $('#modalBudgetAdd').modal('hide');
-            $("#selectProjectQuotation").val('').selectpicker('refresh');
+            //$("#selectProjectQuotation").val('').selectpicker('refresh');
             document.getElementById('saveBudgetData').reset();
             loadBudgetData();
             loadBudget();
@@ -442,11 +443,17 @@
         success: function(res){
           let data = res.data;
           $('#modalBudgetEdit').modal('show');
-          $('#selectProjectQuotationEdit').selectpicker('val', data.projectQuotationId);
+          //$('#selectProjectQuotationEdit').selectpicker('val', data.projectQuotationId);
           $('#orderNoEditBudget').val(data.orderNo);
-          $('#budgetEdit').val(data.budget);
+          if(data.approved == 'PENDING'){
+            document.getElementById("budgetEdit").disabled = false;
+            $('#budgetEdit').val(data.budget);
+          }else{
+            document.getElementById("budgetEdit").disabled = true;
+            $('#budgetEdit').val(data.budget);
+          }
+          
           $('#descriptionEditBudget').val(data.description);
-          $("input[name=isFinal][value=" + data.isFinal + "]").prop('checked', true);
           $('#updateBudgetData').attr("data", id);
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -519,6 +526,39 @@
       return false;
     });
 
+    //APPROVE
+    $('#dataBudgetList').on('click','#btnBudgetApprove',function(){
+      var id = $(this).attr('data');
+      $('#modalBudgetApprove').modal('show');
+      $('#budgetIdApprove').val(id);
+      $('#approveBudgetData').attr("data", id);
+    });	
+
+    //APPROVE DATA
+    $('#approveBudgetData').submit(function(e){
+      let id = $(this).attr('data');
+      $.ajax({
+        type : "POST",
+        url  : "<?= base_url('approve-budget/')?>" + id,
+        dataType : "JSON",
+        data : $(this).serialize(),
+        success: function(res){
+          if(res.response){
+            populateSuccess(res.message);
+          }else{
+            populateError(res.message);
+          }
+          $('#modalBudgetApprove').modal('hide');
+          loadBudgetData();
+          loadBudget();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
     //PROPOSED COST
     // SAVE DATA
     $('#saveProposedCostData').submit(function(e){
@@ -565,8 +605,6 @@
           $('#proposedCostNameEdit').val(data.proposedCostName);
           $('#proposedValueEdit').val(data.proposedValue);
           $('#detailDescriptionEditPC').val(data.detailDescription);
-          $('#distributionDateEdit').val(data.distributionDate);
-          $("input[name=isFinal][value=" + data.isFinal + "]").prop('checked', true);
           $('#updateProposedCostData').attr("data", id);
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -639,138 +677,24 @@
       return false;
     });
 
-    //PROPOSED BUDGET
-    // SAVE DATA
-    $('#saveProposedBudgetData').submit(function(e){
-      $.ajax({
-        type : "POST",
-        url  : "<?php echo base_url('add-proposed-budget/'.$project['projectId'])?>",
-        dataType : "JSON",
-        data : $(this).serialize(),
-        success: function(res){
-          if(res.error){
-            $('.msgError').html(res.error).show();
-          }else{
-            if(res.response){
-              populateSuccess(res.message);
-            }else{
-              populateError(res.message);
-            }
-            $('#modalProposedBudgetAdd').modal('hide');
-            document.getElementById('saveProposedBudgetData').reset();
-            loadProposedBudgetData();
-          }
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-      return false;
-    });
-
-    //GET DATA EDIT
-    $('#dataProposedBudgetList').on('click','#btnProposedBudgetEdit',function(){
+    //GET DATA APPROVE
+    $('#dataProposedCostList').on('click','#btnProposedCostApprove',function(){
       let id = $(this).attr('data');
       $.ajax({
         type : "GET",
-        url  : "<?= base_url('Project/get_proposed_budget_data_by_id')?>",
+        url  : "<?= base_url('Project/get_proposed_cost_data_by_id')?>",
         dataType : "JSON",
         data : {
           id : id
         },
         success: function(res){
           let data = res.data;
-          $('#modalProposedBudgetEdit').modal('show');
-          $('#selectProposedCostEdit').selectpicker('val', data.proposedCostId);
-          $('#selectBudgetEdit').selectpicker('val', data.budgetId);
-          $('#proposedBudgetDescriptionEdit').val(data.proposedBudgetDescription);
-          $('#proposedBudgetValueEdit').val(data.proposedBudgetValue);
-          $('#updateProposedBudgetData').attr("data", id);
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-      return false;
-    });
-
-    //EDIT DATA
-    $('#updateProposedBudgetData').submit(function(e){
-      let id = $(this).attr('data');
-      console.log(id);
-      $.ajax({
-        type : "POST",
-        url  : "<?= base_url('edit-proposed-budget/')?>" + id,
-        dataType : "JSON",
-        data : $(this).serialize(),
-        success: function(res){
-          if(res.error){
-            $('.msgError').html(res.error).show();
-          }else{
-            if(res.response){
-              populateSuccess(res.message);
-            }else{
-              populateError(res.message);
-            }
-            $('#modalProposedBudgetEdit').modal('hide');
-            loadProposedBudgetData();
-          }
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-      return false;
-    });
-
-    //DELETE
-    $('#dataProposedBudgetList').on('click','#btnProposedBudgetDelete',function(){
-      var id = $(this).attr('data');
-      $('#modalProposedBudgetDelete').modal('show');
-      $('#proposedBudgetIdDelete').val(id);
-      $('#deleteProposedBudgetData').attr("data", id);
-    });	
-
-    //DELETE DATA
-    $('#deleteProposedBudgetData').submit(function(e){
-      let id = $(this).attr('data');
-      $.ajax({
-        type : "POST",
-        url  : "<?= base_url('delete-proposed-budget/')?>" + id,
-        dataType : "JSON",
-        data : $(this).serialize(),
-        success: function(res){
-          if(res.response){
-            populateSuccess(res.message);
-          }else{
-            populateError(res.message);
-          }
-          $('#modalProposedBudgetDelete').modal('hide');
-          loadProposedBudgetData();
-        },
-        error: function(xhr, ajaxOptions, thrownError){
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-      return false;
-    });
-
-    //GET DATA EDIT
-    $('#dataProposedBudgetList').on('click','#btnProposedBudgetApprove',function(){
-      let id = $(this).attr('data');
-      $.ajax({
-        type : "GET",
-        url  : "<?= base_url('Project/get_proposed_budget_data_by_id')?>",
-        dataType : "JSON",
-        data : {
-          id : id
-        },
-        success: function(res){
-          let data = res.data;
-          $('#modalProposedBudgetApprove').modal('show');
+          $('#modalProposedCostApprove').modal('show');
+          $('#proposedValueApprove').val(data.proposedValue);
+          $('#selectBudgetApprove').selectpicker('val', data.budgetId);
           $('#approvedDescriptionApprove').val(data.approvedDescription);
           $('#approvedValueApprove').val(data.approvedValue);
-          $('#approveProposedBudgetData').attr("data", id);
+          $('#approveProposedCostData').attr("data", id);
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -780,12 +704,12 @@
     });
 
     //APPROVE DATA
-    $('#approveProposedBudgetData').submit(function(e){
+    $('#approveProposedCostData').submit(function(e){
       let id = $(this).attr('data');
       console.log(id);
       $.ajax({
         type : "POST",
-        url  : "<?= base_url('approve-proposed-budget/')?>" + id,
+        url  : "<?= base_url('approve-proposed-cost/')?>" + id,
         dataType : "JSON",
         data : $(this).serialize(),
         success: function(res){
@@ -797,8 +721,9 @@
             }else{
               populateError(res.message);
             }
-            $('#modalProposedBudgetApprove').modal('hide');
-            loadProposedBudgetData();
+            $('#modalProposedCostApprove').modal('hide');
+            loadProposedCostData();
+            loadProposedCost();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -808,12 +733,12 @@
       return false;
     });
 
-    //GET DATA EDIT
-    $('#dataProposedBudgetList').on('click','#btnProposedBudgetReject',function(){
+    //GET DATA REJECT
+    $('#dataProposedCostList').on('click','#btnProposedCostReject',function(){
       let id = $(this).attr('data');
       $.ajax({
         type : "GET",
-        url  : "<?= base_url('Project/get_proposed_budget_data_by_id')?>",
+        url  : "<?= base_url('Project/get_proposed_cost_data_by_id')?>",
         dataType : "JSON",
         data : {
           id : id
@@ -821,10 +746,9 @@
         success: function(res){
           let data = res.data;
           console.log(data.isFinal);
-          $('#modalProposedBudgetReject').modal('show');
+          $('#modalProposedCostReject').modal('show');
           $('#rejectedDescriptionReject').val(data.rejectedDescription);
-          $("input[id=isFinalReject][value=" + data.isFinal + "]").prop('checked', true);
-          $('#rejectProposedBudgetData').attr("data", id);
+          $('#rejectProposedCostData').attr("data", id);
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -834,12 +758,12 @@
     });
 
     //REJECT DATA
-    $('#rejectProposedBudgetData').submit(function(e){
+    $('#rejectProposedCostData').submit(function(e){
       let id = $(this).attr('data');
       console.log(id);
       $.ajax({
         type : "POST",
-        url  : "<?= base_url('reject-proposed-budget/')?>" + id,
+        url  : "<?= base_url('reject-proposed-cost/')?>" + id,
         dataType : "JSON",
         data : $(this).serialize(),
         success: function(res){
@@ -851,8 +775,9 @@
             }else{
               populateError(res.message);
             }
-            $('#modalProposedBudgetReject').modal('hide');
-            loadProposedBudgetData();
+            $('#modalProposedCostReject').modal('hide');
+            loadProposedCostData();
+            loadProposedCost();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -861,6 +786,229 @@
       });
       return false;
     });
+
+    // //PROPOSED BUDGET
+    // // SAVE DATA
+    // $('#saveProposedBudgetData').submit(function(e){
+    //   $.ajax({
+    //     type : "POST",
+    //     url  : "<?php echo base_url('add-proposed-budget/'.$project['projectId'])?>",
+    //     dataType : "JSON",
+    //     data : $(this).serialize(),
+    //     success: function(res){
+    //       if(res.error){
+    //         $('.msgError').html(res.error).show();
+    //       }else{
+    //         if(res.response){
+    //           populateSuccess(res.message);
+    //         }else{
+    //           populateError(res.message);
+    //         }
+    //         $('#modalProposedBudgetAdd').modal('hide');
+    //         document.getElementById('saveProposedBudgetData').reset();
+    //         loadProposedBudgetData();
+    //       }
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
+
+    // //GET DATA EDIT
+    // $('#dataProposedBudgetList').on('click','#btnProposedBudgetEdit',function(){
+    //   let id = $(this).attr('data');
+    //   $.ajax({
+    //     type : "GET",
+    //     url  : "<?= base_url('Project/get_proposed_budget_data_by_id')?>",
+    //     dataType : "JSON",
+    //     data : {
+    //       id : id
+    //     },
+    //     success: function(res){
+    //       let data = res.data;
+    //       $('#modalProposedBudgetEdit').modal('show');
+    //       $('#selectProposedCostEdit').selectpicker('val', data.proposedCostId);
+    //       $('#selectBudgetEdit').selectpicker('val', data.budgetId);
+    //       $('#proposedBudgetDescriptionEdit').val(data.proposedBudgetDescription);
+    //       $('#proposedBudgetValueEdit').val(data.proposedBudgetValue);
+    //       $('#updateProposedBudgetData').attr("data", id);
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
+
+    // //EDIT DATA
+    // $('#updateProposedBudgetData').submit(function(e){
+    //   let id = $(this).attr('data');
+    //   console.log(id);
+    //   $.ajax({
+    //     type : "POST",
+    //     url  : "<?= base_url('edit-proposed-budget/')?>" + id,
+    //     dataType : "JSON",
+    //     data : $(this).serialize(),
+    //     success: function(res){
+    //       if(res.error){
+    //         $('.msgError').html(res.error).show();
+    //       }else{
+    //         if(res.response){
+    //           populateSuccess(res.message);
+    //         }else{
+    //           populateError(res.message);
+    //         }
+    //         $('#modalProposedBudgetEdit').modal('hide');
+    //         loadProposedBudgetData();
+    //       }
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
+
+    // //DELETE
+    // $('#dataProposedBudgetList').on('click','#btnProposedBudgetDelete',function(){
+    //   var id = $(this).attr('data');
+    //   $('#modalProposedBudgetDelete').modal('show');
+    //   $('#proposedBudgetIdDelete').val(id);
+    //   $('#deleteProposedBudgetData').attr("data", id);
+    // });	
+
+    // //DELETE DATA
+    // $('#deleteProposedBudgetData').submit(function(e){
+    //   let id = $(this).attr('data');
+    //   $.ajax({
+    //     type : "POST",
+    //     url  : "<?= base_url('delete-proposed-budget/')?>" + id,
+    //     dataType : "JSON",
+    //     data : $(this).serialize(),
+    //     success: function(res){
+    //       if(res.response){
+    //         populateSuccess(res.message);
+    //       }else{
+    //         populateError(res.message);
+    //       }
+    //       $('#modalProposedBudgetDelete').modal('hide');
+    //       loadProposedBudgetData();
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
+
+    // //GET DATA APPROVE
+    // $('#dataProposedBudgetList').on('click','#btnProposedBudgetApprove',function(){
+    //   let id = $(this).attr('data');
+    //   $.ajax({
+    //     type : "GET",
+    //     url  : "<?= base_url('Project/get_proposed_budget_data_by_id')?>",
+    //     dataType : "JSON",
+    //     data : {
+    //       id : id
+    //     },
+    //     success: function(res){
+    //       let data = res.data;
+    //       $('#modalProposedBudgetApprove').modal('show');
+    //       $('#approvedDescriptionApprove').val(data.approvedDescription);
+    //       $('#approvedValueApprove').val(data.approvedValue);
+    //       $('#approveProposedBudgetData').attr("data", id);
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
+
+    // //APPROVE DATA
+    // $('#approveProposedBudgetData').submit(function(e){
+    //   let id = $(this).attr('data');
+    //   console.log(id);
+    //   $.ajax({
+    //     type : "POST",
+    //     url  : "<?= base_url('approve-proposed-budget/')?>" + id,
+    //     dataType : "JSON",
+    //     data : $(this).serialize(),
+    //     success: function(res){
+    //       if(res.error){
+    //         $('.msgError').html(res.error).show();
+    //       }else{
+    //         if(res.response){
+    //           populateSuccess(res.message);
+    //         }else{
+    //           populateError(res.message);
+    //         }
+    //         $('#modalProposedBudgetApprove').modal('hide');
+    //         loadProposedBudgetData();
+    //       }
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
+
+    // //GET DATA REJECT
+    // $('#dataProposedBudgetList').on('click','#btnProposedBudgetReject',function(){
+    //   let id = $(this).attr('data');
+    //   $.ajax({
+    //     type : "GET",
+    //     url  : "<?= base_url('Project/get_proposed_budget_data_by_id')?>",
+    //     dataType : "JSON",
+    //     data : {
+    //       id : id
+    //     },
+    //     success: function(res){
+    //       let data = res.data;
+    //       console.log(data.isFinal);
+    //       $('#modalProposedBudgetReject').modal('show');
+    //       $('#rejectedDescriptionReject').val(data.rejectedDescription);
+    //       $("input[id=isFinalReject][value=" + data.isFinal + "]").prop('checked', true);
+    //       $('#rejectProposedBudgetData').attr("data", id);
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
+
+    // //REJECT DATA
+    // $('#rejectProposedBudgetData').submit(function(e){
+    //   let id = $(this).attr('data');
+    //   console.log(id);
+    //   $.ajax({
+    //     type : "POST",
+    //     url  : "<?= base_url('reject-proposed-budget/')?>" + id,
+    //     dataType : "JSON",
+    //     data : $(this).serialize(),
+    //     success: function(res){
+    //       if(res.error){
+    //         $('.msgError').html(res.error).show();
+    //       }else{
+    //         if(res.response){
+    //           populateSuccess(res.message);
+    //         }else{
+    //           populateError(res.message);
+    //         }
+    //         $('#modalProposedBudgetReject').modal('hide');
+    //         loadProposedBudgetData();
+    //       }
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError){
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // });
 
     //DISTRIBUTION COST
     // SAVE DATA

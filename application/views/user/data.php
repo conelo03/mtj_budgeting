@@ -32,11 +32,11 @@
                     User Access
                   </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                   <a class="nav-link" id="group-tab" data-toggle="tab" href="#group" role="tab" aria-controls="group" aria-selected="false">
                     User Group
                   </a>
-                </li>
+                </li> -->
               </ul>
               <div class="tab-content tab-bordered" id="myTab3Content">
                 <div class="tab-pane fade show active" id="user" role="tabpanel" aria-labelledby="user-tab">
@@ -55,7 +55,6 @@
                           <th class="text-center" style="width: 20px;">#</th>
                           <th>Name</th>
                           <th>Email</th>
-                          <th>Group</th>
                           <th>Access</th>
                           <th class="text-center" style="width: 200px;">Action</th>
                         </tr>
@@ -90,7 +89,7 @@
                     </table>
                   </div>
                 </div>
-                <div class="tab-pane fade" id="group" role="tabpanel" aria-labelledby="group-tab">
+                <!-- <div class="tab-pane fade" id="group" role="tabpanel" aria-labelledby="group-tab">
                   <div class="row mt-2 mb-4">
                     <div class="col-md-6">
                       <h5>Data User Group</h5>
@@ -113,7 +112,7 @@
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
