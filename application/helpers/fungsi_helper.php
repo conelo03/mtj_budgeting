@@ -1,25 +1,25 @@
 <?php
 
-function is_manager_leader()
+function is_administrator()
 {
     $ci = get_instance();
     $access = $ci->session->userdata('userAccess');
     $status = false;
 
-    if (in_array("Manager Leader", $access)) {
+    if (in_array("Administrator", $access)) {
         $status = true;
     }
 
     return $status;
 }
 
-function is_manager_budget()
+function is_project_manager()
 {
     $ci = get_instance();
     $access = $ci->session->userdata('userAccess');
     $status = false;
 
-    if (in_array("Manager Budget", $access)) {
+    if (in_array("Project Manager", $access)) {
         $status = true;
     }
 
@@ -66,6 +66,33 @@ function currency($num)
 {
     $data = 'Rp. '.number_format($num, 0, ',', '.');
     return $data;
+}
+
+function badge_status($status)
+{
+    $class = '';
+    switch ($status) {
+        case 'PENDING':
+            $class = "badge badge-warning";
+            break;
+        case 'APPROVED':
+            $class = "badge badge-success";
+            break;
+        case 'ON GOING':
+            $class = "badge badge-info";
+            break;
+        case 'COMPLETED':
+            $class = "badge badge-success";
+            break;
+        case 'REJECTED':
+            $class = "badge badge-danger";
+            break;
+        default:
+            $class = "";
+            break;
+    }
+
+    return '<span class="'.$class.'">'.$status.'</span>';
 }
 
 function output_json($data)

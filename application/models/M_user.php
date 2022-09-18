@@ -63,6 +63,25 @@ class M_user extends CI_Model {
     return $this->db->get();
 	}
 
+	public function get_pengawas_lapangan()
+	{
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->join('user_access', 'user_access.userId=user.userId');
+		$this->db->join('access_right', 'access_right.accessRightId=user_access.accessRightId');
+		$this->db->where('access_right.accessName', 'Pengawas Lapangan');
+    return $this->db->get();
+	}
+
+	public function get_team_member($projectId)
+	{
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->join('team_member', 'team_member.userId=user.userId');
+		$this->db->where('team_member.projectId', $projectId);
+    return $this->db->get();
+	}
+
 	public function insert($data)
 	{
 		return $this->db->insert($this->table, $data);

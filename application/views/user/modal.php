@@ -27,12 +27,12 @@
             </select>
           </div>
 
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Select User Group</label>
             <select name="groupId[]" class="form-control" id="selectUserGroup" data-live-search="true" multiple>
 
             </select>
-          </div>
+          </div> -->
 
           <div class="form-group">
             <label class="form-label">Password</label>
@@ -82,12 +82,12 @@
             </select>
           </div>
 
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Select User Group</label>
             <select name="groupId[]" class="form-control" id="selectUserGroupEdit" data-live-search="true" multiple>
 
             </select>
-          </div>
+          </div> -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

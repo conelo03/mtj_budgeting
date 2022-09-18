@@ -6,16 +6,23 @@ class M_project extends CI_Model {
 	public $table	= 'project';
 
 	// start datatables
-	var $column_order = array('project.generateId', 'group.groupName', 'project_group.projectGroupName', 'project.projectName', 'client.name', 'project.description', 'project.value', 'project.isFinal', 'project.isAddWork'); //set column field database for datatable orderable
-	var $column_search = array('project.generateId', 'group.groupName', 'project_group.projectGroupName', 'project.projectName', 'client.name', 'project.description', 'project.value', 'project.isFinal', 'project.isAddWork'); //set column field database for datatable searchable
+	var $column_order = array('project.generateId', 'project_group.projectGroupName', 'project.projectName', 'client.name', 'project.description', 'project.value', 'project.isFinal', 'project.isAddWork'); //set column field database for datatable orderable
+	var $column_search = array('project.generateId', 'project_group.projectGroupName', 'project.projectName', 'client.name', 'project.description', 'project.value', 'project.isFinal', 'project.isAddWork'); //set column field database for datatable searchable
 	var $order = array('project.projectId' => 'asc'); // default order 
 
 	private function _get_datatables_query() {
 		$this->db->select('*, project.description');
 		$this->db->from($this->table);
-		$this->db->join('group', 'group.groupId=project.groupId');
 		$this->db->join('client', 'client.clientId=project.clientId');
 		$this->db->join('project_group', 'project_group.projectGroupId = project.projectGroupId', 'left');
+		if(is_administrator() || is_finance()){
+
+		} elseif(is_project_manager()) {
+			$this->db->where('project.userId', $this->session->userdata('userId'));
+		} elseif(is_pengawas_lapangan()) {
+			$this->db->join('team_member', 'team_member.projectId=project.projectId');
+			$this->db->where('team_member.userId', $this->session->userdata('userId'));
+		}
 		$i = 0;
 		foreach ($this->column_search as $i) { // loop column 
 			if(@$_POST['search']['value']) { // if datatable send POST for search
@@ -55,6 +62,14 @@ class M_project extends CI_Model {
 	
 	function count_all() {
 		$this->db->from('project');
+		if(is_administrator() || is_finance()){
+
+		} elseif(is_project_manager()) {
+			$this->db->where('project.userId', $this->session->userdata('userId'));
+		} elseif(is_pengawas_lapangan()) {
+			$this->db->join('team_member', 'team_member.projectId=project.projectId');
+			$this->db->where('team_member.userId', $this->session->userdata('userId'));
+		}
 		return $this->db->count_all_results();
 	}
 	// end datatables
@@ -165,14 +180,13 @@ class M_project extends CI_Model {
 
 	// PROJECT BUDGET
 	// start datatables
-	var $column_budget_order = array('orderNo', 'description', 'budget', 'createdAt', 'lastUpdate', 'isFinal'); //set column field database for datatable orderable
-	var $column_budget_search = array('orderNo', 'description', 'budget', 'createdAt', 'lastUpdate', 'isFinal'); //set column field database for datatable searchable
+	var $column_budget_order = array('orderNo', 'description', 'budget', 'createdAt', 'lastUpdate', 'approved'); //set column field database for datatable orderable
+	var $column_budget_search = array('orderNo', 'description', 'budget', 'createdAt', 'lastUpdate', 'approved'); //set column field database for datatable searchable
 	var $order_budget = array('budgetId' => 'asc'); // default order 
 
 	private function _get_datatables_budget_query($projectId) {
-		$this->db->select('*, budget.orderNo, budget.description, budget.isFinal');
+		$this->db->select('*');
 		$this->db->from('budget');
-		$this->db->join('project_quotation', 'project_quotation.projectQuotationId=budget.projectQuotationId', 'left');
 		$this->db->where('budget.projectId', $projectId);
 		$i = 0;
 		foreach ($this->column_budget_search as $i) { // loop column 
@@ -241,14 +255,15 @@ class M_project extends CI_Model {
 
 	// PROPOSED COST
 	// start datatables
-	var $column_proposed_cost_order = array('proposedCostName', 'proposedDate', 'user.userName', 'proposedValue', 'detailDescription', 'isFinal', 'distributionDate'); //set column field database for datatable orderable
-	var $column_proposed_cost_search = array('proposedCostName', 'proposedDate', 'user.userName', 'proposedValue', 'detailDescription', 'isFinal', 'distributionDate'); //set column field database for datatable searchable
+	var $column_proposed_cost_order = array('proposedCostName', 'proposedDate', 'user.userName', 'proposedValue', 'detailDescription', 'approved', 'approvedDate', 'approvedDescription', 'approvedValue', 'rejectedDate', 'rejectedDescription'); //set column field database for datatable orderable
+	var $column_proposed_cost_search = array('proposedCostName', 'proposedDate', 'user.userName', 'proposedValue', 'detailDescription', 'approved', 'approvedDate', 'approvedDescription', 'approvedValue', 'rejectedDate', 'rejectedDescription'); //set column field database for datatable searchable
 	var $order_proposed_cost = array('proposedCostId' => 'asc'); // default order 
 
 	private function _get_datatables_proposed_cost_query($projectId) {
-		$this->db->select('*');
+		$this->db->select('*, proposed_cost.approved, proposed_cost.approvedBy');
 		$this->db->from('proposed_cost');
 		$this->db->join('user', 'user.userId=proposed_cost.proposedBy');
+		$this->db->join('budget', 'budget.budgetId=proposed_cost.budgetId', 'left');
 		$this->db->where('proposed_cost.projectId', $projectId);
 		$i = 0;
 		foreach ($this->column_proposed_cost_search as $i) { // loop column 

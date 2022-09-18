@@ -35,10 +35,12 @@
             <li class="menu-header">Menu</li>
             <li class="<?= $title == 'Dashboard' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('dashboard');?>"><i class="fas fa-fire"></i> <span>Dashboard</span></a></li>  
   
-            <li class="menu-header">Data Master</li>      
-            <li class="<?= $title == 'Data User' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('user');?>"><i class="fas fa-users"></i> <span>Data User</span></a></li> 
+            <li class="menu-header">Data Master</li>   
+            <?php if(is_administrator()): ?>   
+              <li class="<?= $title == 'Data User' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('user');?>"><i class="fas fa-users"></i> <span>Data User</span></a></li> 
+            <?php endif; ?>
             <li class="<?= $title == 'Data Client' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('client');?>"><i class="fas fa-users"></i> <span>Data Client</span></a></li>
-            <li class="<?= $title == 'Data Quotation Header' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('quotation-header');?>"><i class="fas fa-file-invoice"></i> <span>Data Quotation Header</span></a></li>
+            <!-- <li class="<?= $title == 'Data Quotation Header' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('quotation-header');?>"><i class="fas fa-file-invoice"></i> <span>Data Quotation Header</span></a></li> -->
             <li class="<?= $title == 'Data Project Group' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('project-group');?>"><i class="fas fa-building"></i> <span>Data Project Group</span></a></li> 
             <li class="<?= $title == 'Data Project' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('project');?>"><i class="fas fa-building"></i> <span>Data Project</span></a></li> 
             

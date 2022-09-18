@@ -23,10 +23,15 @@
             <div class="card-body">
               <ul class="nav nav-tabs" id="myTab3Content" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link active" id="quotation-tab" data-toggle="tab" href="#quotation" role="tab" aria-controls="quotation" aria-selected="true">
-                    Quotation
+                  <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+                    Overview
                   </a>
                 </li>
+                <!-- <li class="nav-item">
+                  <a class="nav-link" id="quotation-tab" data-toggle="tab" href="#quotation" role="tab" aria-controls="quotation" aria-selected="true">
+                    Quotation
+                  </a>
+                </li> -->
                 <li class="nav-item">
                   <a class="nav-link" id="budget-tab" data-toggle="tab" href="#budget" role="tab" aria-controls="budget" aria-selected="true">
                     Budget
@@ -37,11 +42,11 @@
                     Proposed Cost
                   </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                   <a class="nav-link" id="proposed-budget-tab" data-toggle="tab" href="#proposed-budget" role="tab" aria-controls="proposed-budget" aria-selected="true">
                     Cost to Budget
                   </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                   <a class="nav-link" id="distribution-cost-tab" data-toggle="tab" href="#distribution-cost" role="tab" aria-controls="distribution-cost" aria-selected="true">
                     Distribution Cost
@@ -64,13 +69,153 @@
                 </li>
               </ul>
               <div class="tab-content tab-bordered" id="myTab3Content">
-                <div class="tab-pane fade show active" id="quotation" role="tabpanel" aria-labelledby="quotation-tab">
+                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                  <div class="row mt-2 mb-4">
+                    <div class="col-md-12">
+                      <h4>Overview</h4>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4"><h6>Project ID</h6></div>
+                    <div class="col-md-8"><h6>: ID</h6></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4"><h6>Project Name</h6></div>
+                    <div class="col-md-8"><h6>: Name</h6></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4"><h6>Project Group</h6></div>
+                    <div class="col-md-8"><h6>: Group</h6></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4"><h6>Project Client</h6></div>
+                    <div class="col-md-8"><h6>: Client</h6></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4"><h6>Project Description</h6></div>
+                    <div class="col-md-8"><h6>: Desc</h6></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4"><h6>Project Manager</h6></div>
+                    <div class="col-md-8"><h6>: PM</h6></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4"><h6>Project Team (Pengawas Lapangan)</h6></div>
+                    <div class="col-md-8">
+                      <div class="row">
+                        <div class="col-md-12"><h6> - Waspang 1</h6></div>
+                        <div class="col-md-12"><h6> - Waspang 2</h6></div>
+                        <div class="col-md-12"><h6> - Waspang 3</h6></div>
+                      </div>
+                    </div>
+                  </div>
+                  <br>
+                  <div class="row">
+                    <div class="col-12">
+                      <h5>Budget Usage</h5>
+                      <div class="progress mb-3">
+                        <div class="progress-bar bg-danger" role="progressbar" data-width="80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                      <div class="card card-statistic-1">
+                        <div class="card-icon bg-info">
+                          <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                          <div class="card-header">
+                            <h4>Total Budget</h4>
+                          </div>
+                          <div class="card-body">
+                            Rp 100.000.000,00
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                      <div class="card card-statistic-1">
+                        <div class="card-icon bg-info">
+                          <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                          <div class="card-header">
+                            <h4>Proposed Cost (Approved Value)</h4>
+                          </div>
+                          <div class="card-body">
+                            Rp 80.000.000,00
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                      <div class="card card-statistic-1">
+                        <div class="card-icon bg-warning">
+                          <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                          <div class="card-header">
+                            <h4>Remaining Budget</h4>
+                          </div>
+                          <div class="card-body">
+                            Rp 20.000.000,00
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                      <div class="card card-statistic-1">
+                        <div class="card-icon bg-info">
+                          <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                          <div class="card-header">
+                            <h4>Distribution Cost</h4>
+                          </div>
+                          <div class="card-body">
+                            Rp 80.000.000,00
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                      <div class="card card-statistic-1">
+                        <div class="card-icon bg-info">
+                          <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                          <div class="card-header">
+                            <h4>Real Budget</h4>
+                          </div>
+                          <div class="card-body">
+                            Rp 70.000.000,00
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                      <div class="card card-statistic-1">
+                        <div class="card-icon bg-success">
+                          <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                          <div class="card-header">
+                            <h4>Remaining Real Budget</h4>
+                          </div>
+                          <div class="card-body">
+                            Rp 10.000.000,00
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="tab-pane fade show" id="quotation" role="tabpanel" aria-labelledby="quotation-tab">
                   <div class="row mt-2 mb-4">
                     <div class="col-md-6">
                       <h5>Data Quotation</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <?php if(is_manager_leader() || is_manager_budget()): ?>
+                      <?php if(is_project_manager() || is_finance()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalQuotationAdd"><i class="fa fa-plus"></i> Add Data</a>
                       <?php endif; ?>
                     </div>
@@ -95,14 +240,14 @@
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </div> -->
                 <div class="tab-pane fade show" id="budget" role="tabpanel" aria-labelledby="budget-tab">
                   <div class="row mt-2 mb-4">
                     <div class="col-md-6">
                       <h5>Data Budget</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <?php if(is_manager_budget()): ?>
+                      <?php if(is_project_manager()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalBudgetAdd"><i class="fa fa-plus"></i> Add Data</a>
                       <?php endif; ?>
                     </div>
@@ -115,10 +260,10 @@
                           <th style="width: 100px;">Order No</th>
                           <th style="width: 200px;">Description</th>
                           <th style="width: 100px;">Budget</th>
-                          <th style="width: 100px;">Created At</th>
-                          <th style="width: 100px;">Last Update</th>
-                          <th style="width: 100px;">Is Final</th>
-                          <th class="text-center" style="width: 200px;">Action</th>
+                          <th style="width: 150px;">Created At</th>
+                          <th style="width: 150px;">Last Update</th>
+                          <th style="width: 100px;">Approval</th>
+                          <th class="text-center" style="width: 250px;">Action</th>
                         </tr>
                       </thead>
                       <tbody id="dataBudgetList">
@@ -143,15 +288,20 @@
                       <thead>
                         <tr>
                           <th class="text-center" style="width: 20px;">#</th>
-                          <th style="width: 100px;">Cost Name</th>
-                          <th style="width: 100px;">Date</th>
+                          <th style="width: 200px;">Proposed Cost Name</th>
+                          <th style="width: 100px;">Proposed Date</th>
                           <th style="width: 100px;">Proposed By</th>
-                          <th style="width: 100px;">Value</th>
+                          <th style="width: 100px;">Proposed Value</th>
+                          <th style="width: 200px;">Proposed Desc</th>
+                          <th style="width: 100px;">Approval</th>
+                          <th style="width: 100px;">Approved Date</th>
+                          <th style="width: 200px;">Approved By</th>
                           <th style="width: 100px;">Approved Value</th>
-                          <th style="width: 200px;">Desc</th>
-                          <th style="width: 100px;">Is Final</th>
-                          <th style="width: 100px;">Dist. Date</th>
-                          <th class="text-center" style="width: 200px;">Action</th>
+                          <th style="width: 100px;">Approved Desc</th>
+                          <th style="width: 100px;">Rejected By</th>
+                          <th style="width: 100px;">Rejected Date</th>
+                          <th style="width: 200px;">Rejected Desc</th>
+                          <th class="text-center" style="width: 250px;">Action</th>
                         </tr>
                       </thead>
                       <tbody id="dataProposedCostList">
@@ -160,13 +310,13 @@
                     </table>
                   </div>
                 </div>
-                <div class="tab-pane fade show" id="proposed-budget" role="tabpanel" aria-labelledby="proposed-budget-tab">
+                <!-- <div class="tab-pane fade show" id="proposed-budget" role="tabpanel" aria-labelledby="proposed-budget-tab">
                   <div class="row mt-2 mb-4">
                     <div class="col-md-6">
                       <h5>Data Cost to Budget</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <?php if(is_manager_budget()): ?>
+                      <?php if(is_finance()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalProposedBudgetAdd"><i class="fa fa-plus"></i> Add Data</a>
                       <?php endif; ?>
                     </div>
@@ -200,14 +350,14 @@
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </div> -->
                 <div class="tab-pane fade show" id="distribution-cost" role="tabpanel" aria-labelledby="distribution-cost-tab">
                   <div class="row mt-2 mb-4">
                     <div class="col-md-6">
                       <h5>Data Distribution Cost</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <?php if(is_manager_budget()): ?>
+                      <?php if(is_finance()): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalDistributionCostAdd"><i class="fa fa-plus"></i> Add Data</a>
                       <?php endif; ?>
                     </div>

@@ -27,15 +27,15 @@ class User extends CI_Controller {
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
 			$userId = $i->userId;
-			$this->db->select('*');
-			$this->db->from('user_group');
-			$this->db->join('group', 'group.groupId=user_group.groupId');
-			$this->db->where('user_group.userId', $userId);
-			$userGroup = $this->db->get()->result_array();
-			$userGroupDetail = '';
-			foreach ($userGroup as $key) {
-				$userGroupDetail .= '- '.$key['groupName']."<br>";
-			}
+			// $this->db->select('*');
+			// $this->db->from('user_group');
+			// $this->db->join('group', 'group.groupId=user_group.groupId');
+			// $this->db->where('user_group.userId', $userId);
+			// $userGroup = $this->db->get()->result_array();
+			// $userGroupDetail = '';
+			// foreach ($userGroup as $key) {
+			// 	$userGroupDetail .= '- '.$key['groupName']."<br>";
+			// }
 
 			$this->db->select('*');
 			$this->db->from('user_access');
@@ -52,7 +52,7 @@ class User extends CI_Controller {
 			$row[] = $no.".";
 			$row[] = $i->userName;
 			$row[] = $i->userEmail;
-			$row[] = $userGroupDetail;
+			// $row[] = $userGroupDetail;
 			$row[] = $userAccessDetail;
 			// add html for action
 			$row[] = '<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->userId.'"><i class="fa fa-edit"></i>  Edit</a>
@@ -73,11 +73,11 @@ class User extends CI_Controller {
 		$userId = $this->input->get('id');
 		$data = $this->M_user->get_by_id($userId);
 
-		$group = $this->db->get_where('user_group', ['userId' => $userId])->result_array();
-		$arr_group = [];
-		foreach ($group as $key) {
-			array_push($arr_group, $key['groupId']);
-		}
+		// $group = $this->db->get_where('user_group', ['userId' => $userId])->result_array();
+		// $arr_group = [];
+		// foreach ($group as $key) {
+		// 	array_push($arr_group, $key['groupId']);
+		// }
 
 		$access = $this->db->get_where('user_access', ['userId' => $userId])->result_array();
 		$arr_access = [];
@@ -88,7 +88,7 @@ class User extends CI_Controller {
 		$res = [
 			'data' => $data,
 			'arr_access' => $arr_access,
-			'arr_group' => $arr_group,
+			//'arr_group' => $arr_group,
 			'response' => $data ? true : false,
 		];
 
@@ -114,7 +114,7 @@ class User extends CI_Controller {
 
 				$userId = $this->db->insert_id();
 				$access = $this->input->post('accessRightId', true);
-				$group = $this->input->post('groupId', true);
+				//$group = $this->input->post('groupId', true);
 				$arr_access = [];
 				foreach ($access as $i) {
 					$x = [
@@ -124,16 +124,16 @@ class User extends CI_Controller {
 					array_push($arr_access, $x);
 				}
 
-				$arr_group = [];
-				foreach ($group as $i) {
-					$x = [
-						'userId' => $userId,
-						'groupId' => $i
-					];
-					array_push($arr_group, $x);
-				}
+				// $arr_group = [];
+				// foreach ($group as $i) {
+				// 	$x = [
+				// 		'userId' => $userId,
+				// 		'groupId' => $i
+				// 	];
+				// 	array_push($arr_group, $x);
+				// }
 				$this->db->insert_batch('user_access', $arr_access);
-				$this->db->insert_batch('user_group', $arr_group);
+				//$this->db->insert_batch('user_group', $arr_group);
 
 				$res = [
 					'data' => $data,
@@ -164,7 +164,7 @@ class User extends CI_Controller {
 				$q = $this->M_user->update($data);
 
 				$access = $this->input->post('accessRightId', true);
-				$group = $this->input->post('groupId', true);
+				//$group = $this->input->post('groupId', true);
 				$arr_access = [];
 				foreach ($access as $i) {
 					$x = [
@@ -174,20 +174,20 @@ class User extends CI_Controller {
 					array_push($arr_access, $x);
 				}
 
-				$arr_group = [];
-				foreach ($group as $i) {
-					$x = [
-						'userId' => $userId,
-						'groupId' => $i
-					];
-					array_push($arr_group, $x);
-				}
+				// $arr_group = [];
+				// foreach ($group as $i) {
+				// 	$x = [
+				// 		'userId' => $userId,
+				// 		'groupId' => $i
+				// 	];
+				// 	array_push($arr_group, $x);
+				// }
 
 				$this->db->delete('user_access', ['userId' => $userId]);
-				$this->db->delete('user_group', ['userId' => $userId]);
+				// $this->db->delete('user_group', ['userId' => $userId]);
 
 				$this->db->insert_batch('user_access', $arr_access);
-				$this->db->insert_batch('user_group', $arr_group);
+				// $this->db->insert_batch('user_group', $arr_group);
 				
 				$res = [
 					'data' => $data,
@@ -217,7 +217,7 @@ class User extends CI_Controller {
 	{
 		$this->form_validation->set_rules('userName', 'Name', 'required|trim');
 		$this->form_validation->set_rules('accessRightId[]', 'Access', 'required|trim');
-		$this->form_validation->set_rules('groupId[]', 'Group', 'required|trim');
+		//$this->form_validation->set_rules('groupId[]', 'Group', 'required|trim');
 		$newEmail 	= $this->input->post('userEmail', true);
 		if($email == null){
 			$this->form_validation->set_rules('userEmail', 'Email', 'required|valid_email|is_unique[user.userEmail]', ['is_unique'	=> 'Email Sudah Terdaftar']);

@@ -17,7 +17,7 @@
             <div class="card-header">
               <h4>Data Project</h4>
               <div class="card-header-action">
-                <?php if(is_manager_leader() || is_manager_budget() || is_finance()): ?>
+                <?php if(is_project_manager() || is_finance()): ?>
                   <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalAdd"><i class="fa fa-plus"></i> Add Data</a>
                 <?php endif; ?>
               </div>
@@ -29,15 +29,14 @@
                     <tr>
                       <th class="text-center" style="width: 20px;">#</th>
                       <th style="width: 100px;">ID</th>
-                      <th style="width: 100px;">Group Name</th>
                       <th style="width: 100px;">Project Group</th>
                       <th style="width: 200px;">Project Name</th>
                       <th style="width: 100px;">Client</th>
                       <th style="width: 200px;">Description</th>
                       <th style="width: 100px;">Value</th>
-                      <th style="width: 50px;">Final</th>
-                      <th style="width: 50px;">Add Work</th>
-                      <th class="text-center" style="width: 230px;">Action</th>
+                      <th style="width: 100px;">Approval</th>
+                      <th style="width: 100px;">Status</th>
+                      <th class="text-center" style="width: 250px;">Action</th>
                     </tr>
                   </thead>
                   <tbody id="dataList">
@@ -73,15 +72,15 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Select Group</label>
-            <select name="groupId" class="form-control" id="selectGroup" data-live-search="true" required>
+            <label class="form-label">Select Group Project</label>
+            <select name="projectGroupId" class="form-control" id="selectGroupProject" data-live-search="true" required>
 
             </select>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Select Group Project</label>
-            <select name="projectGroupId" class="form-control" id="selectGroupProject" data-live-search="true" required>
+            <label class="form-label">Select Team</label>
+            <select name="userId[]" class="form-control" id="selectTeam" data-live-search="true" multiple>
 
             </select>
           </div>
@@ -130,15 +129,15 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Select Group</label>
-            <select name="groupId" class="form-control" id="selectGroupEdit" data-live-search="true" required>
+            <label class="form-label">Select Group Project</label>
+            <select name="projectGroupId" class="form-control" id="selectGroupProjectEdit" data-live-search="true">
 
             </select>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Select Group Project</label>
-            <select name="projectGroupId" class="form-control" id="selectGroupProjectEdit" data-live-search="true">
+            <label class="form-label">Select Team</label>
+            <select name="userId[]" class="form-control" id="selectTeamEdit" data-live-search="true" multiple>
 
             </select>
           </div>
@@ -158,34 +157,12 @@
             <input name="value" id="valueEdit" class="form-control" type="number">
           </div>
           <div class="form-group">
-            <label class="d-block">Final</label>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="isFinal" value="1" id="isFinalEdit" >
-              <label class="form-check-label" for="exampleRadios3">
-                Yes
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="isFinal" value="0" id="isFinalEdit">
-              <label class="form-check-label" for="exampleRadios4">
-                No
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="d-block">Add Work</label>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="isAddWork" value="1" id="isAddWorkEdit" >
-              <label class="form-check-label" for="exampleRadios3">
-                Yes
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="isAddWork" value="0" id="isAddWorkEdit">
-              <label class="form-check-label" for="exampleRadios4">
-                No
-              </label>
-            </div>
+            <label class="form-label">Status</label>
+            <select name="status" class="form-control" id="statusEdit" data-live-search="true">
+              <option value="PENDING">PENDING</option>
+              <option value="ON GOING">ON GOING</option>
+              <option value="COMPLETED">COMPLETED</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">
@@ -220,6 +197,29 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Approve Data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="approveData">
+        <div class="modal-body">
+          <input type="hidden" name="projectId" id="projectIdApprove" value="">
+          <p>Are you sure want to Approve this data?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Approve</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript">
   function loadData(){
     table = $('#getData').DataTable({
@@ -232,7 +232,7 @@
         "type" : "POST"
       },
       "columnDefs" : [{
-        "targets" : [0, 9],
+        "targets" : [0, 8],
         "orderable" : false,
         "className" : "text-center"
       }],
@@ -284,14 +284,22 @@
         success: function(res){
           let data = res.data;
           $('#modalEdit').modal('show');
-          $('#selectGroupEdit').selectpicker('val', data.groupId);
           $('#selectClientEdit').selectpicker('val', data.clientId);
           $('#selectGroupProjectEdit').selectpicker('val', data.projectGroupId);
+          $('#selectTeamEdit').selectpicker('val', res.arr_team);
           $('#projectNameEdit').val(data.projectName);
           $('#descriptionEdit').val(data.description);
-          $('#valueEdit').val(data.value);
-          $("input[name=isFinal][value=" + data.isFinal + "]").prop('checked', true);
-          $("input[name=isAddWork][value=" + data.isAddWork + "]").prop('checked', true);
+          if(data.approved == 'PENDING'){
+            console.log('ini');
+            document.getElementById("valueEdit").disabled = false;
+            $('#valueEdit').val(data.value);
+          }else{
+            document.getElementById("valueEdit").disabled = true;
+            $('#valueEdit').val(data.value);
+          }
+          $('#statusEdit').val(data.status);
+          $('#selectApprovedEdit').selectpicker('val', data.projectGroupId);
+          $('#selectStatusEdit').selectpicker('val', data.projectGroupId);
           $('#updateData').attr("data", id);
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -352,6 +360,38 @@
             populateError(res.message);
           }
           $('#modalDelete').modal('hide');
+          loadData();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    //APPROVE
+    $('#dataList').on('click','#btnApprove',function(){
+      var id = $(this).attr('data');
+      $('#modalApprove').modal('show');
+      $('#projectIdApprove').val(id);
+      $('#approveData').attr("data", id);
+    });	
+
+    //Approve DATA
+    $('#approveData').submit(function(e){
+      let id = $(this).attr('data');
+      $.ajax({
+        type : "POST",
+        url  : "<?= base_url('approve-project/')?>" + id,
+        dataType : "JSON",
+        data : $(this).serialize(),
+        success: function(res){
+          if(res.response){
+            populateSuccess(res.message);
+          }else{
+            populateError(res.message);
+          }
+          $('#modalApprove').modal('hide');
           loadData();
         },
         error: function(xhr, ajaxOptions, thrownError){

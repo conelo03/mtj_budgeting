@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 11, 2022 at 07:52 PM
+-- Generation Time: Sep 18, 2022 at 08:09 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.2.33
 
@@ -38,8 +38,8 @@ CREATE TABLE `access_right` (
 --
 
 INSERT INTO `access_right` (`accessRightId`, `accessName`) VALUES
-(1, 'Manager Budget'),
-(2, 'Manager Leader'),
+(1, 'Administrator'),
+(2, 'Project Manager'),
 (3, 'Finance'),
 (4, 'Pengawas Lapangan');
 
@@ -52,21 +52,25 @@ INSERT INTO `access_right` (`accessRightId`, `accessName`) VALUES
 CREATE TABLE `budget` (
   `budgetId` int(11) NOT NULL,
   `projectId` int(11) NOT NULL,
-  `projectQuotationId` int(11) DEFAULT NULL,
   `orderNo` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `budget` double NOT NULL,
   `createdAt` datetime NOT NULL,
   `lastUpdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `isFinal` int(11) NOT NULL
+  `approved` varchar(20) NOT NULL,
+  `approvedBy` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `budget`
 --
 
-INSERT INTO `budget` (`budgetId`, `projectId`, `projectQuotationId`, `orderNo`, `description`, `budget`, `createdAt`, `lastUpdate`, `isFinal`) VALUES
-(3, 5, 6, 'TES/01/BUDGET', 'Desc Budget Tes', 50000000, '2022-09-12 02:44:45', '2022-09-12 02:44:45', 0);
+INSERT INTO `budget` (`budgetId`, `projectId`, `orderNo`, `description`, `budget`, `createdAt`, `lastUpdate`, `approved`, `approvedBy`) VALUES
+(4, 8, '12345', 'Initial Budgett', 100000000, '2022-09-18 23:45:29', '2022-09-19 01:36:18', 'APPROVED', 1),
+(6, 8, '123', 'Kurang', 30000000, '2022-09-19 00:35:17', '2022-09-19 00:42:44', 'APPROVED', 1),
+(7, 9, '-', 'Initial Budget', 50000000, '2022-09-19 02:05:25', '2022-09-19 02:05:25', 'APPROVED', 8),
+(8, 10, '123', 'Initial Budget', 120000000, '2022-09-19 02:05:27', '2022-09-19 02:05:59', 'APPROVED', 8),
+(9, 10, '121345', 'Kurang', 50000000, '2022-09-19 02:06:12', '2022-09-19 02:06:44', 'APPROVED', 8);
 
 -- --------------------------------------------------------
 
@@ -85,7 +89,8 @@ CREATE TABLE `client` (
 --
 
 INSERT INTO `client` (`clientId`, `name`, `description`) VALUES
-(4, 'Client Test 1', 'Desc Test');
+(4, 'Client Test 1', 'Desc Test'),
+(5, 'Client Test 2', 'Desc TEst');
 
 -- --------------------------------------------------------
 
@@ -111,13 +116,6 @@ CREATE TABLE `cost_to_budget` (
   `isFinal` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `cost_to_budget`
---
-
-INSERT INTO `cost_to_budget` (`proposedBudgetId`, `projectId`, `proposedCostId`, `budgetId`, `proposedBudgetDate`, `proposedBudgetDescription`, `proposedBudgetBy`, `proposedBudgetValue`, `approvedDate`, `approvedDescription`, `approvedBy`, `approvedValue`, `rejectedDate`, `rejectedDescription`, `isFinal`) VALUES
-(3, 5, 2, 3, '2022-09-12', 'Proposed Budget Desc Test', 1, 20000000, '2022-09-12', 'Yes approve', 1, 20000000, NULL, NULL, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -139,7 +137,7 @@ CREATE TABLE `distribution_cost` (
 --
 
 INSERT INTO `distribution_cost` (`distributionCostId`, `projectId`, `proposedCostId`, `userId`, `holder`, `value`, `description`) VALUES
-(3, 5, 2, 1, 4, 20000000, 'Dist. Cost Desc Test');
+(7, 10, 5, 8, 4, 5000000, 'Test Desc');
 
 -- --------------------------------------------------------
 
@@ -175,13 +173,6 @@ CREATE TABLE `notes` (
   `notes` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `notes`
---
-
-INSERT INTO `notes` (`notesId`, `projectId`, `notesType`, `timestamp`, `userId`, `notes`) VALUES
-(2, 5, 'Khusus', '2022-09-11 19:51:45', 1, 'Test Notes');
-
 -- --------------------------------------------------------
 
 --
@@ -190,25 +181,26 @@ INSERT INTO `notes` (`notesId`, `projectId`, `notesType`, `timestamp`, `userId`,
 
 CREATE TABLE `project` (
   `projectId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
   `generateId` varchar(10) NOT NULL,
-  `groupId` int(11) NOT NULL,
   `projectGroupId` int(11) DEFAULT NULL,
   `projectName` varchar(100) NOT NULL,
   `clientId` int(11) NOT NULL,
   `description` text NOT NULL,
   `value` varchar(100) NOT NULL,
-  `isFinal` int(11) NOT NULL,
-  `isAddWork` int(11) NOT NULL
+  `approved` varchar(10) NOT NULL,
+  `approvedBy` int(11) DEFAULT NULL,
+  `status` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `project`
 --
 
-INSERT INTO `project` (`projectId`, `generateId`, `groupId`, `projectGroupId`, `projectName`, `clientId`, `description`, `value`, `isFinal`, `isAddWork`) VALUES
-(1, '2209001', 1, 1, 'Project Test', 1, 'Desc Test', '2000000', 1, 0),
-(4, '2209002', 2, NULL, 'Project Test 2', 3, 'Desc', '5000000', 0, 0),
-(5, '2209003', 1, NULL, 'Project Test 1', 4, 'Desc Project Test 1', '100000000', 0, 0);
+INSERT INTO `project` (`projectId`, `userId`, `generateId`, `projectGroupId`, `projectName`, `clientId`, `description`, `value`, `approved`, `approvedBy`, `status`) VALUES
+(8, 1, '2209006', 3, 'TEST NEW PROJECT EDIT', 5, 'DESC TEST EDIT', '130000000', 'APPROVED', 1, 'ON GOING'),
+(9, 1, '2209002', NULL, 'TEST', 4, 'TEST', '50000000', 'APPROVED', 8, 'PENDING'),
+(10, 6, '2209003', NULL, 'Test project pm 1', 4, 'test desc', '170000000', 'APPROVED', 8, 'PENDING');
 
 -- --------------------------------------------------------
 
@@ -248,13 +240,6 @@ CREATE TABLE `project_quotation` (
   `isFinal` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `project_quotation`
---
-
-INSERT INTO `project_quotation` (`projectQuotationId`, `projectId`, `quotationHeaderId`, `orderNo`, `projectQuotationName`, `description`, `quoteValue`, `estCost`, `detailDescription`, `isFinal`) VALUES
-(6, 5, 3, 'TES/01', 'Project Quotation Test', 'Desc Quotation Test', 50000000, 50000000, 'Detail Description Test', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -264,21 +249,30 @@ INSERT INTO `project_quotation` (`projectQuotationId`, `projectId`, `quotationHe
 CREATE TABLE `proposed_cost` (
   `proposedCostId` int(11) NOT NULL,
   `projectId` int(11) NOT NULL,
+  `budgetId` int(11) DEFAULT NULL,
   `proposedCostName` varchar(100) NOT NULL,
   `proposedDate` date NOT NULL,
   `proposedBy` int(11) NOT NULL,
   `proposedValue` double NOT NULL,
   `detailDescription` text NOT NULL,
-  `isFinal` int(11) NOT NULL,
-  `distributionDate` date DEFAULT NULL
+  `approved` varchar(15) NOT NULL,
+  `approvedDate` date DEFAULT NULL,
+  `approvedBy` int(11) DEFAULT NULL,
+  `approvedValue` double DEFAULT NULL,
+  `approvedDescription` text,
+  `rejectedDate` date DEFAULT NULL,
+  `rejectedBy` int(11) DEFAULT NULL,
+  `rejectedDescription` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `proposed_cost`
 --
 
-INSERT INTO `proposed_cost` (`proposedCostId`, `projectId`, `proposedCostName`, `proposedDate`, `proposedBy`, `proposedValue`, `detailDescription`, `isFinal`, `distributionDate`) VALUES
-(2, 5, 'Proposed Cost Test', '2022-09-12', 1, 20000000, 'Desc Proposed Cost Tes', 0, NULL);
+INSERT INTO `proposed_cost` (`proposedCostId`, `projectId`, `budgetId`, `proposedCostName`, `proposedDate`, `proposedBy`, `proposedValue`, `detailDescription`, `approved`, `approvedDate`, `approvedBy`, `approvedValue`, `approvedDescription`, `rejectedDate`, `rejectedBy`, `rejectedDescription`) VALUES
+(3, 8, 4, 'PROPOSED COST NAME TEST', '2022-09-19', 1, 10000000, 'buat a b c', 'APPROVED', '2022-09-19', 1, 10000000, 'Jangan Boros', NULL, NULL, NULL),
+(4, 8, 4, 'TEST 1', '2022-09-19', 1, 20000000, 'TEST', 'REJECTED', '2022-09-19', 1, 20000000, 'TEST', '2022-09-19', 1, 'Gak ada budget'),
+(5, 10, 8, 'Test Waspang 1', '2022-09-19', 4, 10000000, 'Test Desc', 'APPROVED', '2022-09-19', 6, 10000000, 'Boros', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -317,13 +311,6 @@ CREATE TABLE `real_budget` (
   `reportBy` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `real_budget`
---
-
-INSERT INTO `real_budget` (`realBudgetId`, `projectId`, `distributionCostid`, `budgetId`, `description`, `realBudgetValue`, `reportDate`, `reportBy`) VALUES
-(3, 5, 3, 3, 'Ada sisa', 19000000, '2022-09-12', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -338,12 +325,26 @@ CREATE TABLE `report_budget` (
   `fileName` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `report_budget`
+-- Table structure for table `team_member`
 --
 
-INSERT INTO `report_budget` (`reportBudgetId`, `realBudgetId`, `description`, `reportBudgetValue`, `fileName`) VALUES
-(3, 3, 'Ada sisa', 19000000, 'aj_(2).jpeg');
+CREATE TABLE `team_member` (
+  `teamMemberId` int(11) NOT NULL,
+  `projectId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `team_member`
+--
+
+INSERT INTO `team_member` (`teamMemberId`, `projectId`, `userId`) VALUES
+(7, 8, 5),
+(8, 9, 4),
+(10, 10, 4);
 
 -- --------------------------------------------------------
 
@@ -364,7 +365,11 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`userId`, `userName`, `userEmail`, `userPassword`) VALUES
 (1, 'Administrator', 'admin@email.com', '$2y$10$5VifqomOAsoe39zJDc/GJefzvAwOmvdqMbDeNjocX0piQd5KDOKbS'),
-(4, 'User Tes', 'user@email.com', '$2y$10$3QLNv1eUz/4gI.aAjEhpbecllqf.yRfJgqgcf06j0prR8gBQic6pK');
+(4, 'Waspang 1', 'waspang1@email.com', '$2y$10$5VifqomOAsoe39zJDc/GJefzvAwOmvdqMbDeNjocX0piQd5KDOKbS'),
+(5, 'Waspang 2', 'waspang2@email.com', '$2y$10$QkO/ZmvdkMaGRDlQrAuw8eeF4q6.86qNMO67aI61Tw7GBkb73Rt1.'),
+(6, 'PM 1', 'pm1@email.com', '$2y$10$5nSS8/6mUJ0s2gISu0Ev8ORZhAfPzxGyaxZK2EWSpKYphM5JIOpWe'),
+(7, 'PM 2', 'pm2@email.com', '$2y$10$XBt6ip9Qd9VEkJcbxXzRAO91KUi51kEPyqF6ode777ZOrJKQR2KYy'),
+(8, 'Finance', 'finance@email.com', '$2y$10$i0zRjb1oxP355/LBFQk1L.jUazFig14sWobnTiBNH78qa.hecpEuC');
 
 -- --------------------------------------------------------
 
@@ -383,11 +388,15 @@ CREATE TABLE `user_access` (
 --
 
 INSERT INTO `user_access` (`userAccessId`, `accessRightId`, `userId`) VALUES
-(8, 1, 1),
-(9, 2, 1),
-(10, 1, 5),
-(11, 1, 6),
-(12, 4, 4);
+(13, 1, 1),
+(14, 2, 1),
+(15, 3, 1),
+(16, 4, 1),
+(18, 4, 4),
+(22, 2, 7),
+(24, 3, 8),
+(27, 4, 5),
+(28, 2, 6);
 
 -- --------------------------------------------------------
 
@@ -406,11 +415,11 @@ CREATE TABLE `user_group` (
 --
 
 INSERT INTO `user_group` (`userGroupId`, `groupId`, `userId`) VALUES
-(8, 1, 1),
-(9, 2, 1),
 (10, 1, 5),
 (11, 1, 6),
-(12, 1, 4);
+(12, 1, 4),
+(13, 1, 1),
+(14, 2, 1);
 
 --
 -- Indexes for dumped tables
@@ -501,6 +510,12 @@ ALTER TABLE `report_budget`
   ADD PRIMARY KEY (`reportBudgetId`);
 
 --
+-- Indexes for table `team_member`
+--
+ALTER TABLE `team_member`
+  ADD PRIMARY KEY (`teamMemberId`);
+
+--
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -533,13 +548,13 @@ ALTER TABLE `access_right`
 -- AUTO_INCREMENT for table `budget`
 --
 ALTER TABLE `budget`
-  MODIFY `budgetId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `budgetId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `client`
 --
 ALTER TABLE `client`
-  MODIFY `clientId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `clientId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `cost_to_budget`
@@ -551,7 +566,7 @@ ALTER TABLE `cost_to_budget`
 -- AUTO_INCREMENT for table `distribution_cost`
 --
 ALTER TABLE `distribution_cost`
-  MODIFY `distributionCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `distributionCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `group`
@@ -569,7 +584,7 @@ ALTER TABLE `notes`
 -- AUTO_INCREMENT for table `project`
 --
 ALTER TABLE `project`
-  MODIFY `projectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `projectId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `project_group`
@@ -587,7 +602,7 @@ ALTER TABLE `project_quotation`
 -- AUTO_INCREMENT for table `proposed_cost`
 --
 ALTER TABLE `proposed_cost`
-  MODIFY `proposedCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `proposedCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `quotation_header`
@@ -608,22 +623,28 @@ ALTER TABLE `report_budget`
   MODIFY `reportBudgetId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `team_member`
+--
+ALTER TABLE `team_member`
+  MODIFY `teamMemberId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `user_access`
 --
 ALTER TABLE `user_access`
-  MODIFY `userAccessId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `userAccessId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `user_group`
 --
 ALTER TABLE `user_group`
-  MODIFY `userGroupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `userGroupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

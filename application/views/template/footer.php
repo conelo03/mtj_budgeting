@@ -61,18 +61,18 @@
       });
     }
 
-    function loadGroup(){
+    function loadTeam(){
       $.ajax({
         type: "GET", 
-        url: "<?= base_url("Project/get_group"); ?>", 
+        url: "<?= base_url("Project/get_team"); ?>", 
         async : true,
         dataType: "JSON",
         success: function(res) {
           if(res.response === true){
-            $("#selectGroup").html(res.data_group.data).selectpicker('refresh');
-            $("#selectGroupEdit").html(res.data_group.data).selectpicker('refresh');
+            $("#selectTeam").html(res.data_team.data).selectpicker('refresh');
+            $("#selectTeamEdit").html(res.data_team.data).selectpicker('refresh');
           } else {
-            $('#item-error').html('Group not Found!');
+            $('#item-error').html('User not Found!');
           }
         }, 
       });
@@ -132,7 +132,7 @@
     $(document).ready( function () { 
       loadClient();
       loadGroupProject();
-      loadGroup();
+      loadTeam();
       loadUserAccess();
       loadUserGroup();
       loadQuotationHeader();

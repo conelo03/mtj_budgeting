@@ -164,12 +164,12 @@
       <form id="saveBudgetData">
         <div class="modal-body">
           <span class="text-danger msgError" style="display: none"></span>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Select Project Quotation</label>
             <select name="projectQuotationId" class="form-control" id="selectProjectQuotation" data-live-search="true" required>
 
             </select>
-          </div>
+          </div> -->
           <div class="form-group">
             <label class="form-label">Order No</label>
             <input name="orderNo" id="orderNo" class="form-control" type="text" placeholder="Order No">
@@ -207,12 +207,12 @@
       <form id="updateBudgetData">
         <div class="modal-body">
           <span class="text-danger msgError" style="display: none"></span>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Select Project Quotation</label>
             <select name="projectQuotationId" class="form-control" id="selectProjectQuotationEdit" data-live-search="true" required>
 
             </select>
-          </div>
+          </div> -->
           <div class="form-group">
             <label class="form-label">Order No</label>
             <input name="orderNo" id="orderNoEditBudget" class="form-control" type="text" placeholder="Order No">
@@ -228,21 +228,6 @@
             <textarea name="description" id="descriptionEditBudget" class="form-control" type="text" placeholder="Description"></textarea>
           </div>
 
-          <div class="form-group">
-            <label class="d-block">Final</label>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="isFinal" value="1" id="isFinalEdit" >
-              <label class="form-check-label" for="exampleRadios3">
-                Yes
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="isFinal" value="0" id="isFinalEdit">
-              <label class="form-check-label" for="exampleRadios4">
-                No
-              </label>
-            </div>
-          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -270,6 +255,29 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalBudgetApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Approve Budget</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="approveBudgetData">
+        <div class="modal-body">
+          <input type="hidden" name="budgetId" id="budgetIdApprove" value="">
+          <p>Are you sure want to Approve this data?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Approve</button>
         </div>
       </form>
     </div>
@@ -341,26 +349,6 @@
             <textarea name="detailDescription" id="detailDescriptionEditPC" class="form-control" type="text" placeholder="Description"></textarea>
           </div>
 
-          <div class="form-group">
-            <label class="d-block">Final</label>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="isFinal" value="1" id="isFinalEdit" >
-              <label class="form-check-label" for="exampleRadios3">
-                Yes
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="isFinal" value="0" id="isFinalEdit">
-              <label class="form-check-label" for="exampleRadios4">
-                No
-              </label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Distribution Date</label>
-            <input name="distributionDate" id="distributionDateEdit" class="form-control" type="date">
-          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -370,6 +358,7 @@
     </div>
   </div>
 </div>
+
 
 <div class="modal fade" id="modalProposedCostDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -394,8 +383,81 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalProposedCostApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Approve Proposed Cost</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="approveProposedCostData">
+        <div class="modal-body">
+          <span class="text-danger msgError" style="display: none"></span>
+
+          <div class="form-group">
+            <label class="form-label">Proposed Value</label>
+            <input name="" id="proposedValueApprove" class="form-control" type="number" disabled>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Select Budget</label>
+            <select name="budgetId" class="form-control" id="selectBudgetApprove" data-live-search="true" required>
+
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Approve Description</label>
+            <textarea name="approvedDescription" id="approvedDescriptionApprove" class="form-control" type="text" placeholder="Description"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Approve Value</label>
+            <input name="approvedValue" id="approvedValueApprove" class="form-control" type="number">
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalProposedCostReject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Reject Proposed Cost</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="rejectProposedCostData">
+        <div class="modal-body">
+          <span class="text-danger msgError" style="display: none"></span>
+
+          <div class="form-group">
+            <label class="form-label">Reject Description</label>
+            <textarea name="rejectedDescription" id="rejectedDescriptionReject" class="form-control" type="text" placeholder="Description"></textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL PROPOSED BUDGET -->
-<div class="modal fade" id="modalProposedBudgetAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="modalProposedBudgetAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -587,7 +649,7 @@
       </form>
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- MODAL DISTRIBUTION COST -->
 <div class="modal fade" id="modalDistributionCostAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
