@@ -78,40 +78,6 @@
       });
     }
 
-    function loadQuotationHeader(){
-      $.ajax({
-        type: "GET", 
-        url: "<?= base_url("Project/get_quotation_header"); ?>", 
-        async : true,
-        dataType: "JSON",
-        success: function(res) {
-          if(res.response === true){
-            $("#selectQuotationHeader").html(res.data_quotation_header.data).selectpicker('refresh');
-            $("#selectQuotationHeaderEdit").html(res.data_quotation_header.data).selectpicker('refresh');
-          } else {
-            $('#item-error').html('Group not Found!');
-          }
-        }, 
-      });
-    }
-
-    function loadUserGroup(){
-      $.ajax({
-        type: "GET", 
-        url: "<?= base_url("User/get_user_group"); ?>", 
-        async : true,
-        dataType: "JSON",
-        success: function(res) {
-          if(res.response === true){
-            $("#selectUserGroup").html(res.data_group.data).selectpicker('refresh');
-            $("#selectUserGroupEdit").html(res.data_group.data).selectpicker('refresh');
-          } else {
-            $('#item-error').html('Group not Found!');
-          }
-        }, 
-      });
-    }
-
     function loadUserAccess(){
       $.ajax({
         type: "GET", 
@@ -134,8 +100,6 @@
       loadGroupProject();
       loadTeam();
       loadUserAccess();
-      loadUserGroup();
-      loadQuotationHeader();
       
       $('#select-kota').selectpicker({
         search : true,
