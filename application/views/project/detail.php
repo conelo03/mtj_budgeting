@@ -32,11 +32,13 @@
                     Quotation
                   </a>
                 </li> -->
+                <?php if(is_project_manager() || is_finance()): ?>
                 <li class="nav-item">
                   <a class="nav-link" id="budget-tab" data-toggle="tab" href="#budget" role="tab" aria-controls="budget" aria-selected="true">
                     Budget
                   </a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item">
                   <a class="nav-link" id="proposed-cost-tab" data-toggle="tab" href="#proposed-cost" role="tab" aria-controls="proposed-cost" aria-selected="true">
                     Proposed Cost
@@ -110,104 +112,154 @@
                     </div>
                   </div>
                   <br>
-                  <div class="row">
-                    <div class="col-12">
-                      <h5>Budget Usage</h5>
-                      <div class="progress mb-3">
-                        <div class="progress-bar bg-danger" role="progressbar" data-width="80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                      <div class="card card-statistic-1">
-                        <div class="card-icon bg-info">
-                          <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="card-wrap">
-                          <div class="card-header">
-                            <h4>Total Budget</h4>
-                          </div>
-                          <div class="card-body">
-                            Rp 100.000.000,00
-                          </div>
+                  <?php if(is_project_manager() || is_finance()): ?>
+                    <div class="row">
+                      <div class="col-12">
+                        <h5>Budget Usage</h5>
+                        <div class="progress mb-3">
+                          <div class="progress-bar bg-danger" role="progressbar" data-width="80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
                         </div>
                       </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                      <div class="card card-statistic-1">
-                        <div class="card-icon bg-info">
-                          <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="card-wrap">
-                          <div class="card-header">
-                            <h4>Proposed Cost (Approved Value)</h4>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
                           </div>
-                          <div class="card-body">
-                            Rp 80.000.000,00
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Total Budget</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 100.000.000,00
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                      <div class="card card-statistic-1">
-                        <div class="card-icon bg-warning">
-                          <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="card-wrap">
-                          <div class="card-header">
-                            <h4>Remaining Budget</h4>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
                           </div>
-                          <div class="card-body">
-                            Rp 20.000.000,00
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Proposed Cost (Approved Value)</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 80.000.000,00
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-warning">
+                            <i class="fas fa-dollar-sign"></i>
+                          </div>
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Remaining Budget</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 20.000.000,00
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
+                          </div>
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Distribution Cost</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 80.000.000,00
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
+                          </div>
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Real Budget</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 70.000.000,00
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-success">
+                            <i class="fas fa-dollar-sign"></i>
+                          </div>
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Remaining Real Budget</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 10.000.000,00
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                      <div class="card card-statistic-1">
-                        <div class="card-icon bg-info">
-                          <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="card-wrap">
-                          <div class="card-header">
-                            <h4>Distribution Cost</h4>
+                  <?php elseif(is_pengawas_lapangan()): ?>
+                    <div class="row">
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
                           </div>
-                          <div class="card-body">
-                            Rp 80.000.000,00
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Proposed Cost (Approved Value)</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 80.000.000,00
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
+                          </div>
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Distribution Cost</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 80.000.000,00
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
+                          </div>
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Real Budget</h4>
+                            </div>
+                            <div class="card-body">
+                              Rp 70.000.000,00
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                      <div class="card card-statistic-1">
-                        <div class="card-icon bg-info">
-                          <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="card-wrap">
-                          <div class="card-header">
-                            <h4>Real Budget</h4>
-                          </div>
-                          <div class="card-body">
-                            Rp 70.000.000,00
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                      <div class="card card-statistic-1">
-                        <div class="card-icon bg-success">
-                          <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="card-wrap">
-                          <div class="card-header">
-                            <h4>Remaining Real Budget</h4>
-                          </div>
-                          <div class="card-body">
-                            Rp 10.000.000,00
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <?php endif; ?>
                 </div>
                 <!-- <div class="tab-pane fade show" id="quotation" role="tabpanel" aria-labelledby="quotation-tab">
                   <div class="row mt-2 mb-4">

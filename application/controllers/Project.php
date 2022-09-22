@@ -26,17 +26,7 @@ class Project extends CI_Controller {
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
-			// $projectId = $i->projectId;
 
-			// $this->db->select('*');
-			// $this->db->from('team_member');
-			// $this->db->join('user', 'user.userId=team_member.userId');
-			// $this->db->where('team_member.projectId', $projectId);
-			// $userTeam = $this->db->get()->result_array();
-			// $userTeamDetail = '';
-			// foreach ($userTeam as $key) {
-			// 	$userTeamDetail .= '- '.$key['userName']."<br>";
-			// }
 			$no++;
 			$row = array();
 			$row[] = $no.".";
@@ -46,7 +36,7 @@ class Project extends CI_Controller {
 			$row[] = $i->projectName;
 			$row[] = $i->name;
 			$row[] = $i->description;
-			$row[] = currency($i->value);
+			$row[] = (is_project_manager() || is_finance()) ? currency($i->value) : '-';
 			$row[] = badge_status($i->approved);
 			$row[] = badge_status($i->status);
 			// add html for action
