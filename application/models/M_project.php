@@ -187,7 +187,6 @@ class M_project extends CI_Model {
 		$this->db->select('*, proposed_cost.approved, proposed_cost.approvedBy');
 		$this->db->from('proposed_cost');
 		$this->db->join('user', 'user.userId=proposed_cost.proposedBy');
-		$this->db->join('budget', 'budget.budgetId=proposed_cost.budgetId', 'left');
 		$this->db->where('proposed_cost.projectId', $projectId);
 		$i = 0;
 		foreach ($this->column_proposed_cost_search as $i) { // loop column 
@@ -331,97 +330,19 @@ class M_project extends CI_Model {
 		return $this->db->delete('distribution_cost', ['distributionCostId' => $distributionCostId]);
 	}
 
-	// REAL BUDGET
-	// start datatables
-	var $column_real_budget_order = array('distribution_cost.holder', 'distribution_cost.value', 'user.userName', 'real_budget.reportDate', 'real_budget.realBudgetValue', 'real_budget.description', 'budget.orderNo', 'budget.budget'); //set column field database for datatable orderable
-	var $column_real_budget_search = array('distribution_cost.holder', 'distribution_cost.value', 'user.userName', 'real_budget.reportDate', 'real_budget.realBudgetValue', 'real_budget.description', 'budget.orderNo', 'budget.budget'); //set column field database for datatable searchable
-	var $order_real_budget = array('realBudgetId' => 'asc'); // default order 
-
-	private function _get_datatables_real_budget_query($projectId) {
-		$this->db->select('*, real_budget.description');
-		$this->db->from('real_budget');
-		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=real_budget.distributionCostId');
-		$this->db->join('user', 'user.userId=real_budget.reportBy');
-		$this->db->join('budget', 'budget.budgetId=real_budget.budgetId', 'left');
-		$this->db->where('real_budget.projectId', $projectId);
-		$i = 0;
-		foreach ($this->column_real_budget_search as $i) { // loop column 
-			if(@$_POST['search']['value']) { // if datatable send POST for search
-				if($i===0) { // first loop
-					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
-					$this->db->like($i, $_POST['search']['value']);
-				} else {
-					$this->db->or_like($i, $_POST['search']['value']);
-				}
-				if(count($this->column_real_budget_search) - 1 == $i) //last loop
-					$this->db->group_end(); //close bracket
-			}
-			$i++;
-		}
-				
-		if(isset($_POST['order'])) { // here order processing
-			$this->db->order_by($this->column_real_budget_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-		} else if(isset($this->order_real_budget)) {
-			$order = $this->order_real_budget;
-			$this->db->order_by(key($order), $order[key($order)]);
-		}
-	}
-
-	function get_real_budget_datatables($projectId) {
-		$this->_get_datatables_real_budget_query($projectId);
-		if(@$_POST['length'] != -1)
-		$this->db->limit(@$_POST['length'], @$_POST['start']);
-		$query = $this->db->get();
-		return $query->result();
-	}
-
-	function count_real_budget_filtered($projectId) {
-		$this->_get_datatables_real_budget_query($projectId);
-		$query = $this->db->get();
-		return $query->num_rows();
-	}
-	
-	function count_real_budget_all($projectId) {
-		$this->db->from('real_budget');
-		$this->db->where('projectId', $projectId);
-		return $this->db->count_all_results();
-	}
-	// end datatables
-
-	public function insert_real_budget($data)
-	{
-		return $this->db->insert('real_budget', $data);
-	}
-
-	public function get_real_budget_by_id($realBudgetId)
-	{
-		return $this->db->get_where('real_budget', ['realBudgetId' => $realBudgetId])->row_array();
-	}
-
-	public function update_real_budget($data)
-	{
-		$this->db->where('realBudgetId', $data['realBudgetId']);
-		return $this->db->update('real_budget', $data);
-	}
-
-	public function delete_real_budget($realBudgetId)
-	{
-		return $this->db->delete('real_budget', ['realBudgetId' => $realBudgetId]);
-	}
-
 	// REPORT BUDGET
 	// start datatables
-	var $column_report_budget_order = array('reportBudgetValue', 'description', 'fileName'); //set column field database for datatable orderable
-	var $column_report_budget_search = array('reportBudgetValue', 'description', 'fileName'); //set column field database for datatable searchable
-	var $order_report_budget = array('reportBudgetId' => 'asc'); // default order 
+	var $column_report_cost_order = array('reportCostValue', 'description', 'fileName'); //set column field database for datatable orderable
+	var $column_report_cost_search = array('reportCostValue', 'description', 'fileName'); //set column field database for datatable searchable
+	var $order_report_cost = array('reportCostId' => 'asc'); // default order 
 
-	private function _get_datatables_report_budget_query($projectId) {
-		$this->db->select('*, report_budget.description');
-		$this->db->from('report_budget');
-		$this->db->join('real_budget', 'real_budget.realBudgetId=report_budget.realBudgetId');
-		$this->db->where('real_budget.projectId', $projectId);
+	private function _get_datatables_report_cost_query($projectId) {
+		$this->db->select('*, report_cost.description');
+		$this->db->from('report_cost');
+		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
+		$this->db->where('distribution_cost.projectId', $projectId);
 		$i = 0;
-		foreach ($this->column_report_budget_search as $i) { // loop column 
+		foreach ($this->column_report_cost_search as $i) { // loop column 
 			if(@$_POST['search']['value']) { // if datatable send POST for search
 				if($i===0) { // first loop
 					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
@@ -429,61 +350,61 @@ class M_project extends CI_Model {
 				} else {
 					$this->db->or_like($i, $_POST['search']['value']);
 				}
-				if(count($this->column_report_budget_search) - 1 == $i) //last loop
+				if(count($this->column_report_cost_search) - 1 == $i) //last loop
 					$this->db->group_end(); //close bracket
 			}
 			$i++;
 		}
 				
 		if(isset($_POST['order'])) { // here order processing
-			$this->db->order_by($this->column_report_budget_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-		} else if(isset($this->order_report_budget)) {
-			$order = $this->order_report_budget;
+			$this->db->order_by($this->column_report_cost_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if(isset($this->order_report_cost)) {
+			$order = $this->order_report_cost;
 			$this->db->order_by(key($order), $order[key($order)]);
 		}
 	}
 
-	function get_report_budget_datatables($projectId) {
-		$this->_get_datatables_report_budget_query($projectId);
+	function get_report_cost_datatables($projectId) {
+		$this->_get_datatables_report_cost_query($projectId);
 		if(@$_POST['length'] != -1)
 		$this->db->limit(@$_POST['length'], @$_POST['start']);
 		$query = $this->db->get();
 		return $query->result();
 	}
 
-	function count_report_budget_filtered($projectId) {
-		$this->_get_datatables_report_budget_query($projectId);
+	function count_report_cost_filtered($projectId) {
+		$this->_get_datatables_report_cost_query($projectId);
 		$query = $this->db->get();
 		return $query->num_rows();
 	}
 	
-	function count_report_budget_all($projectId) {
-		$this->db->from('report_budget');
-		$this->db->join('real_budget', 'real_budget.realBudgetId=report_budget.realBudgetId');
-		$this->db->where('real_budget.projectId', $projectId);
+	function count_report_cost_all($projectId) {
+		$this->db->from('report_cost');
+		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
+		$this->db->where('distribution_cost.projectId', $projectId);
 		return $this->db->count_all_results();
 	}
 	// end datatables
 
-	public function insert_report_budget($data)
+	public function insert_report_cost($data)
 	{
-		return $this->db->insert('report_budget', $data);
+		return $this->db->insert('report_cost', $data);
 	}
 
-	public function get_report_budget_by_id($reportBudgetId)
+	public function get_report_cost_by_id($reportCostId)
 	{
-		return $this->db->get_where('report_budget', ['reportBudgetId' => $reportBudgetId])->row_array();
+		return $this->db->get_where('report_cost', ['reportCostId' => $reportCostId])->row_array();
 	}
 
-	public function update_report_budget($data)
+	public function update_report_cost($data)
 	{
-		$this->db->where('reportBudgetId', $data['reportBudgetId']);
+		$this->db->where('reportCostId', $data['reportCostId']);
 		return $this->db->update('report_budget', $data);
 	}
 
-	public function delete_report_budget($reportBudgetId)
+	public function delete_report_cost($reportCostId)
 	{
-		return $this->db->delete('report_budget', ['reportBudgetId' => $reportBudgetId]);
+		return $this->db->delete('report_cost', ['reportCostId' => $reportCostId]);
 	}
 
 	// NOTES

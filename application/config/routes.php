@@ -122,14 +122,9 @@ $route['add-distribution-cost/(:any)'] 	        = 'Project/add_distribution_cost
 $route['edit-distribution-cost/(:any)'] 	    = 'Project/edit_distribution_cost/$1';
 $route['delete-distribution-cost/(:any)']    	= 'Project/delete_distribution_cost/$1';
 
-$route['add-real-budget/(:any)'] 	        = 'Project/add_real_budget/$1';
-$route['edit-real-budget/(:any)'] 	    = 'Project/edit_real_budget/$1';
-$route['select-budget-real-budget/(:any)'] 	    = 'Project/select_budget_real_budget/$1';
-$route['delete-real-budget/(:any)']    	= 'Project/delete_real_budget/$1';
-
-$route['add-report-budget/(:any)'] 	        = 'Project/add_report_budget/$1';
-$route['edit-report-budget/(:any)'] 	    = 'Project/edit_report_budget/$1';
-$route['delete-report-budget/(:any)']    	= 'Project/delete_report_budget/$1';
+$route['add-report-cost/(:any)'] 	        = 'Project/add_report_cost/$1';
+$route['edit-report-cost/(:any)'] 	    = 'Project/edit_report_cost/$1';
+$route['delete-report-cost/(:any)']    	= 'Project/delete_report_cost/$1';
 
 $route['add-notes/(:any)'] 	        = 'Project/add_notes/$1';
 $route['edit-notes/(:any)'] 	    = 'Project/edit_notes/$1';

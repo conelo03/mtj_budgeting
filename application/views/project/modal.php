@@ -249,13 +249,6 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Select Budget</label>
-            <select name="budgetId" class="form-control" id="selectBudgetApprove" data-live-search="true" required>
-
-            </select>
-          </div>
-
-          <div class="form-group">
             <label class="form-label">Approve Description</label>
             <textarea name="approvedDescription" id="approvedDescriptionApprove" class="form-control" type="text" placeholder="Description"></textarea>
           </div>
@@ -334,6 +327,7 @@
           <div class="form-group">
             <label class="form-label">Value</label>
             <input name="value" id="value" class="form-control" type="number">
+            <span class="text-danger msgErrorValue" style="display: none"></span>
           </div>
 
           <div class="form-group">
@@ -421,17 +415,17 @@
   </div>
 </div>
 
-<!-- MODAL REAL BUDGET -->
-<div class="modal fade" id="modalRealBudgetAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- MODAL REPORT BUDGET -->
+<div class="modal fade" id="modalReportCostAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Real Budget</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Add Report Cost</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="saveRealBudgetData">
+      <form id="saveReportCostData" enctype="multipart/form-data">
         <div class="modal-body">
           <span class="text-danger msgError" style="display: none"></span>
 
@@ -443,142 +437,8 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Real Budget Value</label>
-            <input name="realBudgetValue" id="realBudgetValue" class="form-control" type="number">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea name="description" id="description" class="form-control" type="text" placeholder="Description"></textarea>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modalRealBudgetEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit Real Budget</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form id="updateRealBudgetData">
-        <div class="modal-body">
-          <span class="text-danger msgError" style="display: none"></span>
-
-          <div class="form-group">
-            <label class="form-label">Select Distribution Cost</label>
-            <select name="distributionCostId" class="form-control" id="selectDistributionCostEdit" data-live-search="true" required>
-
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Real Budget Value</label>
-            <input name="realBudgetValue" id="realBudgetValueEdit" class="form-control" type="number">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea name="description" id="descriptionRBEdit" class="form-control" type="text" placeholder="Description"></textarea>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modalRealBudgetDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Delete Real Budget</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form id="deleteRealBudgetData">
-        <div class="modal-body">
-          <input type="hidden" name="realBudgetId" id="realBudgetIdDelete" value="">
-          <p>Are you sure want to delete this data?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger">Delete</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modalRealBudgetSelectBudget" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Select Budget</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form id="updateBudgetRealBudgetData">
-        <div class="modal-body">
-          <span class="text-danger msgError" style="display: none"></span>
-
-          <div class="form-group">
-            <label class="form-label">Select Budget</label>
-            <select name="budgetId" class="form-control" id="selectBudgetRBEdit" data-live-search="true" required>
-
-            </select>
-          </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL REPORT BUDGET -->
-<div class="modal fade" id="modalReportBudgetAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Report Budget</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form id="saveReportBudgetData" enctype="multipart/form-data">
-        <div class="modal-body">
-          <span class="text-danger msgError" style="display: none"></span>
-
-          <div class="form-group">
-            <label class="form-label">Select Budget</label>
-            <select name="realBudgetId" class="form-control" id="selectRealBudget" data-live-search="true" required>
-
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Report Budget Value</label>
-            <input name="reportBudgetValue" id="reportBudgetValue" class="form-control" type="number">
+            <label class="form-label">Report Cost Value</label>
+            <input name="reportCostValue" id="reportCostValue" class="form-control" type="number">
           </div>
 
           <div class="form-group">
@@ -601,29 +461,29 @@
   </div>
 </div>
 
-<div class="modal fade" id="modalReportBudgetEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalReportCostEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit Report Budget</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Edit Report Cost</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="updateReportBudgetData">
+      <form id="updateReportCostData">
         <div class="modal-body">
           <span class="text-danger msgError" style="display: none"></span>
 
           <div class="form-group">
-            <label class="form-label">Select Budget</label>
-            <select name="realBudgetId" class="form-control" id="selectRealBudgetEdit" data-live-search="true" required>
+            <label class="form-label">Select Distribution Cost</label>
+            <select name="distributionCostId" class="form-control" id="selectDistributionCostEdit" data-live-search="true" required>
 
             </select>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Report Budget Value</label>
-            <input name="reportBudgetValue" id="reportBudgetValueEdit" class="form-control" type="number">
+            <label class="form-label">Report Cost Value</label>
+            <input name="reportCostValue" id="reportCostValueEdit" class="form-control" type="number">
           </div>
 
           <div class="form-group">
@@ -648,18 +508,18 @@
   </div>
 </div>
 
-<div class="modal fade" id="modalReportBudgetDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalReportCostDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Delete Report Budget</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Delete Report Cost</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="deleteReportBudgetData">
+      <form id="deleteReportCostData">
         <div class="modal-body">
-          <input type="hidden" name="reportBudgetId" id="reportBudgetIdDelete" value="">
+          <input type="hidden" name="reportCostId" id="reportCostIdDelete" value="">
           <p>Are you sure want to delete this data?</p>
         </div>
         <div class="modal-footer">
@@ -671,7 +531,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="modalReportBudgetDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalReportCostDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -681,7 +541,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <img class="img" id="reportBudgetFileName" style="width: 100%"/>
+        <img class="img" id="reportCostFileName" style="width: 100%"/>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
