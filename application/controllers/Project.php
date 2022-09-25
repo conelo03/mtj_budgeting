@@ -320,11 +320,35 @@ class Project extends CI_Controller {
 		$this->db->from('team_member');
 		$this->db->join('user', 'user.userId=team_member.userId');
 		$team = $this->db->where('team_member.projectId', $projectId)->get()->result_array();
+
+		$this->db->select_sum('budget');
+		$this->db->from('budget');
+		$this->db->where('approved', 'APPROVED');
+		$budget = $this->db->where('projectId', $projectId)->get()->row_array();
+
+		$this->db->select_sum('reportCostValue');
+		$this->db->from('report_cost');
+		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
+		$this->db->where('budgetId !=', NULL);
+		$rb = $this->db->where('distribution_cost.projectId', $projectId)->get()->row_array();
+
+		$this->db->select_sum('value');
+		$this->db->from('distribution_cost');
+		$dc = $this->db->where('projectId', $projectId)->get()->row_array();
+
+		$this->db->select_sum('reportCostValue');
+		$this->db->from('report_cost');
+		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
+		$rc = $this->db->where('distribution_cost.projectId', $projectId)->get()->row_array();
 	
 		$response = [
 			'response' => true,
 			'dp'	=> $project,
-			'team' => $team
+			'team' => $team,
+			'budget' => $budget,
+			'reportBudget' => $rb,
+			'distributionCost' => $dc,
+			'reportCost' => $rc
 
 		]; 
 		echo json_encode($response);
@@ -332,7 +356,7 @@ class Project extends CI_Controller {
 
 	public function get_proposed_cost($projectId)
 	{
-		$pg = $this->db->get_where('proposed_cost', ['projectId' => $projectId])->result_array();
+		$pg = $this->db->get_where('proposed_cost', ['projectId' => $projectId, 'approved' => 'APPROVED'])->result_array();
 		
 		$html = "<option value='' disabled selected>-- Select Proposed Cost --</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
@@ -349,11 +373,11 @@ class Project extends CI_Controller {
 
 	public function get_budget($projectId)
 	{
-		$pg = $this->db->get_where('budget', ['projectId' => $projectId])->result_array();
+		$pg = $this->db->get_where('budget', ['projectId' => $projectId, 'approved' => 'APPROVED'])->result_array();
 		
 		$html = "<option value='' disabled>-- Select Budget --</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
-			$html .= "<option value='".$data['budgetId']."'>".$data['orderNo']." - ".currency($data['budget'])."</option>"; // Tambahkan tag option ke variabel $html
+			$html .= "<option value='".$data['budgetId']."'>".currency($data['budget'])." - ".$data['description']."</option>"; // Tambahkan tag option ke variabel $html
 		}
 		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
 		$response = [
@@ -857,223 +881,6 @@ class Project extends CI_Controller {
 		$this->form_validation->set_rules('rejectedDescription', 'Description', 'required|trim');
 	}
 
-	// //PROPOSED BUDGET
-	// function get_proposed_budget_data($projectId) {
-	// 	$list = $this->M_project->get_proposed_budget_datatables($projectId);
-	// 	$data = array();
-	// 	$no = @$_POST['start'];
-	// 	foreach ($list as $i) {
-	// 		$userBudget = $this->db->get_where('user', ['userId' => $i->proposedBudgetBy])->row_array();
-	// 		$userApprove = $this->db->get_where('user', ['userId' => $i->approvedBy])->row_array();
-	// 		$no++;
-	// 		$row = array();
-	// 		$row[] = $no.".";
-	// 		$row[] = $i->orderNo;
-	// 		$row[] = currency($i->budget);
-	// 		$row[] = $i->proposedDate;
-	// 		$row[] = $i->proposedCostName;
-	// 		$row[] = currency($i->proposedValue);
-	// 		$row[] = $i->proposedBudgetDate;
-	// 		$row[] = $i->proposedBudgetDescription;
-	// 		$row[] = $userBudget['userName'];
-	// 		$row[] = currency($i->proposedBudgetValue);
-	// 		$row[] = $i->approvedDate;
-	// 		$row[] = $i->approvedDescription;
-	// 		$row[] = $userApprove['userName'];
-	// 		$row[] = currency($i->approvedValue);
-	// 		$row[] = $i->rejectedDate;
-	// 		$row[] = $i->rejectedDescription;
-	// 		$row[] = $i->isFinal == 0 ? 'No' : 'Yes';
-	// 		// add html for action
-
-	// 		if (is_project_manager()) {
-	// 			$row[] = '<a href="#" class="btn btn-info" id="btnProposedBudgetEdit" data="'.$i->proposedBudgetId.'"><i class="fa fa-edit"></i> Edit</a>
-	// 			<a href="#" class="btn btn-danger" id="btnProposedBudgetDelete" data="'.$i->proposedBudgetId.'"><i class="fa fa-trash"></i> Delete</a>';
-	// 		} elseif (is_administrator()) {
-	// 			$row[] = '<a href="#" class="btn btn-success" id="btnProposedBudgetApprove" data="'.$i->proposedBudgetId.'"><i class="fa fa-check"></i> Approve</a>';
-	// 		} elseif (is_finance()) {
-	// 			$row[] = '<a href="#" class="btn btn-danger" id="btnProposedBudgetReject" data="'.$i->proposedBudgetId.'"><i class="fa fa-times"></i> Reject</a>';
-	// 		} else {
-	// 			$row[] = '';
-	// 		}
-			
-			
-	// 		$data[] = $row;
-	// 	}
-	// 	$output = [
-	// 		"draw" => @$_POST['draw'],
-	// 		"recordsTotal" => $this->M_project->count_proposed_budget_all($projectId),
-	// 		"recordsFiltered" => $this->M_project->count_proposed_budget_filtered($projectId),
-	// 		"data" => $data,
-	// 	];
-	// 	// output to json format
-	// 	echo json_encode($output);
-	// }
-
-	// function get_proposed_budget_data_by_id(){
-	// 	$proposedBudgetId = $this->input->get('id');
-	// 	$data = $this->M_project->get_proposed_budget_by_id($proposedBudgetId);
-	// 	$res = [
-	// 		'data' => $data,
-	// 		'response' => $data ? true : false,
-	// 	];
-
-	// 	echo json_encode($res);
-	// }
-
-	// function add_proposed_budget($projectId){
-	// 	$res = [];
-	// 	if($this->input->is_ajax_request() == true){
-	// 		$this->validation_proposed_budget();
-	// 		if (!$this->form_validation->run()) {
-	// 			$res = [
-	// 				'error' => validation_errors()
-	// 			];
-	// 		}else{
-	// 			$data = [
-	// 				'projectId' => $projectId,
-	// 				'budgetId' => empty($this->input->post('budgetId', true)) ? null : $this->input->post('budgetId', true),
-	// 				'proposedCostId' => empty($this->input->post('proposedCostId', true)) ? null : $this->input->post('proposedCostId', true),
-	// 				'proposedBudgetDate' => date('Y-m-d'),
-	// 				'proposedBudgetBy' => $this->session->userdata('userId'),
-	// 				'proposedBudgetDescription' => $this->input->post('proposedBudgetDescription', true),
-	// 				'proposedBudgetValue' => $this->input->post('proposedBudgetValue', true),
-	// 			];
-	
-	// 			$q = $this->M_project->insert_proposed_budget($data);
-	
-	// 			$res = [
-	// 				'data' => $data,
-	// 				'response' => $q,
-	// 				'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
-	// 			];
-	// 		}
-	// 		echo json_encode($res);
-	// 	}
-	// }
-
-	// function edit_proposed_budget($proposedBudgetId){
-	// 	$res = [];
-	// 	if($this->input->is_ajax_request() == true){
-	// 		$this->validation_proposed_budget();
-	// 		if (!$this->form_validation->run()) {
-	// 			$res = [
-	// 				'error' => validation_errors()
-	// 			];
-	// 		}else{
-	// 			$data = [
-	// 				'proposedBudgetId' => $proposedBudgetId,
-	// 				'budgetId' => empty($this->input->post('budgetId', true)) ? null : $this->input->post('budgetId', true),
-	// 				'proposedCostId' => empty($this->input->post('proposedCostId', true)) ? null : $this->input->post('proposedCostId', true),
-	// 				'proposedBudgetDate' => date('Y-m-d'),
-	// 				'proposedBudgetBy' => $this->session->userdata('userId'),
-	// 				'proposedBudgetDescription' => $this->input->post('proposedBudgetDescription', true),
-	// 				'proposedBudgetValue' => $this->input->post('proposedBudgetValue', true),
-	// 			];
-	
-	// 			$q = $this->M_project->update_proposed_budget($data);
-	
-	// 			$res = [
-	// 				'data' => $data,
-	// 				'response' => $q,
-	// 				'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
-	// 			];
-	// 		}
-	// 		echo json_encode($res);
-	// 	}
-	// }
-
-	// function delete_proposed_budget($proposedBudgetId){
-	// 	$res = [];
-	// 	if($this->input->is_ajax_request() == true){
-	// 		$proposedBudgetId = $this->input->post('proposedBudgetId', true);
-	// 		$q = $this->M_project->delete_proposed_budget($proposedBudgetId);
-
-	// 		$res = [
-	// 			'response' => $q,
-	// 			'message' => $q ? 'Data Deleted Successfully!' : 'Data Failed to Delete!'
-	// 		];
-	// 		echo json_encode($res);
-	// 	}
-	// }
-
-	// private function validation_proposed_budget()
-	// {
-	// 	$this->form_validation->set_rules('proposedCostId', 'Proposed Cost', 'required|trim');
-	// 	$this->form_validation->set_rules('budgetId', 'Budget', 'required|trim');
-	// 	$this->form_validation->set_rules('proposedBudgetDescription', 'Proposed Budget Name', 'required|trim');
-	// 	$this->form_validation->set_rules('proposedBudgetValue', 'Value', 'required|trim');
-	// }
-
-	// function approve_proposed_budget($proposedBudgetId){
-	// 	$res = [];
-	// 	if($this->input->is_ajax_request() == true){
-	// 		$this->validation_proposed_budget_approve();
-	// 		if (!$this->form_validation->run()) {
-	// 			$res = [
-	// 				'error' => validation_errors()
-	// 			];
-	// 		}else{
-	// 			$data = [
-	// 				'proposedBudgetId' => $proposedBudgetId,
-	// 				'approvedDate' => date('Y-m-d'),
-	// 				'approvedBy' => $this->session->userdata('userId'),
-	// 				'approvedDescription' => $this->input->post('approvedDescription', true),
-	// 				'approvedValue' => $this->input->post('approvedValue', true),
-	// 			];
-	
-	// 			$q = $this->M_project->update_proposed_budget($data);
-	
-	// 			$res = [
-	// 				'data' => $data,
-	// 				'response' => $q,
-	// 				'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
-	// 			];
-	// 		}
-	// 		echo json_encode($res);
-	// 	}
-	// }
-
-	// private function validation_proposed_budget_approve()
-	// {
-	// 	$this->form_validation->set_rules('approvedDescription', 'Description', 'required|trim');
-	// 	$this->form_validation->set_rules('approvedValue', 'Value', 'required|trim');
-	// }
-
-	// function reject_proposed_budget($proposedBudgetId){
-	// 	$res = [];
-	// 	if($this->input->is_ajax_request() == true){
-	// 		$this->validation_proposed_budget_reject();
-	// 		if (!$this->form_validation->run()) {
-	// 			$res = [
-	// 				'error' => validation_errors()
-	// 			];
-	// 		}else{
-	// 			$data = [
-	// 				'proposedBudgetId' => $proposedBudgetId,
-	// 				'rejectedDate' => date('Y-m-d'),
-	// 				'rejectedDescription' => $this->input->post('rejectedDescription', true),
-	// 				'isFinal' => $this->input->post('isFinal', true),
-	// 			];
-	
-	// 			$q = $this->M_project->update_proposed_budget($data);
-	
-	// 			$res = [
-	// 				'data' => $data,
-	// 				'response' => $q,
-	// 				'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
-	// 			];
-	// 		}
-	// 		echo json_encode($res);
-	// 	}
-	// }
-
-	// private function validation_proposed_budget_reject()
-	// {
-	// 	$this->form_validation->set_rules('rejectedDescription', 'Description', 'required|trim');
-	// 	$this->form_validation->set_rules('isFinal', 'Final', 'required|trim');
-	// }
-
 	//DISTRIBUTION COST
 	function get_distribution_cost_data($projectId) {
 		$list = $this->M_project->get_distribution_cost_datatables($projectId);
@@ -1269,6 +1076,7 @@ class Project extends CI_Controller {
 		echo json_encode($output);
 	}
 
+	// REPORT COST
 	function get_report_cost_data($projectId) {
 		$list = $this->M_project->get_report_cost_datatables($projectId);
 		$data = array();
@@ -1283,8 +1091,13 @@ class Project extends CI_Controller {
 			// add html for action
 
 			if (is_pengawas_lapangan()) {
-				$row[] = '<a href="#" class="btn btn-info" id="btnReportCostEdit" data="'.$i->reportCostId.'"><i class="fa fa-edit"></i> Edit</a>
-				<a href="#" class="btn btn-danger" id="btnReportCostDelete" data="'.$i->reportCostId.'"><i class="fa fa-trash"></i> Delete</a>';
+				if ($i->budgetId == NULL) {
+					$row[] = '<a href="#" class="btn btn-info" id="btnReportCostEdit" data="'.$i->reportCostId.'"><i class="fa fa-edit"></i> Edit</a>
+									<a href="#" class="btn btn-danger" id="btnReportCostDelete" data="'.$i->reportCostId.'"><i class="fa fa-trash"></i> Delete</a>';
+				} else {
+					$row[] = '';
+				}
+				
 			} else {
 				$row[] = '';
 			}
@@ -1454,6 +1267,81 @@ class Project extends CI_Controller {
 		$this->form_validation->set_rules('description', 'Description', 'required|trim');
 	}
 
+	function get_report_budget_data($projectId) {
+		$list = $this->M_project->get_report_budget_datatables($projectId);
+		$data = array();
+		$no = @$_POST['start'];
+		foreach ($list as $i) {
+			$no++;
+			$row = array();
+			$row[] = $no.".";
+			$row[] = currency($i->reportCostValue);
+			$row[] = $i->description;
+			$row[] = $i->budgetDescription;
+			// add html for action
+
+			if (is_project_manager()) {
+				if ($i->budgetId == NULL) {
+					$row[] = '<a href="#" class="btn btn-info" id="btnReportBudgetSelectBudget" data="'.$i->reportCostId.'"><i class="fa fa-edit"></i> Select Budget</a>';
+				} else {
+					$row[] = '<a href="#" class="btn btn-danger" id="btnReportBudgetCancelBudget" data="'.$i->reportCostId.'"><i class="fa fa-times"></i> Cancel Budget</a>';
+				}
+			} else {
+				$row[] = '';
+			}
+			
+			
+			$data[] = $row;
+		}
+		$output = [
+			"draw" => @$_POST['draw'],
+			"recordsTotal" => $this->M_project->count_report_cost_all($projectId),
+			"recordsFiltered" => $this->M_project->count_report_cost_filtered($projectId),
+			"data" => $data,
+		];
+		// output to json format
+		echo json_encode($output);
+	}
+
+	function edit_report_budget($reportCostId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$data = [
+				'reportCostId' => $reportCostId,
+				'budgetId' => $this->input->post('budgetId', true),
+			];
+
+			$q = $this->M_project->update_report_cost($data);
+			
+			$res = [
+				'data' => $data,
+				'response' => $q,
+				'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+			];
+			echo json_encode($res);
+		}
+	}
+
+	function cancel_report_budget($reportCostId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$data = [
+				'reportCostId' => $reportCostId,
+				'budgetId' => NULL,
+			];
+
+			$q = $this->M_project->update_report_cost($data);
+			
+			$res = [
+				'data' => $data,
+				'response' => $q,
+				'message' => $q ? 'Data Canceled Successfully!' : 'Data Failed to Save!'
+			];
+			echo json_encode($res);
+		}
+	}
+
+	//NOTES
 	function get_notes_data($projectId) {
 		$list = $this->M_project->get_notes_datatables($projectId);
 		$data = array();

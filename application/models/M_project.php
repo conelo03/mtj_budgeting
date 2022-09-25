@@ -330,7 +330,7 @@ class M_project extends CI_Model {
 		return $this->db->delete('distribution_cost', ['distributionCostId' => $distributionCostId]);
 	}
 
-	// REPORT BUDGET
+	// REPORT COST
 	// start datatables
 	var $column_report_cost_order = array('reportCostValue', 'description', 'fileName'); //set column field database for datatable orderable
 	var $column_report_cost_search = array('reportCostValue', 'description', 'fileName'); //set column field database for datatable searchable
@@ -399,13 +399,71 @@ class M_project extends CI_Model {
 	public function update_report_cost($data)
 	{
 		$this->db->where('reportCostId', $data['reportCostId']);
-		return $this->db->update('report_budget', $data);
+		return $this->db->update('report_cost', $data);
 	}
 
 	public function delete_report_cost($reportCostId)
 	{
 		return $this->db->delete('report_cost', ['reportCostId' => $reportCostId]);
 	}
+
+		// REPORT BUDGET
+	// start datatables
+	var $column_report_budget_order = array('reportCostValue', 'description', 'budget.description'); //set column field database for datatable orderable
+	var $column_report_budget_search = array('reportCostValue', 'description', 'budget.description'); //set column field database for datatable searchable
+	var $order_report_budget = array('reportCostId' => 'asc'); // default order 
+
+	private function _get_datatables_report_budget_query($projectId) {
+		$this->db->select('*, report_cost.description, budget.description as budgetDescription');
+		$this->db->from('report_cost');
+		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
+		$this->db->join('budget', 'budget.budgetId=report_cost.budgetId', 'left');
+		$this->db->where('distribution_cost.projectId', $projectId);
+		$i = 0;
+		foreach ($this->column_report_budget_search as $i) { // loop column 
+			if(@$_POST['search']['value']) { // if datatable send POST for search
+				if($i===0) { // first loop
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+					$this->db->like($i, $_POST['search']['value']);
+				} else {
+					$this->db->or_like($i, $_POST['search']['value']);
+				}
+				if(count($this->column_report_budget_search) - 1 == $i) //last loop
+					$this->db->group_end(); //close bracket
+			}
+			$i++;
+		}
+				
+		if(isset($_POST['order'])) { // here order processing
+			$this->db->order_by($this->column_report_budget_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if(isset($this->order_report_budget)) {
+			$order = $this->order_report_budget;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function get_report_budget_datatables($projectId) {
+		$this->_get_datatables_report_budget_query($projectId);
+		if(@$_POST['length'] != -1)
+		$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function count_report_budget_filtered($projectId) {
+		$this->_get_datatables_report_budget_query($projectId);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	
+	function count_report_budget_all($projectId) {
+		$this->db->from('report_cost');
+		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
+		$this->db->join('budget', 'budget.budgetId=report_cost.budgetId', 'left');
+		$this->db->where('distribution_cost.projectId', $projectId);
+		return $this->db->count_all_results();
+	}
+	// end datatables
 
 	// NOTES
 	// start datatables

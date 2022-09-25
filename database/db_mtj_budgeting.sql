@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 21, 2022 at 12:29 PM
+-- Generation Time: Sep 25, 2022 at 05:26 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.2.33
 
@@ -68,9 +68,11 @@ CREATE TABLE `budget` (
 INSERT INTO `budget` (`budgetId`, `projectId`, `orderNo`, `description`, `budget`, `createdAt`, `lastUpdate`, `approved`, `approvedBy`) VALUES
 (4, 8, '12345', 'Initial Budgett', 100000000, '2022-09-18 23:45:29', '2022-09-19 01:36:18', 'APPROVED', 1),
 (6, 8, '123', 'Kurang', 30000000, '2022-09-19 00:35:17', '2022-09-19 00:42:44', 'APPROVED', 1),
-(7, 9, '-', 'Initial Budget', 50000000, '2022-09-19 02:05:25', '2022-09-19 02:05:25', 'APPROVED', 8),
+(7, 9, '12345', 'Budget Material', 50000000, '2022-09-19 02:05:25', '2022-09-24 00:11:37', 'APPROVED', 8),
 (8, 10, '123', 'Initial Budget', 120000000, '2022-09-19 02:05:27', '2022-09-19 02:05:59', 'APPROVED', 8),
-(9, 10, '121345', 'Kurang', 50000000, '2022-09-19 02:06:12', '2022-09-19 02:06:44', 'APPROVED', 8);
+(9, 10, '121345', 'Kurang', 50000000, '2022-09-19 02:06:12', '2022-09-19 02:06:44', 'APPROVED', 8),
+(10, 9, '12345567', 'Budget Konsumsi', 20000000, '2022-09-24 00:11:59', '2022-09-24 00:12:49', 'APPROVED', 1),
+(11, 9, '12334567', 'Budget Operasional', 30000000, '2022-09-24 00:12:27', '2022-09-24 00:12:52', 'APPROVED', 1);
 
 -- --------------------------------------------------------
 
@@ -113,7 +115,8 @@ CREATE TABLE `distribution_cost` (
 --
 
 INSERT INTO `distribution_cost` (`distributionCostId`, `projectId`, `proposedCostId`, `userId`, `holder`, `value`, `description`) VALUES
-(7, 10, 5, 8, 4, 5000000, 'Test Desc');
+(7, 10, 5, 8, 4, 5000000, 'Test Desc'),
+(9, 9, 6, 1, 4, 10000000, 'desc');
 
 -- --------------------------------------------------------
 
@@ -187,7 +190,6 @@ INSERT INTO `project_group` (`projectGroupId`, `projectGroupName`, `description`
 CREATE TABLE `proposed_cost` (
   `proposedCostId` int(11) NOT NULL,
   `projectId` int(11) NOT NULL,
-  `budgetId` int(11) DEFAULT NULL,
   `proposedCostName` varchar(100) NOT NULL,
   `proposedDate` date NOT NULL,
   `proposedBy` int(11) NOT NULL,
@@ -207,41 +209,37 @@ CREATE TABLE `proposed_cost` (
 -- Dumping data for table `proposed_cost`
 --
 
-INSERT INTO `proposed_cost` (`proposedCostId`, `projectId`, `budgetId`, `proposedCostName`, `proposedDate`, `proposedBy`, `proposedValue`, `detailDescription`, `approved`, `approvedDate`, `approvedBy`, `approvedValue`, `approvedDescription`, `rejectedDate`, `rejectedBy`, `rejectedDescription`) VALUES
-(3, 8, 4, 'PROPOSED COST NAME TEST', '2022-09-19', 1, 10000000, 'buat a b c', 'APPROVED', '2022-09-19', 1, 10000000, 'Jangan Boros', NULL, NULL, NULL),
-(4, 8, 4, 'TEST 1', '2022-09-19', 1, 20000000, 'TEST', 'REJECTED', '2022-09-19', 1, 20000000, 'TEST', '2022-09-19', 1, 'Gak ada budget'),
-(5, 10, 8, 'Test Waspang 1', '2022-09-19', 4, 10000000, 'Test Desc', 'APPROVED', '2022-09-19', 6, 10000000, 'Boros', NULL, NULL, NULL);
+INSERT INTO `proposed_cost` (`proposedCostId`, `projectId`, `proposedCostName`, `proposedDate`, `proposedBy`, `proposedValue`, `detailDescription`, `approved`, `approvedDate`, `approvedBy`, `approvedValue`, `approvedDescription`, `rejectedDate`, `rejectedBy`, `rejectedDescription`) VALUES
+(3, 8, 'PROPOSED COST NAME TEST', '2022-09-19', 1, 10000000, 'buat a b c', 'APPROVED', '2022-09-19', 1, 10000000, 'Jangan Boros', NULL, NULL, NULL),
+(4, 8, 'TEST 1', '2022-09-19', 1, 20000000, 'TEST', 'REJECTED', '2022-09-19', 1, 20000000, 'TEST', '2022-09-19', 1, 'Gak ada budget'),
+(5, 10, 'Test Waspang 1', '2022-09-19', 4, 10000000, 'Test Desc', 'APPROVED', '2022-09-19', 6, 10000000, 'Boros', NULL, NULL, NULL),
+(6, 9, 'Beli Material dan Transportasi', '2022-09-24', 1, 10000000, '- a\r\n- b\r\n- c', 'APPROVED', '2022-09-24', 1, 10000000, 'Sok', NULL, NULL, NULL),
+(7, 9, 'TEST PROPOSED COST', '2022-09-25', 1, 5000000, 'DESC', 'PENDING', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `real_budget`
+-- Table structure for table `report_cost`
 --
 
-CREATE TABLE `real_budget` (
-  `realBudgetId` int(11) NOT NULL,
-  `projectId` int(11) NOT NULL,
-  `distributionCostid` int(11) NOT NULL,
+CREATE TABLE `report_cost` (
+  `reportCostId` int(11) NOT NULL,
+  `distributionCostId` int(11) NOT NULL,
   `budgetId` int(11) DEFAULT NULL,
   `description` text NOT NULL,
-  `realBudgetValue` double NOT NULL,
-  `reportDate` date NOT NULL,
-  `reportBy` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `report_budget`
---
-
-CREATE TABLE `report_budget` (
-  `reportBudgetId` int(11) NOT NULL,
-  `realBudgetId` int(11) NOT NULL,
-  `description` text NOT NULL,
-  `reportBudgetValue` double NOT NULL,
+  `reportCostValue` double NOT NULL,
   `fileName` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `report_cost`
+--
+
+INSERT INTO `report_cost` (`reportCostId`, `distributionCostId`, `budgetId`, `description`, `reportCostValue`, `fileName`) VALUES
+(1, 9, 7, 'Beli Semen', 1000000, 'aj1.png'),
+(2, 9, 7, 'Beli Pasir', 2000000, 'aj_(2)1.jpeg'),
+(3, 9, 10, 'Beli Makan', 2000000, '2798326-middle.png'),
+(5, 9, 11, 'Desc', 5000000, '2798326-middle1.png');
 
 -- --------------------------------------------------------
 
@@ -260,9 +258,10 @@ CREATE TABLE `team_member` (
 --
 
 INSERT INTO `team_member` (`teamMemberId`, `projectId`, `userId`) VALUES
-(7, 8, 5),
 (8, 9, 4),
-(10, 10, 4);
+(10, 10, 4),
+(11, 8, 4),
+(12, 8, 5);
 
 -- --------------------------------------------------------
 
@@ -369,16 +368,10 @@ ALTER TABLE `proposed_cost`
   ADD PRIMARY KEY (`proposedCostId`);
 
 --
--- Indexes for table `real_budget`
+-- Indexes for table `report_cost`
 --
-ALTER TABLE `real_budget`
-  ADD PRIMARY KEY (`realBudgetId`);
-
---
--- Indexes for table `report_budget`
---
-ALTER TABLE `report_budget`
-  ADD PRIMARY KEY (`reportBudgetId`);
+ALTER TABLE `report_cost`
+  ADD PRIMARY KEY (`reportCostId`);
 
 --
 -- Indexes for table `team_member`
@@ -413,7 +406,7 @@ ALTER TABLE `access_right`
 -- AUTO_INCREMENT for table `budget`
 --
 ALTER TABLE `budget`
-  MODIFY `budgetId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `budgetId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `client`
@@ -425,7 +418,7 @@ ALTER TABLE `client`
 -- AUTO_INCREMENT for table `distribution_cost`
 --
 ALTER TABLE `distribution_cost`
-  MODIFY `distributionCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `distributionCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `notes`
@@ -449,25 +442,19 @@ ALTER TABLE `project_group`
 -- AUTO_INCREMENT for table `proposed_cost`
 --
 ALTER TABLE `proposed_cost`
-  MODIFY `proposedCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `proposedCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `real_budget`
+-- AUTO_INCREMENT for table `report_cost`
 --
-ALTER TABLE `real_budget`
-  MODIFY `realBudgetId` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `report_budget`
---
-ALTER TABLE `report_budget`
-  MODIFY `reportBudgetId` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `report_cost`
+  MODIFY `reportCostId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `team_member`
 --
 ALTER TABLE `team_member`
-  MODIFY `teamMemberId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `teamMemberId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `user`

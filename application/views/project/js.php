@@ -94,6 +94,25 @@
     });
   }
 
+  function loadReportBudgetData(){
+    table = $('#getReportBudgetData').DataTable({
+      "autoWidth": false,
+      "responsive" : true,
+      "destroy" : true,
+      "processing" : true,
+      "serverside" : true,
+      "ajax" : {
+        "url" : "<?= base_url('Project/get_report_budget_data/'.$project['projectId']) ?>",
+        "type" : "POST"
+      },
+      "columnDefs" : [{
+        "targets" : [0, 4],
+        "orderable" : false,
+        "className" : "text-center"
+      }],
+    });
+  }
+
   function loadNotesData(){
     table = $('#getNotesData').DataTable({
       "autoWidth": false,
@@ -194,6 +213,14 @@
       dataType: "JSON",
       success: function(res) {
         if(res.response === true){
+          let totalBudget = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(res.budget.budget);
+          let reportBudget = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(res.reportBudget.reportCostValue);
+          let remainingBudget = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(res.budget.budget - res.reportBudget.reportCostValue);
+          let distributionCost = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(res.distributionCost.value);
+          let reportCost = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(res.reportCost.reportCostValue);
+          let remainingCost = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(res.distributionCost.value - res.reportCost.reportCostValue);
+          let budgetUsage = res.reportBudget.reportCostValue / res.budget.budget * 100;
+
           $('#projectId').html(res.dp.generateId).show();
           $('#projectName').html(res.dp.projectName).show();
           $('#projectGroupName').html(res.dp.projectGroupName).show();
@@ -210,6 +237,37 @@
           });
 
           $('#projectTeam').html(waspang).show();
+          
+          if(budgetUsage < 60){
+            $('#budgetUsage').attr('class', `progress-bar bg-success`);
+            $('#budgetUsage').attr('data-width', `${budgetUsage}%`);
+            $('#budgetUsage').attr('aria-valuenow', `${budgetUsage}`);
+            $('#budgetUsage').attr('style', `width: ${budgetUsage}%`);
+            $('#budgetUsage').html(`${budgetUsage}%`).show();
+          }else if(budgetUsage >= 60 && budgetUsage < 85){
+            $('#budgetUsage').attr('class', `progress-bar bg-warning`);
+            $('#budgetUsage').attr('data-width', `${budgetUsage}%`);
+            $('#budgetUsage').attr('aria-valuenow', `${budgetUsage}`);
+            $('#budgetUsage').attr('style', `width: ${budgetUsage}%`);
+            $('#budgetUsage').html(`${budgetUsage}%`).show();
+          }else if(budgetUsage >= 85){
+            $('#budgetUsage').attr('class', `progress-bar bg-danger`);
+            $('#budgetUsage').attr('data-width', `${budgetUsage}%`);
+            $('#budgetUsage').attr('aria-valuenow', `${budgetUsage}`);
+            $('#budgetUsage').attr('style', `width: ${budgetUsage}%`);
+            $('#budgetUsage').html(`${budgetUsage}%`).show();
+          }
+          console.log(budgetUsage);
+
+          $('#totalBudget').html(totalBudget).show();
+          $('#reportBudget').html(reportBudget).show();
+          $('#remainingBudget').html(remainingBudget).show();
+          $('#distributionCost').html(distributionCost).show();
+          $('#reportCost').html(reportCost).show();
+          $('#remainingCost').html(remainingCost).show();
+          $('#distributionCost2').html(distributionCost).show();
+          $('#reportCost2').html(reportCost).show();
+          $('#remainingCost2').html(remainingCost).show();
         } else {
           alert('Project not Found!');
         }
@@ -228,6 +286,7 @@
     loadDistributionCostData();
     loadRealBudgetData();
     loadReportCostData();
+    loadReportBudgetData();
     loadNotesData();
 
     // BUDGET
@@ -251,6 +310,7 @@
             document.getElementById('saveBudgetData').reset();
             loadBudgetData();
             loadBudget();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -313,6 +373,7 @@
             $('#modalBudgetEdit').modal('hide');
             loadBudgetData();
             loadBudget();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -347,6 +408,7 @@
           $('#modalBudgetDelete').modal('hide');
           loadBudgetData();
           loadBudget();
+            loadDetailProject();
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -380,6 +442,7 @@
           $('#modalBudgetApprove').modal('hide');
           loadBudgetData();
           loadBudget();
+          loadDetailProject();
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -409,6 +472,7 @@
             document.getElementById('saveProposedCostData').reset();
             loadProposedCostData();
             loadProposedCost();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -464,6 +528,7 @@
             $('#modalProposedCostEdit').modal('hide');
             loadProposedCostData();
             loadProposedCost();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -498,6 +563,7 @@
           $('#modalProposedCostDelete').modal('hide');
           loadProposedCostData();
           loadProposedCost();
+          loadDetailProject();
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -552,6 +618,7 @@
             $('#modalProposedCostApprove').modal('hide');
             loadProposedCostData();
             loadProposedCost();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -606,6 +673,7 @@
             $('#modalProposedCostReject').modal('hide');
             loadProposedCostData();
             loadProposedCost();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -638,9 +706,11 @@
             $('.msgErrorValue').html('');
             document.getElementById('saveDistributionCostData').reset();
             loadProposedCost();
+            loadRealBudgetData();
             loadUser();
             loadDistributionCostData();
             loadDistributionCost();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -699,6 +769,8 @@
             $('#modalDistributionCostEdit').modal('hide');
             loadDistributionCostData();
             loadDistributionCost();
+            loadRealBudgetData();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -733,6 +805,8 @@
           $('#modalDistributionCostDelete').modal('hide');
           loadDistributionCostData();
           loadDistributionCost();
+          loadRealBudgetData();
+          loadDetailProject();
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -767,6 +841,8 @@
             document.getElementById('saveReportCostData').reset();
             loadReportCostData();
             loadDistributionCost();
+            loadReportBudgetData();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -848,6 +924,8 @@
             }
             $('#modalReportCostEdit').modal('hide');
             loadReportCostData();
+            loadReportBudgetData();
+            loadDetailProject();
           }
         },
         error: function(xhr, ajaxOptions, thrownError){
@@ -881,6 +959,8 @@
           }
           $('#modalReportCostDelete').modal('hide');
           loadReportCostData();
+          loadReportBudgetData();
+          loadDetailProject();
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -889,7 +969,98 @@
       return false;
     });
 
-    //REAL BUDGET
+    //REPORT BUDGET
+    //GET DATA DETAIL
+    $('#dataReportBudgetList').on('click','#btnReportBudgetSelectBudget',function(){
+      let id = $(this).attr('data');
+      $.ajax({
+        type : "GET",
+        url  : "<?= base_url('Project/get_report_cost_data_by_id')?>",
+        dataType : "JSON",
+        data : {
+          id : id
+        },
+        success: function(res){
+          let data = res.data;
+          $('#modalReportBudgetSelectBudget').modal('show');
+          $('#selectBudget').selectpicker('val', data.budgetId);
+          $('#updateReportBudgetData').attr("data", id);
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    // EDIT DATA
+    $('#updateReportBudgetData').submit(function(e){
+      let id = $(this).attr('data');
+
+      $.ajax({
+        type : "POST",
+        url  : "<?php echo base_url('edit-report-budget/')?>" + id,
+        dataType : "JSON",
+        data : $(this).serialize(),
+        success: function(res){
+          if(res.error){
+            $('.msgError').html(res.error).show();
+          }else{
+            if(res.response){
+              populateSuccess(res.message);
+            }else{
+              populateError(res.message);
+            }
+            $('#modalReportBudgetSelectBudget').modal('hide');
+            loadReportCostData();
+            loadReportBudgetData();
+            loadDetailProject();
+          }
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    //DELETE
+    $('#dataReportBudgetList').on('click','#btnReportBudgetCancelBudget',function(){
+      let id = $(this).attr('data');
+
+      $('#modalReportBudgetCancel').modal('show');
+      $('#reportCostIdCancel').val(id);
+      $('#cancelReportBudgetData').attr("data", id);
+    });	
+
+    //DELETE DATA
+    $('#cancelReportBudgetData').submit(function(e){
+      let id = $(this).attr('data');
+      $.ajax({
+        type : "POST",
+        url  : "<?= base_url('cancel-report-budget/')?>" + id,
+        dataType : "JSON",
+        data : $(this).serialize(),
+        success: function(res){
+          if(res.response){
+            populateSuccess(res.message);
+          }else{
+            populateError(res.message);
+          }
+          $('#modalReportBudgetCancel').modal('hide');
+          loadNotesData();
+          loadReportCostData();
+          loadReportBudgetData();
+          loadDetailProject();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    //NOTES
     // SAVE DATA
     $('#saveNotesData').submit(function(e){
       $.ajax({

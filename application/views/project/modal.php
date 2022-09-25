@@ -206,7 +206,6 @@
   </div>
 </div>
 
-
 <div class="modal fade" id="modalProposedCostDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -415,7 +414,7 @@
   </div>
 </div>
 
-<!-- MODAL REPORT BUDGET -->
+<!-- MODAL REPORT COST -->
 <div class="modal fade" id="modalReportCostAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -546,6 +545,60 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REPORT BUDGET -->
+<div class="modal fade" id="modalReportBudgetSelectBudget" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Select Budget</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="updateReportBudgetData">
+        <div class="modal-body">
+          <span class="text-danger msgError" style="display: none"></span>
+
+          <div class="form-group">
+            <label class="form-label">Select Budget</label>
+            <select name="budgetId" class="form-control" id="selectBudget" data-live-search="true" required>
+
+            </select>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalReportBudgetCancel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Cancel Report Budget</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="cancelReportBudgetData">
+        <div class="modal-body">
+          <input type="hidden" name="reportCostId" id="reportCostIdCancel" value="">
+          <p>Are you sure want to cancel this data?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

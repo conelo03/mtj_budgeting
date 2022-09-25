@@ -28,8 +28,7 @@
               <div class="card-header">
                 <h4>Amount</h4>
               </div>
-              <div class="card-body">
-                <h6>2</h6>
+              <div class="card-body" id="jmlPendingPorject">
               </div>
             </div>
           </div>
@@ -48,8 +47,7 @@
               <div class="card-header">
                 <h4>Amount</h4>
               </div>
-              <div class="card-body">
-                <h6>5</h6>
+              <div class="card-body" id="jmlOnGoingProject">
               </div>
             </div>
           </div>
@@ -68,8 +66,7 @@
               <div class="card-header">
                 <h4>Amount</h4>
               </div>
-              <div class="card-body">
-                <h6>20</h6>
+              <div class="card-body" id="jmlCompletedProject">
               </div>
             </div>
           </div>
@@ -88,8 +85,7 @@
               <div class="card-header">
                 <h4>Amount</h4>
               </div>
-              <div class="card-body">
-                <h6>27</h6>
+              <div class="card-body" id="jmlTotalProject">
               </div>
             </div>
           </div>
@@ -108,8 +104,7 @@
               <div class="card-header">
                 <h4>Administrator</h4>
               </div>
-              <div class="card-body">
-                <?= 1 ?>
+              <div class="card-body" id="jmlAdministrator">
               </div>
             </div>
           </div>
@@ -123,8 +118,7 @@
               <div class="card-header">
                 <h4>Finance</h4>
               </div>
-              <div class="card-body">
-              <?= 2 ?>
+              <div class="card-body" id="jmlFinance">
               </div>
             </div>
           </div>
@@ -138,8 +132,7 @@
               <div class="card-header">
                 <h4>Project Manager</h4>
               </div>
-              <div class="card-body">
-              <?= 10 ?>
+              <div class="card-body" id="jmlPM">
               </div>
             </div>
           </div>
@@ -153,8 +146,7 @@
               <div class="card-header">
                 <h4>Pengawas Lapangan</h4>
               </div>
-              <div class="card-body">
-              <?= 10 ?>
+              <div class="card-body" id="jmlWaspang">
               </div>
             </div>
           </div>

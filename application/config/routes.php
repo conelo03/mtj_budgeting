@@ -126,6 +126,10 @@ $route['add-report-cost/(:any)'] 	        = 'Project/add_report_cost/$1';
 $route['edit-report-cost/(:any)'] 	    = 'Project/edit_report_cost/$1';
 $route['delete-report-cost/(:any)']    	= 'Project/delete_report_cost/$1';
 
+
+$route['edit-report-budget/(:any)'] 	    = 'Project/edit_report_budget/$1';
+$route['cancel-report-budget/(:any)']    	= 'Project/cancel_report_budget/$1';
+
 $route['add-notes/(:any)'] 	        = 'Project/add_notes/$1';
 $route['edit-notes/(:any)'] 	    = 'Project/edit_notes/$1';
 $route['delete-notes/(:any)']    	= 'Project/delete_notes/$1';

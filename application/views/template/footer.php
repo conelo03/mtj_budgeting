@@ -27,6 +27,29 @@
   <!-- Page Specific JS File -->
   <script src="<?= base_url(); ?>assets/js/page/index-0.js"></script>
   <script type="text/javascript">
+    function loadDashboard(){
+      $.ajax({
+        type: "GET", 
+        url: "<?= base_url("Dashboard/get_data"); ?>", 
+        async : true,
+        dataType: "JSON",
+        success: function(res) {
+          if(res.response === true){
+            $("#jmlPendingPorject").html(res.pendingProject).show();
+            $("#jmlOnGoingProject").html(res.onGoingProject).show();
+            $("#jmlCompletedProject").html(res.completedProject).show();
+            $("#jmlTotalProject").html(res.totalProject).show();
+            $("#jmlAdministrator").html(res.admin).show();
+            $("#jmlFinance").html(res.finance).show();
+            $("#jmlPM").html(res.pm).show();
+            $("#jmlWaspang").html(res.waspang).show();
+          } else {
+            $('#item-error').html('Data not Found!');
+          }
+        }, 
+      });
+    }
+
     function loadClient(){
       $.ajax({
         type: "GET", 
@@ -96,6 +119,7 @@
     }
 
     $(document).ready( function () { 
+      loadDashboard();
       loadClient();
       loadGroupProject();
       loadTeam();

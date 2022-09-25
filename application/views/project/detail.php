@@ -67,6 +67,13 @@
                     Real Cost
                   </a>
                 </li>
+                <?php if(is_project_manager()): ?>
+                  <li class="nav-item">
+                    <a class="nav-link" id="report-budget-tab" data-toggle="tab" href="#report-budget" role="tab" aria-controls="report-budget" aria-selected="true">
+                      Report Budget
+                    </a>
+                  </li>
+                <?php endif; ?>
                 <li class="nav-item">
                   <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="true">
                     Notes
@@ -117,7 +124,7 @@
                       <div class="col-12">
                         <h5>Budget Usage</h5>
                         <div class="progress mb-3">
-                          <div class="progress-bar bg-danger" role="progressbar" data-width="80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
+                          <div class="progress-bar bg-secondary" role="progressbar" data-width="0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="budgetUsage">0%</div>
                         </div>
                       </div>
                       <div class="col-lg-4 col-md-4 col-sm-6 col-12">
@@ -129,8 +136,7 @@
                             <div class="card-header">
                               <h4>Total Budget</h4>
                             </div>
-                            <div class="card-body">
-                              Rp 100.000.000,00
+                            <div class="card-body" id="totalBudget">
                             </div>
                           </div>
                         </div>
@@ -142,10 +148,9 @@
                           </div>
                           <div class="card-wrap">
                             <div class="card-header">
-                              <h4>Proposed Cost (Approved Value)</h4>
+                              <h4>Report Budget</h4>
                             </div>
-                            <div class="card-body">
-                              Rp 80.000.000,00
+                            <div class="card-body" id="reportBudget">
                             </div>
                           </div>
                         </div>
@@ -159,8 +164,7 @@
                             <div class="card-header">
                               <h4>Remaining Budget</h4>
                             </div>
-                            <div class="card-body">
-                              Rp 20.000.000,00
+                            <div class="card-body" id="remainingBudget">
                             </div>
                           </div>
                         </div>
@@ -174,8 +178,7 @@
                             <div class="card-header">
                               <h4>Distribution Cost</h4>
                             </div>
-                            <div class="card-body">
-                              Rp 80.000.000,00
+                            <div class="card-body" id="distributionCost">
                             </div>
                           </div>
                         </div>
@@ -187,10 +190,9 @@
                           </div>
                           <div class="card-wrap">
                             <div class="card-header">
-                              <h4>Real Budget</h4>
+                              <h4>Report Cost</h4>
                             </div>
-                            <div class="card-body">
-                              Rp 70.000.000,00
+                            <div class="card-body" id="reportCost">
                             </div>
                           </div>
                         </div>
@@ -202,10 +204,9 @@
                           </div>
                           <div class="card-wrap">
                             <div class="card-header">
-                              <h4>Remaining Real Budget</h4>
+                              <h4>Remaining Cost</h4>
                             </div>
-                            <div class="card-body">
-                              Rp 10.000.000,00
+                            <div class="card-body" id="remainingCost">
                             </div>
                           </div>
                         </div>
@@ -220,25 +221,9 @@
                           </div>
                           <div class="card-wrap">
                             <div class="card-header">
-                              <h4>Proposed Cost (Approved Value)</h4>
-                            </div>
-                            <div class="card-body">
-                              Rp 80.000.000,00
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                        <div class="card card-statistic-1">
-                          <div class="card-icon bg-info">
-                            <i class="fas fa-dollar-sign"></i>
-                          </div>
-                          <div class="card-wrap">
-                            <div class="card-header">
                               <h4>Distribution Cost</h4>
                             </div>
-                            <div class="card-body">
-                              Rp 80.000.000,00
+                            <div class="card-body" id="distributionCost2">
                             </div>
                           </div>
                         </div>
@@ -250,10 +235,23 @@
                           </div>
                           <div class="card-wrap">
                             <div class="card-header">
-                              <h4>Real Budget</h4>
+                              <h4>Report Cost</h4>
                             </div>
-                            <div class="card-body">
-                              Rp 70.000.000,00
+                            <div class="card-body" id="reportCost2">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <div class="card card-statistic-1">
+                          <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
+                          </div>
+                          <div class="card-wrap">
+                            <div class="card-header">
+                              <h4>Remaining Cost</h4>
+                            </div>
+                            <div class="card-body" id="remainingCost2">
                             </div>
                           </div>
                         </div>
@@ -361,6 +359,34 @@
                     </table>
                   </div>
                 </div>
+                <div class="tab-pane fade show" id="report-cost" role="tabpanel" aria-labelledby="report-cost-tab">
+                  <div class="row mt-2 mb-4">
+                    <div class="col-md-6">
+                      <h5>Data Report Cost</h5>
+                    </div>
+                    <div class="col-md-6 text-right">
+                      <?php if(is_pengawas_lapangan()): ?>
+                      <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalReportCostAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-striped" id="getReportCostData" style="width: 100%;">
+                      <thead>
+                        <tr>
+                          <th class="text-center" style="width: 20px;">#</th>
+                          <th>Value</th>
+                          <th>Description</th>
+                          <th>File Name</th>
+                          <th class="text-center" style="width: 200px;">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="dataReportCostList">
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
                 <div class="tab-pane fade show" id="real-budget" role="tabpanel" aria-labelledby="real-budget-tab">
                   <div class="row mt-2 mb-4">
                     <div class="col-md-12">
@@ -386,29 +412,24 @@
                     </table>
                   </div>
                 </div>
-                <div class="tab-pane fade show" id="report-cost" role="tabpanel" aria-labelledby="report-cost-tab">
+                <div class="tab-pane fade show" id="report-budget" role="tabpanel" aria-labelledby="report-budget-tab">
                   <div class="row mt-2 mb-4">
                     <div class="col-md-6">
-                      <h5>Data Report Cost</h5>
-                    </div>
-                    <div class="col-md-6 text-right">
-                      <?php if(is_pengawas_lapangan()): ?>
-                      <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalReportCostAdd"><i class="fa fa-plus"></i> Add Data</a>
-                      <?php endif; ?>
+                      <h5>Data Report Budget</h5>
                     </div>
                   </div>
                   <div class="table-responsive">
-                    <table class="table table-striped" id="getReportCostData" style="width: 100%;">
+                    <table class="table table-striped" id="getReportBudgetData" style="table-layout: fixed; width: 100%;">
                       <thead>
                         <tr>
                           <th class="text-center" style="width: 20px;">#</th>
-                          <th>Value</th>
-                          <th>Description</th>
-                          <th>File Name</th>
-                          <th class="text-center" style="width: 200px;">Action</th>
+                          <th style="width: 100px;">Value</th>
+                          <th style="width: 200px;">Description</th>
+                          <th style="width: 100px;">Budget Description</th>
+                          <th class="text-center" style="width: 100px;">Action</th>
                         </tr>
                       </thead>
-                      <tbody id="dataReportCostList">
+                      <tbody id="dataReportBudgetList">
                         
                       </tbody>
                     </table>
