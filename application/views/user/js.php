@@ -102,6 +102,7 @@
         },
         success: function(res){
           let data = res.data;
+          $('.msgError').html('').show();
           $('#modalEdit').modal('show');
           $('#userNameEdit').val(data.userName);
           $('#userEmailEdit').val(data.userEmail);
@@ -148,6 +149,7 @@
     //DELETE
     $('#dataList').on('click','#btnDelete',function(){
       var id = $(this).attr('data');
+      $('.msgError').html('').show();
       $('#modalDelete').modal('show');
       $('#userIdDelete').val(id);
       $('#deleteData').attr("data", id);
@@ -169,6 +171,40 @@
           }
           $('#modalDelete').modal('hide');
           loadData();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    $('#dataList').on('click','#btnChangePassword',function(){
+      var id = $(this).attr('data');
+      $('.msgError').html('').show();
+      $('#modalChangePassword').modal('show');
+      $('#changePasswordData').attr("data", id);
+    });	
+
+    $('#changePasswordData').submit(function(e){
+      let id = $(this).attr('data');
+      $.ajax({
+        type : "POST",
+        url  : "<?= base_url('change-password-user/')?>" + id,
+        dataType : "JSON",
+        data : $(this).serialize(),
+        success: function(res){
+          if(res.error){
+            $('.msgError').html(res.error).show();
+          }else{
+            if(res.response){
+              populateSuccess(res.message);
+            }else{
+              populateError(res.message);
+            }
+            $('#modalChangePassword').modal('hide');
+            loadData();
+          }
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);

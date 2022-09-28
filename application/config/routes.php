@@ -64,6 +64,9 @@ $route['user'] 				    = 'User';
 $route['add-user'] 	        = 'User/add';
 $route['edit-user/(:any)'] 	    = 'User/edit/$1';
 $route['delete-user/(:any)']    	= 'User/delete/$1';
+$route['change-password-user/(:any)']    	= 'User/change_password/$1';
+
+$route['edit-user-account/(:any)'] 	    = 'User/edit_account/$1';
 
 $route['access-right'] 				    = 'User';
 $route['add-access-right'] 	        = 'User/add_access';
@@ -125,7 +128,6 @@ $route['delete-distribution-cost/(:any)']    	= 'Project/delete_distribution_cos
 $route['add-report-cost/(:any)'] 	        = 'Project/add_report_cost/$1';
 $route['edit-report-cost/(:any)'] 	    = 'Project/edit_report_cost/$1';
 $route['delete-report-cost/(:any)']    	= 'Project/delete_report_cost/$1';
-
 
 $route['edit-report-budget/(:any)'] 	    = 'Project/edit_report_budget/$1';
 $route['cancel-report-budget/(:any)']    	= 'Project/cancel_report_budget/$1';

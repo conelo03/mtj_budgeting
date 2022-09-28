@@ -121,6 +121,36 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalChangePassword" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Change Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="changePasswordData">
+        <div class="modal-body">
+          <span class="text-danger msgError" style="display: none"></span>
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input name="userPassword" id="" class="form-control" type="password" placeholder="New Password">
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password Confirmation</label>
+            <input name="userPasswordConfirm" id="" class="form-control" type="password" placeholder="New Password Confirmation">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="modalAccessAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">

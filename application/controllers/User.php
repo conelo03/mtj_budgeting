@@ -44,7 +44,8 @@ class User extends CI_Controller {
 			$row[] = $i->userEmail;
 			$row[] = $userAccessDetail;
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->userId.'"><i class="fa fa-edit"></i>  Edit</a>
+			$row[] = '<a href="#" class="btn btn-light" id="btnChangePassword" data="'.$i->userId.'"><i class="fa fa-key"></i> Change Password</a>
+			<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->userId.'"><i class="fa fa-edit"></i>  Edit</a>
 							<a href="#" class="btn btn-danger" id="btnDelete" data="'.$i->userId.'"><i class="fa fa-trash"></i>  Hapus</a>';
 			$data[] = $row;
 		}
@@ -190,6 +191,88 @@ class User extends CI_Controller {
 				$this->form_validation->set_rules('userEmail', 'Email', 'required|valid_email|is_unique[user.userEmail]', ['is_unique'	=> 'Email Sudah Terdaftar']);
 			}
 		}
+	}
+
+	function change_password($userId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_change_password();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$data = [
+					'userId' => $userId,
+					'userPassword' => password_hash($this->input->post('userPassword', true), PASSWORD_DEFAULT),
+				];
+	
+				$q = $this->M_user->update($data);
+				
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Edit!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	private function validation_change_password()
+	{
+		$this->form_validation->set_rules('userPassword', 'Password', 'required|trim');
+		$this->form_validation->set_rules('userPasswordConfirm', 'Konfirmasi Password', 'required|matches[userPassword]', ['matches'	=> 'Konfirmasi Password Salah']);
+	}
+
+	function edit_account($userId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$data = $this->M_user->get_by_id($userId);
+			$this->validation_edit_account($data['userEmail']);
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				if (empty($this->input->post('userPassword', true))) {
+					$data = [
+						'userId' => $userId,
+						'userName' => $this->input->post('userName', true),
+						'userEmail' => $this->input->post('userEmail', true),
+					];
+				} else {
+					$data = [
+						'userId' => $userId,
+						'userName' => $this->input->post('userName', true),
+						'userEmail' => $this->input->post('userEmail', true),
+						'userPassword' => password_hash($this->input->post('userPassword', true), PASSWORD_DEFAULT),
+					];
+				}
+				
+				$q = $this->M_user->update($data);
+				
+				$res = [
+					'data' => $data,
+					'response' => $q,
+					'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Edit!'
+				];
+			}
+			echo json_encode($res);
+		}
+	}
+
+	private function validation_edit_account($email)
+	{
+		$this->form_validation->set_rules('userName', 'Name', 'required|trim');
+		$newEmail 	= $this->input->post('userEmail', true);
+		if($email == $newEmail){
+			$this->form_validation->set_rules('userEmail', 'Email', 'required|valid_email');	
+		} else {
+			$this->form_validation->set_rules('userEmail', 'Email', 'required|valid_email|is_unique[user.userEmail]', ['is_unique'	=> 'Email Sudah Terdaftar']);
+		}
+		$this->form_validation->set_rules('userPassword', 'Password', 'trim');
+		$this->form_validation->set_rules('userPasswordConfirm', 'Konfirmasi Password', 'matches[userPassword]', ['matches'	=> 'Konfirmasi Password Salah']);
 	}
 
 	function get_access_data() {

@@ -9,8 +9,8 @@
           <li class="dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
             <img alt="image" src="<?= base_url('assets/img/profile/user.png'); ?>" class="rounded-circle mr-1">
             <div class="d-sm-none d-lg-inline-block"><?= $this->session->userdata('userName') ?></div></a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a href="#" class="dropdown-item has-icon">
+            <div class="dropdown-menu dropdown-menu-right" id="dataUser">
+              <a href="#" id="btnEditAccount" data="<?= $this->session->userdata('userId') ?>" class="dropdown-item has-icon">
                 <i class="fas fa-cog"></i> Edit Account
               </a>
               <div class="dropdown-divider"></div>

@@ -56,7 +56,7 @@
                           <th>Name</th>
                           <th>Email</th>
                           <th>Access</th>
-                          <th class="text-center" style="width: 200px;">Action</th>
+                          <th class="text-center" style="width: 350px;">Action</th>
                         </tr>
                       </thead>
                       <tbody id="dataList">
