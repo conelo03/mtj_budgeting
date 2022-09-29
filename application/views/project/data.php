@@ -97,7 +97,7 @@
 
           <div class="form-group">
             <label class="form-label">Value</label>
-            <input name="value" id="value" class="form-control" type="number">
+            <input name="value" id="value" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
         </div>
         <div class="modal-footer">
@@ -154,7 +154,7 @@
 
           <div class="form-group">
             <label class="form-label">Value</label>
-            <input name="value" id="valueEdit" class="form-control" type="number">
+            <input name="value" id="valueEdit" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
           <div class="form-group">
             <label class="form-label">Status</label>
@@ -290,12 +290,11 @@
           $('#projectNameEdit').val(data.projectName);
           $('#descriptionEdit').val(data.description);
           if(data.approved == 'PENDING'){
-            console.log('ini');
             document.getElementById("valueEdit").disabled = false;
-            $('#valueEdit').val(data.value);
+            $('#valueEdit').val(formatRupiah(data.value, ''));
           }else{
             document.getElementById("valueEdit").disabled = true;
-            $('#valueEdit').val(data.value);
+            $('#valueEdit').val(formatRupiah(data.value, ''));
           }
           $('#statusEdit').val(data.status);
           $('#selectApprovedEdit').selectpicker('val', data.projectGroupId);

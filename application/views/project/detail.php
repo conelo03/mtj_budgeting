@@ -67,7 +67,7 @@
                     Real Cost
                   </a>
                 </li>
-                <?php if(is_project_manager()): ?>
+                <?php if(is_project_manager() || is_finance()): ?>
                   <li class="nav-item">
                     <a class="nav-link" id="report-budget-tab" data-toggle="tab" href="#report-budget" role="tab" aria-controls="report-budget" aria-selected="true">
                       Report Budget
@@ -265,7 +265,7 @@
                       <h5>Data Budget</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <?php if(is_project_manager()): ?>
+                      <?php if(is_project_manager() && $project['status'] != 'COMPLETED'): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalBudgetAdd"><i class="fa fa-plus"></i> Add Data</a>
                       <?php endif; ?>
                     </div>
@@ -296,7 +296,7 @@
                       <h5>Data Proposed Cost</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <?php if(is_project_manager() || is_pengawas_lapangan()): ?>
+                      <?php if((is_project_manager() || is_pengawas_lapangan()) && $project['status'] != 'COMPLETED'): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalProposedCostAdd"><i class="fa fa-plus"></i> Add Data</a>
                       <?php endif; ?>
                     </div>
@@ -319,7 +319,7 @@
                           <th style="width: 100px;">Rejected By</th>
                           <th style="width: 100px;">Rejected Date</th>
                           <th style="width: 200px;">Rejected Desc</th>
-                          <th class="text-center" style="width: 250px;">Action</th>
+                          <th class="text-center" style="width: 320px;">Action</th>
                         </tr>
                       </thead>
                       <tbody id="dataProposedCostList">
@@ -334,7 +334,7 @@
                       <h5>Data Distribution Cost</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <?php if(is_finance()): ?>
+                      <?php if(is_finance() && $project['status'] != 'COMPLETED'): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalDistributionCostAdd"><i class="fa fa-plus"></i> Add Data</a>
                       <?php endif; ?>
                     </div>
@@ -365,7 +365,7 @@
                       <h5>Data Report Cost</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <?php if(is_pengawas_lapangan()): ?>
+                      <?php if(is_pengawas_lapangan() && $project['status'] != 'COMPLETED'): ?>
                       <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalReportCostAdd"><i class="fa fa-plus"></i> Add Data</a>
                       <?php endif; ?>
                     </div>
@@ -397,13 +397,17 @@
                     <table class="table table-striped" id="getRealBudgetData" style="table-layout: fixed; width: 100%;">
                       <thead>
                         <tr>
-                          <th class="text-center" style="width: 20px;">#</th>
-                          <th style="width: 100px;">Holder</th>
-                          <th style="width: 200px;">Description</th>
-                          <th style="width: 100px;">Dist. Value</th>
-                          <th style="width: 200px;">Detail Cost</th>
-                          <th style="width: 100px;">Usage Cost</th>
-                          <th style="width: 100px;">Remaining Cost</th>
+                          <th class="text-center" style="width: 20px;" rowspan="2">#</th>
+                          <th style="width: 100px;" rowspan="2">Holder</th>
+                          <th style="width: 100px;" rowspan="2">Description</th>
+                          <th style="width: 100px;" rowspan="2">Dist. Value</th>
+                          <th style="width: 300px;" class="text-center" colspan="2">Detail Cost</th>
+                          <th style="width: 100px;" rowspan="2">Usage Cost</th>
+                          <th style="width: 100px;" rowspan="2">Remaining Cost</th>
+                        </tr>
+                        <tr>
+                          <th style="width: 200px;">Desc</th>
+                          <th style="width: 100px;">Cost</th>
                         </tr>
                       </thead>
                       <tbody id="dataRealBudgetList">
@@ -441,8 +445,10 @@
                       <h5>Notes</h5>
                     </div>
                     <div class="col-md-6 text-right">
-                      <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalNotesAdd"><i class="fa fa-plus"></i> Add Data</a>
-                    </div>
+                      <?php if ($project['status'] != 'COMPLETED') { ?>
+                        <a href="#" class="btn btn-info"  data-toggle="modal" data-target="#modalNotesAdd"><i class="fa fa-plus"></i> Add Data</a>
+                      <?php } ?>
+                      </div>
                   </div>
                   <div class="table-responsive">
                     <table class="table table-striped" id="getNotesData" style="width: 100%;">

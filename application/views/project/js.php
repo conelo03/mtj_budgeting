@@ -71,6 +71,10 @@
         "targets" : [0],
         "orderable" : false,
         "className" : "text-center"
+      },{
+        "targets" : [5],
+        "orderable" : true,
+        "className" : "text-right"
       }],
     });
   }
@@ -332,14 +336,15 @@
         },
         success: function(res){
           let data = res.data;
+          $('.msgError').html('').show();
           $('#modalBudgetEdit').modal('show');
           $('#orderNoEditBudget').val(data.orderNo);
           if(data.approved == 'PENDING'){
             document.getElementById("budgetEdit").disabled = false;
-            $('#budgetEdit').val(data.budget);
+            $('#budgetEdit').val(formatRupiah(data.budget, ''));
           }else{
             document.getElementById("budgetEdit").disabled = true;
-            $('#budgetEdit').val(data.budget);
+            $('#budgetEdit').val(formatRupiah(data.budget, ''));
           }
           
           $('#descriptionEditBudget').val(data.description);
@@ -496,7 +501,7 @@
           let data = res.data;
           $('#modalProposedCostEdit').modal('show');
           $('#proposedCostNameEdit').val(data.proposedCostName);
-          $('#proposedValueEdit').val(data.proposedValue);
+          $('#proposedValueEdit').val(formatRupiah(data.proposedValue, ''));
           $('#detailDescriptionEditPC').val(data.detailDescription);
           $('#updateProposedCostData').attr("data", id);
         },
@@ -585,10 +590,10 @@
         success: function(res){
           let data = res.data;
           $('#modalProposedCostApprove').modal('show');
-          $('#proposedValueApprove').val(data.proposedValue);
-          $('#approvedDescriptionApprove').val(data.approvedDescription);
-          $('#approvedValueApprove').val(data.approvedValue);
-          $('#approveProposedCostData').attr("data", id);
+          $('#proposedValueApprove').val(formatRupiah(data.proposedValue, ''));
+          //$('#approvedDescriptionApprove').val(data.approvedDescription);
+          //$('#approvedValueApprove').val(formatRupiah(is_null(data.approvedValue) ? 0 : data.approvedValue, ''));
+          $('#approveProposedCostData').attr("data", data.proposedCostId);
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -720,6 +725,52 @@
       return false;
     });
 
+    //GET REMAINING VALUE
+    $('#saveDistributionCostData').on('change','#selectProposedCostForDC',function(){
+      let id = $('#selectProposedCostForDC').val();
+      $.ajax({
+        type : "GET",
+        url  : "<?= base_url('Project/get_proposed_cost_to_dist_cost_by_id')?>",
+        dataType : "JSON",
+        data : {
+          id : id
+        },
+        success: function(res){
+          let data_pc = res.data_pc;
+          let data_dc = res.data_dc;
+          let value = data_pc.approvedValue - data_dc.value === 0 ? 0 : data_pc.approvedValue - data_dc.value;
+          $('#remainingValue').val(formatRupiah(`${value}`, ''));
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    //GET REMAINING VALUE
+    $('#updateDistributionCostData').on('change','#selectProposedCostForDCEdit',function(){
+      let id = $('#selectProposedCostForDCEdit').val();
+      $.ajax({
+        type : "GET",
+        url  : "<?= base_url('Project/get_proposed_cost_to_dist_cost_by_id')?>",
+        dataType : "JSON",
+        data : {
+          id : id
+        },
+        success: function(res){
+          let data_pc = res.data_pc;
+          let data_dc = res.data_dc;
+          let value = data_pc.approvedValue - data_dc.value === 0 ? 0 : data_pc.approvedValue - data_dc.value;
+          $('#remainingValueEdit').val(formatRupiah(`${value}`, ''));
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
     //GET DATA EDIT
     $('#dataDistributionCostList').on('click','#btnDistributionCostEdit',function(){
       let id = $(this).attr('data');
@@ -732,12 +783,14 @@
         },
         success: function(res){
           let data = res.data;
+          let value = res.remainingValue;
           $('.msgError').html('');
           $('.msgErrorValue').html('');
           $('#modalDistributionCostEdit').modal('show');
           $('#selectProposedCostForDCEdit').selectpicker('val', data.proposedCostId);
           $('#selectUserEdit').selectpicker('val', data.holder);
-          $('#valueEdit').val(data.value);
+          $('#remainingValueEdit').val(formatRupiah(`${value}`, ''));
+          $('#valueEdit').val(formatRupiah(data.value, ''));
           $('#descriptionDCEdit').val(data.description);
           $('#updateDistributionCostData').attr("data", id);
         },
@@ -829,7 +882,8 @@
         contentType: false,
         data: formData,
         success: function(res){
-          if(res.error){
+          if(res.error || res.errorValue){
+            $('.msgErrorValue').html(res.errorValue).show();
             $('.msgError').html(res.error).show();
           }else{
             if(res.response){
@@ -837,13 +891,39 @@
             }else{
               populateError(res.message);
             }
+            $('.msgErrorValue').html('').show();
+            $('.msgError').html('').show();
             $('#modalReportCostAdd').modal('hide');
             document.getElementById('saveReportCostData').reset();
             loadReportCostData();
             loadDistributionCost();
             loadReportBudgetData();
+            loadRealBudgetData();
             loadDetailProject();
           }
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    //GET REMAINING CoST VALUE
+    $('#saveReportCostData').on('change','#selectDistributionCost',function(){
+      let id = $('#selectDistributionCost').val();
+      $.ajax({
+        type : "GET",
+        url  : "<?= base_url('Project/get_dist_cost_to_report_cost_by_id')?>",
+        dataType : "JSON",
+        data : {
+          id : id
+        },
+        success: function(res){
+          let data_rc = res.data_rc;
+          let data_dc = res.data_dc;
+          let value = data_dc.value - data_rc.reportCostValue  === 0 ? 0 : data_dc.value - data_rc.reportCostValue;
+          $('#remainingCostValue').val(formatRupiah(`${value}`, ''));
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -886,12 +966,38 @@
         },
         success: function(res){
           let data = res.data;
+          $('.msgErrorValue').html('').show();
+          $('.msgError').html('').show();
           $('#modalReportCostEdit').modal('show');
-          $('#selectDistributionCost').selectpicker('val', data.distributionCostId);
-          $('#reportCostValueEdit').val(data.reportCostValue);
+          $('#selectDistributionCostEdit').selectpicker('val', data.distributionCostId);
+          $('#remainingCostValueEdit').val(formatRupiah(`${res.remainingValue}`, ''));
+          $('#reportCostValueEdit').val(formatRupiah(data.reportCostValue, ''));
           $('#descriptionReportCostEdit').val(data.description);
           $('#fileNameEdit').val(data.fileName);
           $('#updateReportCostData').attr("data", id);
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    //GET REMAINING CoST VALUE
+    $('#updateReportCostData').on('change','#selectDistributionCostEdit',function(){
+      let id = $('#selectDistributionCostEdit').val();
+      $.ajax({
+        type : "GET",
+        url  : "<?= base_url('Project/get_dist_cost_to_report_cost_by_id')?>",
+        dataType : "JSON",
+        data : {
+          id : id
+        },
+        success: function(res){
+          let data_rc = res.data_rc;
+          let data_dc = res.data_dc;
+          let value = data_dc.value - data_rc.reportCostValue  === 0 ? 0 : data_dc.value - data_rc.reportCostValue;
+          $('#remainingCostValueEdit').val(formatRupiah(`${value}`, ''));
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
@@ -914,7 +1020,8 @@
         contentType: false,
         data: formData,
         success: function(res){
-          if(res.error){
+          if(res.error || res.errorValue){
+            $('.msgErrorValue').html(res.errorValue).show();
             $('.msgError').html(res.error).show();
           }else{
             if(res.response){
@@ -924,7 +1031,9 @@
             }
             $('#modalReportCostEdit').modal('hide');
             loadReportCostData();
+            loadDistributionCost();
             loadReportBudgetData();
+            loadRealBudgetData();
             loadDetailProject();
           }
         },
@@ -959,7 +1068,9 @@
           }
           $('#modalReportCostDelete').modal('hide');
           loadReportCostData();
+          loadDistributionCost();
           loadReportBudgetData();
+          loadRealBudgetData();
           loadDetailProject();
         },
         error: function(xhr, ajaxOptions, thrownError){

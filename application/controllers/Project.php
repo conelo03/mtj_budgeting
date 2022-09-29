@@ -63,13 +63,6 @@ class Project extends CI_Controller {
 				}
 			}
 
-			// if (is_project_manager() || is_finance()) {
-			// 	$row[] = '<a href="'.base_url('detail-project/'.$i->projectId).'" class="btn btn-light"><i class="fa fa-list"></i> Detail</a>
-			// 				<a href="#" class="btn btn-info" id="btnEdit" data="'.$i->projectId.'"><i class="fa fa-edit"></i> Edit</a>
-			// 				<a href="#" class="btn btn-danger" id="btnDelete" data="'.$i->projectId.'"><i class="fa fa-trash"></i> Delete</a>';
-			// } else {
-			// 	$row[] = '<a href="'.base_url('detail-project/'.$i->projectId).'" class="btn btn-light"><i class="fa fa-list"></i> Detail</a>';
-			// }
 			$data[] = $row;
 		}
 		$output = [
@@ -118,7 +111,7 @@ class Project extends CI_Controller {
 					'projectGroupId' => empty($this->input->post('projectGroupId', true)) ? null : $this->input->post('projectGroupId', true),
 					'projectName' => $this->input->post('projectName', true),
 					'description' => $this->input->post('description', true),
-					'value' => $this->input->post('value', true),
+					'value' => $this->priceToFloat($this->input->post('value', true)),
 					'approved' => 'PENDING',
 					'status' => 'PENDING'
 				];
@@ -128,7 +121,10 @@ class Project extends CI_Controller {
 				$projectId = $this->db->insert_id();
 				$team = $this->input->post('userId', true);
 				//$group = $this->input->post('groupId', true);
-				$arr_team = [];
+				$arr_team = [[
+					'projectId' => $projectId,
+					'userId' => $this->session->userdata('userId'),
+				]];
 				foreach ($team as $i) {
 					$x = [
 						'projectId' => $projectId,
@@ -159,7 +155,7 @@ class Project extends CI_Controller {
 					'error' => validation_errors()
 				];
 			}else{
-				$value = $this->input->post('value', true);
+				$value = $this->priceToFloat($this->input->post('value', true));
 				$project = $this->M_project->get_by_id($projectId);
 				if($project['approved'] != 'PENDING'){
 					$value = $project['value'];
@@ -309,7 +305,7 @@ class Project extends CI_Controller {
 
 	public function get_detail_project($projectId)
 	{
-		$this->db->select('*');
+		$this->db->select('*, client.name as clientName');
 		$this->db->from('project');
 		$this->db->join('project_group', 'project_group.projectGroupId=project.projectGroupId', 'left');
 		$this->db->join('client', 'client.clientId=project.clientId');
@@ -330,15 +326,24 @@ class Project extends CI_Controller {
 		$this->db->from('report_cost');
 		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
 		$this->db->where('budgetId !=', NULL);
-		$rb = $this->db->where('distribution_cost.projectId', $projectId)->get()->row_array();
+		$this->db->where('distribution_cost.projectId', $projectId);
+		$rb = $this->db->get()->row_array();
 
 		$this->db->select_sum('value');
 		$this->db->from('distribution_cost');
+		if(is_pengawas_lapangan() && is_project_manager()){
+		}elseif(is_pengawas_lapangan()){
+			$this->db->where('holder', $this->session->userdata('userId'));
+		}
 		$dc = $this->db->where('projectId', $projectId)->get()->row_array();
 
 		$this->db->select_sum('reportCostValue');
 		$this->db->from('report_cost');
 		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
+		if(is_pengawas_lapangan() && is_project_manager()){
+		}elseif(is_pengawas_lapangan()){
+			$this->db->where('holder', $this->session->userdata('userId'));
+		}
 		$rc = $this->db->where('distribution_cost.projectId', $projectId)->get()->row_array();
 	
 		$response = [
@@ -355,12 +360,16 @@ class Project extends CI_Controller {
 	}
 
 	public function get_proposed_cost($projectId)
-	{
-		$pg = $this->db->get_where('proposed_cost', ['projectId' => $projectId, 'approved' => 'APPROVED'])->result_array();
+	{	
+		$this->db->select('*');
+		$this->db->from('proposed_cost');	
+		$this->db->join('user', 'user.userId=proposed_cost.proposedBy');
+		$this->db->where(['projectId' => $projectId, 'approved' => 'APPROVED']);
+		$pg = $this->db->get()->result_array();
 		
 		$html = "<option value='' disabled selected>-- Select Proposed Cost --</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
-			$html .= "<option value='".$data['proposedCostId']."'>".$data['proposedCostName']." - ".currency($data['approvedValue'])."</option>"; // Tambahkan tag option ke variabel $html
+			$html .= "<option value='".$data['proposedCostId']."'>".$data['proposedCostName']." - ".currency($data['approvedValue'])." - Proposed By : ".$data['userName']."</option>"; // Tambahkan tag option ke variabel $html
 		}
 		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
 		$response = [
@@ -444,7 +453,11 @@ class Project extends CI_Controller {
 		$this->db->select('*');
 		$this->db->from('distribution_cost');
 		$this->db->join('user', 'user.userId=distribution_cost.holder');
-		$this->db->where('projectId', $projectId);
+		$this->db->where('distribution_cost.projectId', $projectId);
+		if(is_pengawas_lapangan() && is_project_manager()){
+		}elseif(is_pengawas_lapangan()){
+			$this->db->where('distribution_cost.holder', $this->session->userdata('userId'));
+		}
 		$pg = $this->db->get()->result_array();
 		
 		$html = "<option value='' disabled selected>-- Select Distribution Cost --</option>";
@@ -460,29 +473,38 @@ class Project extends CI_Controller {
 		echo json_encode($response);
 	}
 
-	function generateId(){
-		$p = $this->M_project->get_data()->num_rows();
-		$p = $p + 1;
-		$char = strlen($p);
-		$x;
-		switch ($char) {
-			case 1:
-				$x = '00'.$p;
-				break;
-			case 2:
-				$x = '0'.$p;
-				break;
-			case 3:
-				$x = $p;
-				break;
-			default:
-				$x = $p;
-				break;
-		}
+	function get_proposed_cost_to_dist_cost_by_id(){
+		$proposedCostId = $this->input->get('id');
+		$data_pc = $this->M_project->get_proposed_cost_by_id($proposedCostId);
+		
+		$this->db->select_sum('value');
+		$this->db->from('distribution_cost');
+		$this->db->where('proposedCostId', $proposedCostId);
+		$data_dc = $this->db->get()->row_array();
+		$res = [
+			'data_pc' => $data_pc,
+			'data_dc' => $data_dc,
+			'response' => $data_pc || $data_dc ? true : false,
+		];
 
-		$id = date('ym').$x;
+		echo json_encode($res);
+	}
 
-		return $id;
+	function get_dist_cost_to_report_cost_by_id(){
+		$distributionCostId = $this->input->get('id');
+		$data_dc = $this->M_project->get_distribution_cost_by_id($distributionCostId);
+		
+		$this->db->select_sum('reportCostValue');
+		$this->db->from('report_cost');
+		$this->db->where('distributionCostId', $distributionCostId);
+		$data_rc = $this->db->get()->row_array();
+		$res = [
+			'data_rc' => $data_rc,
+			'data_dc' => $data_dc,
+			'response' => $data_rc || $data_dc ? true : false,
+		];
+
+		echo json_encode($res);
 	}
 
 	//Detail Project
@@ -496,6 +518,7 @@ class Project extends CI_Controller {
 	//PROJECT BUDGET
 	function get_budget_data($projectId) {
 		$list = $this->M_project->get_budget_datatables($projectId);
+		$project = $this->M_project->get_by_id($projectId);
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
@@ -510,7 +533,7 @@ class Project extends CI_Controller {
 			$row[] = badge_status($i->approved);
 			// add html for action
 
-			if($i->approved == 'PENDING'){
+			if($i->approved == 'PENDING' && $project['status'] != 'COMPLETED'){
 				if (is_finance() && is_project_manager()) {
 					$row[] = '<a href="#" class="btn btn-success" id="btnBudgetApprove" data="'.$i->budgetId.'"><i class="fa fa-check"></i> Approve</a>
 								<a href="#" class="btn btn-info" id="btnBudgetEdit" data="'.$i->budgetId.'"><i class="fa fa-edit"></i> Edit</a>
@@ -524,11 +547,7 @@ class Project extends CI_Controller {
 					$row[] = '';
 				}
 			} else {
-				if (is_project_manager()) {
-					$row[] = '<a href="#" class="btn btn-info" id="btnBudgetEdit" data="'.$i->budgetId.'"><i class="fa fa-edit"></i> Edit</a>';
-				} else {
-					$row[] = '';
-				}
+				$row[] = '';
 			}
 			
 			$data[] = $row;
@@ -563,10 +582,11 @@ class Project extends CI_Controller {
 					'error' => validation_errors()
 				];
 			}else{
+				$orderNo = $this->generateOrderNo($projectId);
 				$data = [
 					'projectId' => $projectId,
-					'orderNo' => $this->input->post('orderNo', true),
-					'budget' => $this->input->post('budget', true),
+					'orderNo' => $orderNo,
+					'budget' => $this->priceToFloat($this->input->post('budget', true)),
 					'description' => $this->input->post('description', true),
 					'createdAt' => date('Y-m-d H:i:s'),
 					'approved' => 'PENDING'
@@ -593,14 +613,13 @@ class Project extends CI_Controller {
 					'error' => validation_errors()
 				];
 			}else{
-				$budget = $this->input->post('budget', true);
+				$budget = $this->priceToFloat($this->input->post('budget', true));
 				$b = $this->M_project->get_budget_by_id($budgetId);
 				if($b['approved'] != 'PENDING'){
 					$budget = $b['budget'];
 				}
 				$data = [
 					'budgetId' => $budgetId,
-					'orderNo' => $this->input->post('orderNo', true),
 					'budget' => $budget,
 					'description' => $this->input->post('description', true),
 				];
@@ -659,13 +678,13 @@ class Project extends CI_Controller {
 		}else{
 			$this->form_validation->set_rules('budget', 'Budget', 'trim');
 		}
-		$this->form_validation->set_rules('orderNo', 'Order No', 'required|trim');
 		$this->form_validation->set_rules('description', 'Description', 'required|trim');
 	}
 
 	//PROPOSED COST
 	function get_proposed_cost_data($projectId) {
 		$list = $this->M_project->get_proposed_cost_datatables($projectId);
+		$project = $this->M_project->get_by_id($projectId);
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
@@ -689,15 +708,19 @@ class Project extends CI_Controller {
 			$row[] = $i->rejectedDescription;
 			// add html for action
 
-			if($i->approved == 'PENDING'){
-				if (is_pengawas_lapangan() || is_project_manager()) {
+			if($i->approved == 'PENDING' && $project['status'] != 'COMPLETED'){
+				if (is_project_manager()) {
 					$row[] = '<a href="#" class="btn btn-success" id="btnProposedCostApprove" data="'.$i->proposedCostId.'"><i class="fa fa-check"></i> Approve</a>
+							<a href="#" class="btn btn-danger" id="btnProposedCostReject" data="'.$i->proposedCostId.'"><i class="fa fa-times"></i> Reject</a>
 							<a href="#" class="btn btn-info" id="btnProposedCostEdit" data="'.$i->proposedCostId.'"><i class="fa fa-edit"></i> Edit</a>
 							<a href="#" class="btn btn-danger" id="btnProposedCostDelete" data="'.$i->proposedCostId.'"><i class="fa fa-trash"></i> Delete</a>';
-				} else {
+				} elseif (is_pengawas_lapangan()){
+					$row[] = '<a href="#" class="btn btn-info" id="btnProposedCostEdit" data="'.$i->proposedCostId.'"><i class="fa fa-edit"></i> Edit</a>
+					<a href="#" class="btn btn-danger" id="btnProposedCostDelete" data="'.$i->proposedCostId.'"><i class="fa fa-trash"></i> Delete</a>';
+				} {
 					$row[] = '';
 				}
-			} elseif($i->approved == 'APPROVED') {
+			} elseif($i->approved == 'APPROVED' && $project['status'] != 'COMPLETED') {
 				if (is_finance()) {
 					$row[] = '<a href="#" class="btn btn-danger" id="btnProposedCostReject" data="'.$i->proposedCostId.'"><i class="fa fa-times"></i> Reject</a>';
 				} else {
@@ -744,7 +767,7 @@ class Project extends CI_Controller {
 					'proposedDate' => date('Y-m-d'),
 					'proposedBy' => $this->session->userdata('userId'),
 					'proposedCostName' => $this->input->post('proposedCostName', true),
-					'proposedValue' => $this->input->post('proposedValue', true),
+					'proposedValue' => $this->priceToFloat($this->input->post('proposedValue', true)),
 					'detailDescription' => $this->input->post('detailDescription', true),
 					'approved' => 'PENDING',
 				];
@@ -774,7 +797,7 @@ class Project extends CI_Controller {
 					'proposedCostId' => $proposedCostId,
 					'proposedBy' => $this->session->userdata('userId'),
 					'proposedCostName' => $this->input->post('proposedCostName', true),
-					'proposedValue' => $this->input->post('proposedValue', true),
+					'proposedValue' => $this->priceToFloat($this->input->post('proposedValue', true)),
 					'detailDescription' => $this->input->post('detailDescription', true),
 				];
 	
@@ -826,7 +849,7 @@ class Project extends CI_Controller {
 					'approvedDate' => date('Y-m-d'),
 					'approvedBy' => $this->session->userdata('userId'),
 					'approvedDescription' => $this->input->post('approvedDescription', true),
-					'approvedValue' => $this->input->post('approvedValue', true),
+					'approvedValue' => $this->priceToFloat($this->input->post('approvedValue', true)),
 				];
 	
 				$q = $this->M_project->update_proposed_cost($data);
@@ -884,6 +907,7 @@ class Project extends CI_Controller {
 	//DISTRIBUTION COST
 	function get_distribution_cost_data($projectId) {
 		$list = $this->M_project->get_distribution_cost_datatables($projectId);
+		$project = $this->M_project->get_by_id($projectId);
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
@@ -899,7 +923,7 @@ class Project extends CI_Controller {
 			$row[] = $i->description;
 			// add html for action
 
-			if (is_finance()) {
+			if (is_finance() && $project['status'] != 'COMPLETED') {
 				$row[] = '<a href="#" class="btn btn-info" id="btnDistributionCostEdit" data="'.$i->distributionCostId.'"><i class="fa fa-edit"></i> Edit</a>
 			<a href="#" class="btn btn-danger" id="btnDistributionCostDelete" data="'.$i->distributionCostId.'"><i class="fa fa-trash"></i> Delete</a>';
 			} else {
@@ -921,8 +945,20 @@ class Project extends CI_Controller {
 	function get_distribution_cost_data_by_id(){
 		$distributionCostId = $this->input->get('id');
 		$data = $this->M_project->get_distribution_cost_by_id($distributionCostId);
+		$proposedCostId = $data['proposedCostId'];
+		
+		$this->db->select_sum('approvedValue');
+		$this->db->from('proposed_cost');
+		$this->db->where('proposedCostId', $proposedCostId);
+		$data_pc = $this->db->get()->row_array();
+
+		$this->db->select_sum('value');
+		$this->db->from('distribution_cost');
+		$this->db->where('proposedCostId', $proposedCostId);
+		$data_dc = $this->db->get()->row_array();
 		$res = [
 			'data' => $data,
+			'remainingValue' => $data_pc['approvedValue'] - $data_dc['value'],
 			'response' => $data ? true : false,
 		];
 
@@ -939,11 +975,16 @@ class Project extends CI_Controller {
 				];
 			}else{
 				$proposedCostId = $this->input->post('proposedCostId', true);
-				$value = $this->input->post('value', true);
+				$value = $this->priceToFloat($this->input->post('value', true));
+
+				$this->db->select_sum('value');
+				$this->db->from('distribution_cost');
+				$this->db->where('proposedCostId', $proposedCostId);
+				$distributionValue = $this->db->get()->row_array();
 
 				$app = $this->M_project->get_proposed_cost_by_id($proposedCostId);
 
-				if($value > $app['approvedValue']){
+				if(($distributionValue['value'] + $value) > $app['approvedValue']){
 					$res = [
 						'errorValue' => 'Value distribution exceeds the Approval Value<br>',
 					];
@@ -953,7 +994,7 @@ class Project extends CI_Controller {
 						'proposedCostId' => $this->input->post('proposedCostId', true),
 						'userId' => $this->session->userdata('userId'),
 						'holder' => $this->input->post('holder', true),
-						'value' => $this->input->post('value', true),
+						'value' => $value,
 						'description' => $this->input->post('description', true),
 					];
 		
@@ -982,14 +1023,17 @@ class Project extends CI_Controller {
 				];
 			}else{
 				$proposedCostId = $this->input->post('proposedCostId', true);
-				$value = $this->input->post('value', true);
+				$value = $this->priceToFloat($this->input->post('value', true));
 
-				$this->db->select_sum('approvedValue');
-				$this->db->from('proposed_cost');
+				$this->db->select_sum('value');
+				$this->db->from('distribution_cost');
 				$this->db->where('proposedCostId', $proposedCostId);
-				$app = $this->db->get()->row_array();
+				$distributionValue = $this->db->get()->row_array();
 
-				if($value > $app['approvedValue']){
+				$dc_before = $this->M_project->get_distribution_cost_by_id($distributionCostId);
+				$app = $this->M_project->get_proposed_cost_by_id($proposedCostId);
+
+				if(($distributionValue['value'] + $value - $dc_before['value']) > $app['approvedValue']){
 					$res = [
 						'error' => 'Value distribution exceeds the Approval Value<br>',
 					];
@@ -999,7 +1043,7 @@ class Project extends CI_Controller {
 						'proposedCostId' => $this->input->post('proposedCostId', true),
 						'userId' => $this->session->userdata('userId'),
 						'holder' => $this->input->post('holder', true),
-						'value' => $this->input->post('value', true),
+						'value' => $value,
 						'description' => $this->input->post('description', true),
 					];
 		
@@ -1052,7 +1096,8 @@ class Project extends CI_Controller {
 			$total_cost = 0;
 			foreach ($report_cost as $rc) {
 				$total_cost += $rc['reportCostValue'];
-				$detail .= "- ".$rc['description']." = ".currency($rc['reportCostValue'])."<br>";
+				$detail .= "- ".$rc['description']."<br>";
+				$cost .= currency($rc['reportCostValue'])."<br>";
 			}
 			$no++;
 			$row = array();
@@ -1061,6 +1106,7 @@ class Project extends CI_Controller {
 			$row[] = $i->description;
 			$row[] = currency($i->value);
 			$row[] = $detail;
+			$row[] = $cost;
 			$row[] = currency($total_cost);
 			$row[] = currency($i->value - $total_cost);
 			
@@ -1079,6 +1125,7 @@ class Project extends CI_Controller {
 	// REPORT COST
 	function get_report_cost_data($projectId) {
 		$list = $this->M_project->get_report_cost_datatables($projectId);
+		$project = $this->M_project->get_by_id($projectId);
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
@@ -1090,7 +1137,7 @@ class Project extends CI_Controller {
 			$row[] = '<a href="#" class="btn btn-light" id="btnReportCostDetail" data="'.$i->reportCostId.'"><i class="fa fa-eye"></i> </a> '.$i->fileName;
 			// add html for action
 
-			if (is_pengawas_lapangan()) {
+			if (is_pengawas_lapangan() && $project['status'] != 'COMPLETED') {
 				if ($i->budgetId == NULL) {
 					$row[] = '<a href="#" class="btn btn-info" id="btnReportCostEdit" data="'.$i->reportCostId.'"><i class="fa fa-edit"></i> Edit</a>
 									<a href="#" class="btn btn-danger" id="btnReportCostDelete" data="'.$i->reportCostId.'"><i class="fa fa-trash"></i> Delete</a>';
@@ -1118,8 +1165,22 @@ class Project extends CI_Controller {
 	function get_report_cost_data_by_id(){
 		$reportCostId = $this->input->get('id');
 		$data = $this->M_project->get_report_cost_by_id($reportCostId);
+
+		$distributionCostId = $data['distributionCostId'];
+		
+		$this->db->select_sum('reportCostValue');
+		$this->db->from('report_cost');
+		$this->db->where('distributionCostId', $distributionCostId);
+		$data_rc = $this->db->get()->row_array();
+
+		$this->db->select_sum('value');
+		$this->db->from('distribution_cost');
+		$this->db->where('distributionCostId', $distributionCostId);
+		$data_dc = $this->db->get()->row_array();
+
 		$res = [
 			'data' => $data,
+			'remainingValue' => $data_dc['value'] - $data_rc['reportCostValue'],
 			'response' => $data ? true : false,
 		];
 
@@ -1135,55 +1196,21 @@ class Project extends CI_Controller {
 					'error' => validation_errors()
 				];
 			}else{
-				$config['upload_path'] = './assets/upload/report-budget'; 
-				$config['allowed_types'] = 'png|jpg|jpeg|PNG|JPG|JPEG';
-				$config['max_size'] = 10000;
+				$distributionCostId = $this->input->post('distributionCostId', true);
+				$reportCostValue = $this->priceToFloat($this->input->post('reportCostValue', true));
 
-				$this->upload->initialize($config);
-				$this->load->library('upload', $config); 
+				$this->db->select_sum('reportCostValue');
+				$this->db->from('report_cost');
+				$this->db->where('distributionCostId', $distributionCostId);
+				$rep = $this->db->get()->row_array();
 
-				$image = '';
-				if($this->upload->do_upload('fileName')){
-					$uploadData = $this->upload->data();
-					$image =  $uploadData['file_name'];
-				}
+				$dist = $this->M_project->get_distribution_cost_by_id($distributionCostId);
 
-				if($image == ''){
+				if(($rep['reportCostValue'] + $reportCostValue) > $dist['value']){
 					$res = [
-						'error' => $this->upload->display_errors('<p>', '</p>'),
+						'errorValue' => 'Value exceeds the Distribution Cost Value<br>',
 					];
 				} else {
-					$data = [
-						'distributionCostId' => $this->input->post('distributionCostId', true),
-						'reportCostValue' => $this->input->post('reportCostValue', true),
-						'description' => $this->input->post('description', true),
-						'fileName' => $image
-					];
-		
-					$q = $this->M_project->insert_report_cost($data);
-					
-					$res = [
-						'data' => $data,
-						'response' => $q,
-						'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
-					];
-				}
-			}
-			echo json_encode($res);
-		}
-	}
-
-	function edit_report_cost($reportCostId){
-		$res = [];
-		if($this->input->is_ajax_request() == true){
-			$this->validation_report_cost();
-			if (!$this->form_validation->run()) {
-				$res = [
-					'error' => validation_errors()
-				];
-			}else{
-				$rb = $this->M_project->get_report_cost_by_id($reportCostId);
-				if (!empty($_FILES['fileName']['name'])) {
 					$config['upload_path'] = './assets/upload/report-budget'; 
 					$config['allowed_types'] = 'png|jpg|jpeg|PNG|JPG|JPEG';
 					$config['max_size'] = 10000;
@@ -1203,17 +1230,101 @@ class Project extends CI_Controller {
 						];
 					} else {
 						$data = [
-							'reportCostId' => $reportCostId,
 							'distributionCostId' => $this->input->post('distributionCostId', true),
-							'reportCostValue' => $this->input->post('reportCostValue', true),
+							'reportCostValue' => $reportCostValue,
 							'description' => $this->input->post('description', true),
 							'fileName' => $image
 						];
 			
-						$q = $this->M_project->update_report_cost($data);
-						if($q == true){
-							unlink('./assets/upload/report-budget/'.$rb['fileName']);
+						$q = $this->M_project->insert_report_cost($data);
+						
+						$res = [
+							'data' => $data,
+							'response' => $q,
+							'message' => $q ? 'Data Saved Successfully!' : 'Data Failed to Save!'
+						];
+					}
+				}
+				
+			}
+			echo json_encode($res);
+		}
+	}
+
+	function edit_report_cost($reportCostId){
+		$res = [];
+		if($this->input->is_ajax_request() == true){
+			$this->validation_report_cost();
+			if (!$this->form_validation->run()) {
+				$res = [
+					'error' => validation_errors()
+				];
+			}else{
+				$distributionCostId = $this->input->post('distributionCostId', true);
+				$reportCostValue = $this->priceToFloat($this->input->post('reportCostValue', true));
+
+				$rc = $this->M_project->get_report_cost_by_id($reportCostId);
+
+				$this->db->select_sum('reportCostValue');
+				$this->db->from('report_cost');
+				$this->db->where('distributionCostId', $distributionCostId);
+				$rep = $this->db->get()->row_array();
+
+				$dist = $this->M_project->get_distribution_cost_by_id($distributionCostId);
+
+				if(($rep['reportCostValue'] + $reportCostValue - $rc['reportCostValue']) > $dist['value']){
+					$res = [
+						'errorValue' => 'Value exceeds the Distribution Cost Value<br>',
+					];
+				} else {
+					$rb = $this->M_project->get_report_cost_by_id($reportCostId);
+					if (!empty($_FILES['fileName']['name'])) {
+						$config['upload_path'] = './assets/upload/report-budget'; 
+						$config['allowed_types'] = 'png|jpg|jpeg|PNG|JPG|JPEG';
+						$config['max_size'] = 10000;
+
+						$this->upload->initialize($config);
+						$this->load->library('upload', $config); 
+
+						$image = '';
+						if($this->upload->do_upload('fileName')){
+							$uploadData = $this->upload->data();
+							$image =  $uploadData['file_name'];
 						}
+
+						if($image == ''){
+							$res = [
+								'error' => $this->upload->display_errors('<p>', '</p>'),
+							];
+						} else {
+							$data = [
+								'reportCostId' => $reportCostId,
+								'distributionCostId' => $this->input->post('distributionCostId', true),
+								'reportCostValue' => $reportCostValue,
+								'description' => $this->input->post('description', true),
+								'fileName' => $image
+							];
+				
+							$q = $this->M_project->update_report_cost($data);
+							if($q == true){
+								unlink('./assets/upload/report-budget/'.$rb['fileName']);
+							}
+							
+							$res = [
+								'data' => $data,
+								'response' => $q,
+								'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
+							];
+						}
+					}else{
+						$data = [
+							'reportCostId' => $reportCostId,
+							'distributionCostId' => $this->input->post('distributionCostId', true),
+							'reportCostValue' => $reportCostValue,
+							'description' => $this->input->post('description', true),
+						];
+			
+						$q = $this->M_project->update_report_cost($data);
 						
 						$res = [
 							'data' => $data,
@@ -1221,21 +1332,6 @@ class Project extends CI_Controller {
 							'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
 						];
 					}
-				}else{
-					$data = [
-						'reportCostId' => $reportCostId,
-						'distributionCostId' => $this->input->post('distributionCostId', true),
-						'reportCostValue' => $this->input->post('reportCostValue', true),
-						'description' => $this->input->post('description', true),
-					];
-		
-					$q = $this->M_project->update_report_cost($data);
-					
-					$res = [
-						'data' => $data,
-						'response' => $q,
-						'message' => $q ? 'Data Edited Successfully!' : 'Data Failed to Save!'
-					];
 				}
 				
 			}
@@ -1269,6 +1365,7 @@ class Project extends CI_Controller {
 
 	function get_report_budget_data($projectId) {
 		$list = $this->M_project->get_report_budget_datatables($projectId);
+		$project = $this->M_project->get_by_id($projectId);
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
@@ -1280,7 +1377,7 @@ class Project extends CI_Controller {
 			$row[] = $i->budgetDescription;
 			// add html for action
 
-			if (is_project_manager()) {
+			if (is_project_manager() && $project['status'] != 'COMPLETED') {
 				if ($i->budgetId == NULL) {
 					$row[] = '<a href="#" class="btn btn-info" id="btnReportBudgetSelectBudget" data="'.$i->reportCostId.'"><i class="fa fa-edit"></i> Select Budget</a>';
 				} else {
@@ -1344,6 +1441,7 @@ class Project extends CI_Controller {
 	//NOTES
 	function get_notes_data($projectId) {
 		$list = $this->M_project->get_notes_datatables($projectId);
+		$project = $this->M_project->get_by_id($projectId);
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
@@ -1355,8 +1453,15 @@ class Project extends CI_Controller {
 			$row[] = $i->userName;
 			$row[] = $i->timestamp;
 			// add html for action
-			$row[] = '<a href="#" class="btn btn-info" id="btnNotesEdit" data="'.$i->notesId.'"><i class="fa fa-edit"></i> Edit</a>
-			<a href="#" class="btn btn-danger" id="btnNotesDelete" data="'.$i->notesId.'"><i class="fa fa-trash"></i> Delete</a>';
+
+			if ($project['status'] != 'COMPLETED') {
+				$row[] = '<a href="#" class="btn btn-info" id="btnNotesEdit" data="'.$i->notesId.'"><i class="fa fa-edit"></i> Edit</a>
+				<a href="#" class="btn btn-danger" id="btnNotesDelete" data="'.$i->notesId.'"><i class="fa fa-trash"></i> Delete</a>';
+			} else {
+				$row[] = '';
+			}
+			
+			
 			$data[] = $row;
 		}
 		$output = [
@@ -1454,5 +1559,69 @@ class Project extends CI_Controller {
 	{
 		$this->form_validation->set_rules('notesType', 'Type', 'required|trim');
 		$this->form_validation->set_rules('notes', 'Notes', 'required|trim');
+	}
+
+	private function generateId(){
+		$p = $this->M_project->get_data()->num_rows();
+		$p = $p + 1;
+		$char = strlen($p);
+		$x;
+		switch ($char) {
+			case 1:
+				$x = '00'.$p;
+				break;
+			case 2:
+				$x = '0'.$p;
+				break;
+			case 3:
+				$x = $p;
+				break;
+			default:
+				$x = $p;
+				break;
+		}
+
+		$id = date('ym').$x;
+
+		return $id;
+	}
+
+	private function generateOrderNo($projectId){
+		$p = $this->db->get_where('budget', ['projectId' => $projectId])->num_rows();
+		$p = $p + 1;
+		$char = strlen($p);
+		$x;
+		switch ($char) {
+			case 1:
+				$x = '00'.$p;
+				break;
+			case 2:
+				$x = '0'.$p;
+				break;
+			case 3:
+				$x = $p;
+				break;
+			default:
+				$x = $p;
+				break;
+		}
+
+		$id = $x.'/'.date('M/y');
+		return $id;
+	}
+
+	private function priceToFloat($s)
+	{
+		// convert "," to "."
+		$s = str_replace(',', '.', $s);
+
+		// remove everything except numbers and dot "."
+		$s = preg_replace("/[^0-9\.]/", "", $s);
+
+		// remove all seperators from first part and keep the end
+		$s = str_replace('.', '', substr($s, 0, -3)) . substr($s, -3);
+
+		// return float
+		return (float) $s;
 	}
 }

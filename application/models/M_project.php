@@ -8,7 +8,7 @@ class M_project extends CI_Model {
 	// start datatables
 	var $column_order = array('project.generateId', 'project_group.projectGroupName', 'project.projectName', 'client.name', 'project.description', 'project.value', 'project.isFinal', 'project.isAddWork'); //set column field database for datatable orderable
 	var $column_search = array('project.generateId', 'project_group.projectGroupName', 'project.projectName', 'client.name', 'project.description', 'project.value', 'project.isFinal', 'project.isAddWork'); //set column field database for datatable searchable
-	var $order = array('project.projectId' => 'asc'); // default order 
+	var $order = array('project.approved' => 'desc', 'project.projectId' => 'desc'); // default order 
 
 	private function _get_datatables_query() {
 		$this->db->select('*, project.description');
@@ -181,13 +181,17 @@ class M_project extends CI_Model {
 	// start datatables
 	var $column_proposed_cost_order = array('proposedCostName', 'proposedDate', 'user.userName', 'proposedValue', 'detailDescription', 'approved', 'approvedDate', 'approvedDescription', 'approvedValue', 'rejectedDate', 'rejectedDescription'); //set column field database for datatable orderable
 	var $column_proposed_cost_search = array('proposedCostName', 'proposedDate', 'user.userName', 'proposedValue', 'detailDescription', 'approved', 'approvedDate', 'approvedDescription', 'approvedValue', 'rejectedDate', 'rejectedDescription'); //set column field database for datatable searchable
-	var $order_proposed_cost = array('proposedCostId' => 'asc'); // default order 
+	var $order_proposed_cost = array('proposedCostId' => 'desc'); // default order 
 
 	private function _get_datatables_proposed_cost_query($projectId) {
 		$this->db->select('*, proposed_cost.approved, proposed_cost.approvedBy');
 		$this->db->from('proposed_cost');
 		$this->db->join('user', 'user.userId=proposed_cost.proposedBy');
 		$this->db->where('proposed_cost.projectId', $projectId);
+		if(is_pengawas_lapangan() && is_project_manager()){
+		}elseif(is_pengawas_lapangan()){
+			$this->db->where('proposed_cost.proposedBy', $this->session->userdata('userId'));
+		}
 		$i = 0;
 		foreach ($this->column_proposed_cost_search as $i) { // loop column 
 			if(@$_POST['search']['value']) { // if datatable send POST for search
@@ -265,6 +269,10 @@ class M_project extends CI_Model {
 		$this->db->join('proposed_cost', 'proposed_cost.proposedCostId=distribution_cost.proposedCostId');
 		$this->db->join('user', 'user.userId=distribution_cost.userId');
 		$this->db->where('distribution_cost.projectId', $projectId);
+		if(is_pengawas_lapangan() && is_project_manager()){
+		}elseif(is_pengawas_lapangan()){
+			$this->db->where('distribution_cost.holder', $this->session->userdata('userId'));
+		}
 		$i = 0;
 		foreach ($this->column_distribution_cost_search as $i) { // loop column 
 			if(@$_POST['search']['value']) { // if datatable send POST for search
@@ -341,6 +349,10 @@ class M_project extends CI_Model {
 		$this->db->from('report_cost');
 		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId');
 		$this->db->where('distribution_cost.projectId', $projectId);
+		if(is_pengawas_lapangan() && is_project_manager()){
+		}elseif(is_pengawas_lapangan()){
+			$this->db->where('distribution_cost.holder', $this->session->userdata('userId'));
+		}
 		$i = 0;
 		foreach ($this->column_report_cost_search as $i) { // loop column 
 			if(@$_POST['search']['value']) { // if datatable send POST for search

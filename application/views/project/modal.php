@@ -17,14 +17,14 @@
 
             </select>
           </div> -->
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Order No</label>
             <input name="orderNo" id="orderNo" class="form-control" type="text" placeholder="Order No">
-          </div>
+          </div> -->
 
           <div class="form-group">
             <label class="form-label">Budget</label>
-            <input name="budget" id="budget" class="form-control" type="number">
+            <input name="budget" id="budget" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
 
           <div class="form-group">
@@ -62,12 +62,12 @@
           </div> -->
           <div class="form-group">
             <label class="form-label">Order No</label>
-            <input name="orderNo" id="orderNoEditBudget" class="form-control" type="text" placeholder="Order No">
+            <input name="orderNo" id="orderNoEditBudget" class="form-control" type="text" placeholder="Order No" disabled>
           </div>
 
           <div class="form-group">
             <label class="form-label">Budget</label>
-            <input name="budget" id="budgetEdit" class="form-control" type="number">
+            <input name="budget" id="budgetEdit" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
 
           <div class="form-group">
@@ -151,7 +151,7 @@
 
           <div class="form-group">
             <label class="form-label">Proposed Value</label>
-            <input name="proposedValue" id="proposedValue" class="form-control" type="number">
+            <input name="proposedValue" id="proposedValue" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
 
           <div class="form-group">
@@ -188,7 +188,7 @@
 
           <div class="form-group">
             <label class="form-label">Proposed Value</label>
-            <input name="proposedValue" id="proposedValueEdit" class="form-control" type="number">
+            <input name="proposedValue" id="proposedValueEdit" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
 
           <div class="form-group">
@@ -244,7 +244,7 @@
 
           <div class="form-group">
             <label class="form-label">Proposed Value</label>
-            <input name="" id="proposedValueApprove" class="form-control" type="number" disabled>
+            <input name="" id="proposedValueApprove" class="form-control" type="text" onkeyup="rupiah(this)" disabled>
           </div>
 
           <div class="form-group">
@@ -254,7 +254,7 @@
 
           <div class="form-group">
             <label class="form-label">Approve Value</label>
-            <input name="approvedValue" id="approvedValueApprove" class="form-control" type="number">
+            <input name="approvedValue" id="approvedValueApprove" class="form-control"  type="text" onkeyup="rupiah(this)">
           </div>
 
         </div>
@@ -317,6 +317,11 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Remaining Value</label>
+            <input id="remainingValue" class="form-control" type="text" onkeyup="rupiah(this)" disabled>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Select Holder</label>
             <select name="holder" class="form-control" id="selectUser" data-live-search="true" required>
 
@@ -325,7 +330,7 @@
 
           <div class="form-group">
             <label class="form-label">Value</label>
-            <input name="value" id="value" class="form-control" type="number">
+            <input name="value" id="value" class="form-control" type="text" onkeyup="rupiah(this)">
             <span class="text-danger msgErrorValue" style="display: none"></span>
           </div>
 
@@ -365,6 +370,11 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Remaining Value</label>
+            <input id="remainingValueEdit" class="form-control" type="text" onkeyup="rupiah(this)" disabled>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Select Holder</label>
             <select name="holder" class="form-control" id="selectUserEdit" data-live-search="true" required>
 
@@ -373,7 +383,7 @@
 
           <div class="form-group">
             <label class="form-label">Value</label>
-            <input name="value" id="valueEdit" class="form-control" type="number">
+            <input name="value" id="valueEdit" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
 
           <div class="form-group">
@@ -436,8 +446,14 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Remaining Cost Value</label>
+            <input name="" id="remainingCostValue" class="form-control" disabled>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Report Cost Value</label>
-            <input name="reportCostValue" id="reportCostValue" class="form-control" type="number">
+            <input name="reportCostValue" id="reportCostValue" class="form-control" type="text" onkeyup="rupiah(this)">
+            <span class="text-danger msgErrorValue" style="display: none"></span>
           </div>
 
           <div class="form-group">
@@ -481,13 +497,19 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Remaining Cost Value</label>
+            <input name="" id="remainingCostValueEdit" class="form-control" disabled>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Report Cost Value</label>
-            <input name="reportCostValue" id="reportCostValueEdit" class="form-control" type="number">
+            <input name="reportCostValue" id="reportCostValueEdit" class="form-control" type="text" onkeyup="rupiah(this)">
+            <span class="text-danger msgErrorValue" style="display: none"></span>
           </div>
 
           <div class="form-group">
             <label class="form-label">Description</label>
-            <textarea name="description" id="descriptionReportBudgetEdit" class="form-control" type="text" placeholder="Description"></textarea>
+            <textarea name="description" id="descriptionReportCostEdit" class="form-control" type="text" placeholder="Description"></textarea>
           </div>
 
           <div class="form-group">

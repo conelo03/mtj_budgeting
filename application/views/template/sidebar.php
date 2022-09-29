@@ -38,12 +38,14 @@
             <li class="menu-header">Data Master</li>   
             <?php if(is_administrator()): ?>   
               <li class="<?= $title == 'Data User' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('user');?>"><i class="fas fa-users"></i> <span>Data User</span></a></li> 
+            <?php endif; ?>
+            <?php if(is_project_manager()): ?>   
               <li class="<?= $title == 'Data Client' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('client');?>"><i class="fas fa-users"></i> <span>Data Client</span></a></li>
-              <!-- <li class="<?= $title == 'Data Quotation Header' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('quotation-header');?>"><i class="fas fa-file-invoice"></i> <span>Data Quotation Header</span></a></li> -->
               <li class="<?= $title == 'Data Project Group' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('project-group');?>"><i class="fas fa-building"></i> <span>Data Project Group</span></a></li> 
             <?php endif; ?>
-            <li class="<?= $title == 'Data Project' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('project');?>"><i class="fas fa-building"></i> <span>Data Project</span></a></li> 
-            
+            <?php if(is_project_manager() || is_finance() || is_pengawas_lapangan()): ?>  
+              <li class="<?= $title == 'Data Project' ? 'active' : ''; ?>"><a class="nav-link" href="<?= base_url('project');?>"><i class="fas fa-building"></i> <span>Data Project</span></a></li> 
+            <?php endif; ?>
           </ul>
 
           <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
