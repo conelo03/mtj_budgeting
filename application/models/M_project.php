@@ -15,7 +15,7 @@ class M_project extends CI_Model {
 		$this->db->from($this->table);
 		$this->db->join('client', 'client.clientId=project.clientId');
 		$this->db->join('project_group', 'project_group.projectGroupId = project.projectGroupId', 'left');
-		if(is_administrator() || is_finance()){
+		if(is_finance()){
 
 		} elseif(is_project_manager()) {
 			$this->db->where('project.userId', $this->session->userdata('userId'));
@@ -62,7 +62,7 @@ class M_project extends CI_Model {
 	
 	function count_all() {
 		$this->db->from('project');
-		if(is_administrator() || is_finance()){
+		if(is_finance()){
 
 		} elseif(is_project_manager()) {
 			$this->db->where('project.userId', $this->session->userdata('userId'));

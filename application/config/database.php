@@ -75,9 +75,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
+	'hostname' => '178.128.209.164',
+  'username' => 'dikdik',
+	'password' => 'Kurniawan757!',
 	'database' => 'db_mtj_budgeting',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
