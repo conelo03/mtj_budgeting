@@ -276,8 +276,9 @@
                         <tr>
                           <th class="text-center" style="width: 20px;">#</th>
                           <th style="width: 100px;">Order No</th>
+                          <th style="width: 150px;">Budget Name</th>
+                          <th style="width: 100px;">Value</th>
                           <th style="width: 200px;">Description</th>
-                          <th style="width: 100px;">Budget</th>
                           <th style="width: 150px;">Created At</th>
                           <th style="width: 150px;">Last Update</th>
                           <th style="width: 100px;">Approval</th>

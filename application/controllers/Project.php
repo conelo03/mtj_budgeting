@@ -386,7 +386,7 @@ class Project extends CI_Controller {
 		
 		$html = "<option value='' disabled>-- Select Budget --</option>";
 		foreach($pg as $data){ // Ambil semua data dari hasil eksekusi $sql
-			$html .= "<option value='".$data['budgetId']."'>".currency($data['budget'])." - ".$data['description']."</option>"; // Tambahkan tag option ke variabel $html
+			$html .= "<option value='".$data['budgetId']."'>".currency($data['budget'])." - ".$data['budgetName']."</option>"; // Tambahkan tag option ke variabel $html
 		}
 		$callback = array('data'=>$html); // Masukan variabel html tadi ke dalam array $callback dengan index array : data_kota
 		$response = [
@@ -526,8 +526,9 @@ class Project extends CI_Controller {
 			$row = array();
 			$row[] = $no.".";
 			$row[] = $i->orderNo;
-			$row[] = $i->description;
+			$row[] = $i->budgetName;
 			$row[] = currency($i->budget);
+			$row[] = $i->description;
 			$row[] = $i->createdAt;
 			$row[] = $i->lastUpdate;
 			$row[] = badge_status($i->approved);
@@ -587,6 +588,7 @@ class Project extends CI_Controller {
 					'projectId' => $projectId,
 					'orderNo' => $orderNo,
 					'budget' => $this->priceToFloat($this->input->post('budget', true)),
+					'budgetName' => $this->input->post('budgetName', true),
 					'description' => $this->input->post('description', true),
 					'createdAt' => date('Y-m-d H:i:s'),
 					'approved' => 'PENDING'
@@ -621,6 +623,7 @@ class Project extends CI_Controller {
 				$data = [
 					'budgetId' => $budgetId,
 					'budget' => $budget,
+					'budgetName' => $this->input->post('budgetName', true),
 					'description' => $this->input->post('description', true),
 				];
 	
@@ -678,6 +681,7 @@ class Project extends CI_Controller {
 		}else{
 			$this->form_validation->set_rules('budget', 'Budget', 'trim');
 		}
+		$this->form_validation->set_rules('budgetName', 'Name', 'required|trim');
 		$this->form_validation->set_rules('description', 'Description', 'required|trim');
 	}
 

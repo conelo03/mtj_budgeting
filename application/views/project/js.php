@@ -11,7 +11,7 @@
         "type" : "POST"
       },
       "columnDefs" : [{
-        "targets" : [0, 6],
+        "targets" : [0, 7],
         "orderable" : false,
         "className" : "text-center"
       }],
@@ -347,6 +347,7 @@
             $('#budgetEdit').val(formatRupiah(data.budget, ''));
           }
           
+          $('#budgetNameEdit').val(data.budgetName);
           $('#descriptionEditBudget').val(data.description);
           $('#updateBudgetData').attr("data", id);
         },

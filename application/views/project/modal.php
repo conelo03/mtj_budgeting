@@ -17,13 +17,13 @@
 
             </select>
           </div> -->
-          <!-- <div class="form-group">
-            <label class="form-label">Order No</label>
-            <input name="orderNo" id="orderNo" class="form-control" type="text" placeholder="Order No">
-          </div> -->
+          <div class="form-group">
+            <label class="form-label">Budget Name</label>
+            <input name="budgetName" id="budgetName" class="form-control" type="text" placeholder="Budget Name">
+          </div>
 
           <div class="form-group">
-            <label class="form-label">Budget</label>
+            <label class="form-label">Budget value</label>
             <input name="budget" id="budget" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
 
@@ -60,13 +60,19 @@
 
             </select>
           </div> -->
+          
           <div class="form-group">
             <label class="form-label">Order No</label>
             <input name="orderNo" id="orderNoEditBudget" class="form-control" type="text" placeholder="Order No" disabled>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Budget</label>
+            <label class="form-label">Budget Name</label>
+            <input name="budgetName" id="budgetNameEdit" class="form-control" type="text" placeholder="Budget Name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Budget Value</label>
             <input name="budget" id="budgetEdit" class="form-control" type="text" onkeyup="rupiah(this)">
           </div>
 
