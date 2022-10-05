@@ -277,11 +277,11 @@
                           <th class="text-center" style="width: 20px;">#</th>
                           <th style="width: 100px;">Order No</th>
                           <th style="width: 150px;">Budget Name</th>
-                          <th style="width: 100px;">Value</th>
-                          <th style="width: 200px;">Description</th>
-                          <th style="width: 150px;">Created At</th>
-                          <th style="width: 150px;">Last Update</th>
+                          <th style="width: 120px;">Value</th>
+                          <th style="width: 120px;">Usage Value</th>
+                          <th style="width: 120px;">Remaining Value</th>
                           <th style="width: 100px;">Approval</th>
+                          <th style="width: 200px;">Description</th>
                           <th class="text-center" style="width: 250px;">Action</th>
                         </tr>
                       </thead>
@@ -400,15 +400,15 @@
                         <tr>
                           <th class="text-center" style="width: 20px;" rowspan="2">#</th>
                           <th style="width: 100px;" rowspan="2">Holder</th>
-                          <th style="width: 100px;" rowspan="2">Description</th>
                           <th style="width: 100px;" rowspan="2">Dist. Value</th>
-                          <th style="width: 300px;" class="text-center" colspan="2">Detail Cost</th>
+                          <th style="width: 350px;" class="text-center" colspan="3">Detail Cost</th>
                           <th style="width: 100px;" rowspan="2">Usage Cost</th>
                           <th style="width: 100px;" rowspan="2">Remaining Cost</th>
                         </tr>
                         <tr>
                           <th style="width: 200px;">Desc</th>
                           <th style="width: 100px;">Cost</th>
+                          <th style="width: 50px;">Pict</th>
                         </tr>
                       </thead>
                       <tbody id="dataRealBudgetList">

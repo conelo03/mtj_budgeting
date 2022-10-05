@@ -67,15 +67,25 @@
         "url" : "<?= base_url('Project/get_real_budget_data/'.$project['projectId']) ?>",
         "type" : "POST"
       },
-      "columnDefs" : [{
-        "targets" : [0],
-        "orderable" : false,
-        "className" : "text-center"
-      },{
-        "targets" : [5],
-        "orderable" : true,
-        "className" : "text-right"
-      }],
+      "columnDefs" : [
+        {
+          "targets" : [0],
+          "orderable" : false,
+          "className" : "align-middle text-center"
+        },{
+          "targets" : [4],
+          "className" : "text-right"
+        },
+        {
+          "targets" : [1, 2, 6, 7],
+          "className" : "align-middle"
+        },
+        {
+          "targets" : [5],
+          "className" : "text-center"
+        }
+      ],
+      "rowsGroup": [1, 2, 6, 7],
     });
   }
 
@@ -281,17 +291,17 @@
 
 	$(document).ready(function(){
     loadDetailProject();
-    loadProposedCost();
-    loadBudget();
-    loadUser();
-    loadDistributionCost();
-    loadBudgetData();
     loadProposedCostData();
     loadDistributionCostData();
     loadRealBudgetData();
     loadReportCostData();
     loadReportBudgetData();
     loadNotesData();
+    loadProposedCost();
+    loadBudget();
+    loadUser();
+    loadDistributionCost();
+    loadBudgetData();
 
     // BUDGET
     // SAVE DATA
@@ -1073,6 +1083,29 @@
           loadReportBudgetData();
           loadRealBudgetData();
           loadDetailProject();
+        },
+        error: function(xhr, ajaxOptions, thrownError){
+          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+      return false;
+    });
+
+    //REAL COST
+    //GET DATA DETAIL
+    $('#dataRealBudgetList').on('click','#btnRealCostDetail',function(){
+      let id = $(this).attr('data');
+      $.ajax({
+        type : "GET",
+        url  : "<?= base_url('Project/get_report_cost_data_by_id')?>",
+        dataType : "JSON",
+        data : {
+          id : id
+        },
+        success: function(res){
+          let data = res.data;
+          $('#modalReportCostDetail').modal('show');
+          $('#reportCostFileName').attr('src',`<?= base_url('assets/upload/report-budget/') ?>${data.fileName}`);
         },
         error: function(xhr, ajaxOptions, thrownError){
           alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);

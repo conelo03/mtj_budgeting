@@ -104,8 +104,8 @@ class M_project extends CI_Model {
 
 	// PROJECT BUDGET
 	// start datatables
-	var $column_budget_order = array('orderNo', 'description', 'budget', 'createdAt', 'lastUpdate', 'approved'); //set column field database for datatable orderable
-	var $column_budget_search = array('orderNo', 'description', 'budget', 'createdAt', 'lastUpdate', 'approved'); //set column field database for datatable searchable
+	var $column_budget_order = array('orderNo', 'budgetName', 'description', 'budget', 'createdAt', 'lastUpdate', 'approved'); //set column field database for datatable orderable
+	var $column_budget_search = array('orderNo', 'budgetName', 'description', 'budget', 'createdAt', 'lastUpdate', 'approved'); //set column field database for datatable searchable
 	var $order_budget = array('budgetId' => 'asc'); // default order 
 
 	private function _get_datatables_budget_query($projectId) {
@@ -418,6 +418,71 @@ class M_project extends CI_Model {
 	{
 		return $this->db->delete('report_cost', ['reportCostId' => $reportCostId]);
 	}
+
+	// REAL COST
+	// start datatables
+	var $column_real_cost_order = array('user.userName', 'distribution_cost.value', 'distribution_cost.reportCostValue', 'distribution_cost.description', 'distribution_cost.fileName'); //set column field database for datatable orderable
+	var $column_real_cost_search = array('user.userName', 'distribution_cost.value', 'distribution_cost.reportCostValue', 'distribution_cost.description', 'distribution_cost.fileName'); //set column field database for datatable searchable
+	var $order_real_cost = array('user.userName' => 'asc'); // default order 
+
+	private function _get_datatables_real_cost_query($projectId) {
+		$this->db->select('*, report_cost.description');
+		$this->db->from('distribution_cost');
+		$this->db->join('report_cost', 'report_cost.distributionCostId=distribution_cost.distributionCostId', 'left');
+		$this->db->join('user', 'user.userId=distribution_cost.holder');
+		$this->db->where('distribution_cost.projectId', $projectId);
+		if(is_pengawas_lapangan() && is_project_manager()){
+		}elseif(is_pengawas_lapangan()){
+			$this->db->where('distribution_cost.holder', $this->session->userdata('userId'));
+		}
+		$i = 0;
+		foreach ($this->column_real_cost_search as $i) { // loop column 
+			if(@$_POST['search']['value']) { // if datatable send POST for search
+				if($i===0) { // first loop
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+					$this->db->like($i, $_POST['search']['value']);
+				} else {
+					$this->db->or_like($i, $_POST['search']['value']);
+				}
+				if(count($this->column_report_cost_search) - 1 == $i) //last loop
+					$this->db->group_end(); //close bracket
+			}
+			$i++;
+		}
+				
+		if(isset($_POST['order'])) { // here order processing
+			$this->db->order_by($this->column_real_cost_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if(isset($this->order_real_cost)) {
+			$order = $this->order_real_cost;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function get_real_cost_datatables($projectId) {
+		$this->_get_datatables_real_cost_query($projectId);
+		if(@$_POST['length'] != -1)
+		$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function count_real_cost_filtered($projectId) {
+		$this->_get_datatables_real_cost_query($projectId);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+	
+	function count_real_cost_all($projectId) {
+		$this->db->from('report_cost');
+		$this->db->join('distribution_cost', 'distribution_cost.distributionCostId=report_cost.distributionCostId', 'left');
+		$this->db->where('distribution_cost.projectId', $projectId);
+		if(is_pengawas_lapangan() && is_project_manager()){
+		}elseif(is_pengawas_lapangan()){
+			$this->db->where('distribution_cost.holder', $this->session->userdata('userId'));
+		}
+		return $this->db->count_all_results();
+	}
+	// end datatables
 
 		// REPORT BUDGET
 	// start datatables

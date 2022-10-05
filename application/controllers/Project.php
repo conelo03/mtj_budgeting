@@ -522,16 +522,21 @@ class Project extends CI_Controller {
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
+			$this->db->select_sum('reportCostValue');
+			$this->db->from('report_cost');
+			$this->db->where('budgetId', $i->budgetId);
+			$this->db->group_by('budgetId');
+			$rc = $this->db->get()->row_array();
 			$no++;
 			$row = array();
 			$row[] = $no.".";
 			$row[] = $i->orderNo;
 			$row[] = $i->budgetName;
 			$row[] = currency($i->budget);
-			$row[] = $i->description;
-			$row[] = $i->createdAt;
-			$row[] = $i->lastUpdate;
+			$row[] = $rc['reportCostValue'] ? currency($rc['reportCostValue']) : '-' ;
+			$row[] = $rc['reportCostValue'] ? currency($i->budget - $rc['reportCostValue']) : currency($i->budget);
 			$row[] = badge_status($i->approved);
+			$row[] = $i->description;
 			// add html for action
 
 			if($i->approved == 'PENDING' && $project['status'] != 'COMPLETED'){
@@ -1089,28 +1094,23 @@ class Project extends CI_Controller {
 
 	//REAL BUDGET
 	function get_real_budget_data($projectId) {
-		$list = $this->M_project->get_distribution_cost_datatables($projectId);
+		$list = $this->M_project->get_real_cost_datatables($projectId);
 		$data = array();
 		$no = @$_POST['start'];
 		foreach ($list as $i) {
-			$user = $this->db->get_where('user', ['userId' => $i->holder])->row_array();
 			$report_cost = $this->db->get_where('report_cost', ['distributionCostId' => $i->distributionCostId])->result_array();
-			$detail = '';
-			$cost = '';
 			$total_cost = 0;
 			foreach ($report_cost as $rc) {
 				$total_cost += $rc['reportCostValue'];
-				$detail .= "- ".$rc['description']."<br>";
-				$cost .= currency($rc['reportCostValue'])."<br>";
 			}
 			$no++;
 			$row = array();
 			$row[] = $no.".";
-			$row[] = $user['userName'];
-			$row[] = $i->description;
+			$row[] = $i->userName;
 			$row[] = currency($i->value);
-			$row[] = $detail;
-			$row[] = $cost;
+			$row[] = $i->description;
+			$row[] = $i->reportCostId ? currency($i->reportCostValue) : '';
+			$row[] = $i->reportCostId ? '<a href="#" class="btn btn-light" id="btnRealCostDetail" data="'.$i->reportCostId.'"><i class="fa fa-eye"></i> </a><br/>' : '';
 			$row[] = currency($total_cost);
 			$row[] = currency($i->value - $total_cost);
 			
@@ -1118,8 +1118,8 @@ class Project extends CI_Controller {
 		}
 		$output = [
 			"draw" => @$_POST['draw'],
-			"recordsTotal" => $this->M_project->count_distribution_cost_all($projectId),
-			"recordsFiltered" => $this->M_project->count_distribution_cost_filtered($projectId),
+			"recordsTotal" => $this->M_project->count_real_cost_all($projectId),
+			"recordsFiltered" => $this->M_project->count_real_cost_filtered($projectId),
 			"data" => $data,
 		];
 		// output to json format
