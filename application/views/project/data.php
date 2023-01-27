@@ -261,6 +261,7 @@
               populateError(res.message);
             }
             $('#modalAdd').modal('hide');
+            document.getElementById('saveData').reset();
             loadData();
           }
         },
@@ -326,6 +327,7 @@
               populateError(res.message);
             }
             $('#modalEdit').modal('hide');
+            document.getElementById('updateData').reset();
             loadData();
           }
         },
